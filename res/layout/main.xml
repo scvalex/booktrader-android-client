@@ -6,7 +6,7 @@
     android:layout_height="fill_parent"
     >
   <View
-      class="org.abstractbinary.BookTrader$SpecialMenuBar"
+      class="org.abstractbinary.SpecialMenuBar"
       android:background="@color/not_logged_in"
       android:layout_height="100dip"
       android:layout_width="fill_parent"
