@@ -9,19 +9,28 @@
       android:id="@+id/menu_bar"
       xmlns:android="http://schemas.android.com/apk/res/android"
       android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="60dip"
       >
+    <TextView
+        android:id="@+id/user_label"
+        android:background="@color/logged_in"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        />
     <TextView
         android:background="@color/logged_in"
         android:gravity="center"
         android:layout_gravity="center"
-        android:layout_height="60dip"
+        android:layout_height="fill_parent"
         android:layout_width="fill_parent"
-        android:text="Logged in"
+        android:text="Logging in"
         />
     <Button
+        android:id="@+id/login_button"
         android:layout_gravity="center"
-        android:layout_height="60dip"
+        android:layout_height="fill_parent"
         android:layout_width="fill_parent"
         android:onClick="logIn"
         android:text="@string/log_in"
