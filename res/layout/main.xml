@@ -12,6 +12,7 @@
       android:layout_height="60dip"
       >
     <LinearLayout
+        android:id="@+id/logged_in_view"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
         android:orientation="horizontal"
@@ -26,12 +27,13 @@
           />
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/logging_in_view"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
         android:orientation="horizontal"
         >
       <TextView
-          android:background="@color/logged_in"
+          android:background="@color/logging_in"
           android:gravity="center"
           android:layout_gravity="center"
           android:layout_height="fill_parent"
@@ -40,6 +42,7 @@
           />
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/not_logged_in_view"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
         android:orientation="horizontal"

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <color name="not_logged_in">#f00</color>
+  <color name="logging_in">#00f</color>
   <color name="logged_in">#0f0</color>
 </resources>
