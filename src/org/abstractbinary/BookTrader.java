@@ -53,8 +53,19 @@ public class BookTrader extends Activity {
             dialog.setContentView(R.layout.login_dialog);
             dialog.setTitle("Login");
 
-            EditText apiKeyField = (EditText)dialog.findViewById(R.id.api_key_field);
-            apiKeyField.setText("API key");
+            final EditText apiKeyField =
+                (EditText)dialog.findViewById(R.id.api_key_field);
+            final Button button =
+                (Button)dialog.findViewById(R.id.login_dialog_button);
+            button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.v(TAG, "API key changed to: " +
+                              apiKeyField.getText());
+                        Toast.makeText(BookTrader.this, "API Key changed!",
+                                       Toast.LENGTH_SHORT).show();
+                    }
+            });
 
             break;
         default:
@@ -68,7 +79,6 @@ public class BookTrader extends Activity {
 
     /** Called when the login button is pressed. */
     public void logIn(View v) {
-        Toast.makeText(this, "Log in", Toast.LENGTH_SHORT).show();
         nextState();
     }
 

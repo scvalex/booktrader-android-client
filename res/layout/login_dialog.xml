@@ -8,8 +8,16 @@
     >
   <EditText
       android:id="@+id/api_key_field"
-      android:layout_height="fill_parent"
+      android:layout_height="wrap_content"
       android:layout_width="wrap_content"
       android:minEms="10"
+      android:text="@string/api_key"
+      />
+  <Button
+      android:id="@+id/login_dialog_button"
+      android:layout_gravity="right"
+      android:layout_height="wrap_content"
+      android:layout_width="wrap_content"
+      android:text="@string/log_in"
       />
 </LinearLayout>
