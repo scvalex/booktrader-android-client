@@ -7,7 +7,22 @@ import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class BookTrader extends Activity {
+    /* Remote API */
+    static final String LOGIN_URL = "http://146.169.25.146:6543/users/login";
+
     /* Debugging */
     static final String TAG = "BookTrader";
 
@@ -25,7 +40,8 @@ public class BookTrader extends Activity {
     Button loginButton;
 
     /* Internal gubbins */
-    String apiKey = "Your Key";
+    String username = "username";
+    String password = "password";
 
 
     /* Application life-cycle */
@@ -56,16 +72,20 @@ public class BookTrader extends Activity {
             dialog.setContentView(R.layout.login_dialog);
             dialog.setTitle("Login");
 
-            final EditText apiKeyField =
-                (EditText)dialog.findViewById(R.id.api_key_field);
-            apiKeyField.setText(apiKey);
+            final EditText usernameField =
+                (EditText)dialog.findViewById(R.id.username_field);
+            usernameField.setText(username);
+            final EditText passwordField =
+                (EditText)dialog.findViewById(R.id.password_field);
+            passwordField.setText(password);
             final Button button =
                 (Button)dialog.findViewById(R.id.login_dialog_button);
             button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        apiKey = apiKeyField.getText().toString();
-                        Log.v(TAG, "API key changed to: " + apiKey);
+                        username = usernameField.getText().toString();
+                        password = passwordField.getText().toString();
+                        Log.v(TAG, "New login info: " + username);
                         dialog.dismiss();
                         doLogin();
                     }
@@ -115,8 +135,25 @@ public class BookTrader extends Activity {
         menuBar.addView(v, 0);
     }
 
-    /** Perform the remote login and switch to login state if successful. */
+    /** Perform the remote login and switch to login state if successful.
+     *  Cheers for:
+     *  <a href="http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient">Executing a HTTP POST Request with HttpClient</a> */
     void doLogin() {
         Toast.makeText(this, "Doing login (and much more)...", Toast.LENGTH_SHORT).show();
+
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpPost httpPost = new HttpPost(LOGIN_URL);
+
+        try {
+            List<NameValuePair> values = new ArrayList<NameValuePair>();
+            values.add(new BasicNameValuePair("username", username));
+            values.add(new BasicNameValuePair("password", password));
+            HttpResponse response = httpClient.execute(httpPost);
+            Log.v(TAG, "login request done with " + response.getStatusLine());
+        } catch (ClientProtocolException e) {
+            Log.v(TAG, "login failed with " + e);
+        } catch (Exception e) {
+            Log.v(TAG, "login failed with " + e);
+        }
     }
 }
