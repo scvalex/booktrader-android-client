@@ -54,7 +54,6 @@ class BookTraderAPI {
         values.add(new BasicNameValuePair("username", username));
         values.add(new BasicNameValuePair("password", password));
         values.add(new BasicNameValuePair("Login", "Login"));
-        values.add(new BasicNameValuePair("came_from", "/"));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(values));
         } catch (Exception e) {
