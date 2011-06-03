@@ -143,8 +143,6 @@ public class BookTrader extends Activity {
      *  Cheers for:
      *  <a href="http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient">Executing a HTTP POST Request with HttpClient</a> */
     void doLogin() {
-        Toast.makeText(this, "Doing login (and much more)...", Toast.LENGTH_SHORT).show();
-
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(LOGIN_URL);
 
@@ -154,10 +152,13 @@ public class BookTrader extends Activity {
             values.add(new BasicNameValuePair("password", password));
             HttpResponse response = httpClient.execute(httpPost);
             Log.v(TAG, "login request done with " + response.getStatusLine());
-        } catch (ClientProtocolException e) {
-            Log.v(TAG, "login failed with " + e);
+
+            Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Log.v(TAG, "login failed with " + e);
+            Toast.makeText(this, "Login failed :(", Toast.LENGTH_LONG).show();
+            nextState();
+            nextState();
         }
     }
 }
