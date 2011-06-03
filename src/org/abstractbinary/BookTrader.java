@@ -3,6 +3,7 @@ package org.abstractbinary;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -100,6 +101,13 @@ public class BookTrader extends Activity {
             throw new RuntimeException("Unknown dialog type: " + id);
         }
         return dialog;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        Log.v(TAG, "screen orientation changed");
+        super.onConfigurationChanged(newConfig);
+        setContentView(R.layout.main);
     }
 
 
