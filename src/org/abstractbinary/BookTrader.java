@@ -45,8 +45,8 @@ public class BookTrader extends Activity {
     Button loginButton;
 
     /* Internal gubbins */
-    String username = "username";
-    String password = "password";
+    String username = null;
+    String password = null;
 
 
     /* Application life-cycle */
@@ -79,10 +79,14 @@ public class BookTrader extends Activity {
 
             final EditText usernameField =
                 (EditText)dialog.findViewById(R.id.username_field);
-            usernameField.setText(username);
+            if (username != null) {
+                usernameField.setText(username);
+            }
             final EditText passwordField =
                 (EditText)dialog.findViewById(R.id.password_field);
-            passwordField.setText(password);
+            if (password != null) {
+                passwordField.setText(password);
+            }
             final Button button =
                 (Button)dialog.findViewById(R.id.login_dialog_button);
             button.setOnClickListener(new View.OnClickListener() {

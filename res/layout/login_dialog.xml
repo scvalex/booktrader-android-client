@@ -8,12 +8,14 @@
     >
   <EditText
       android:id="@+id/username_field"
+      android:hint="@string/username"
       android:layout_height="wrap_content"
       android:layout_width="wrap_content"
       android:minEms="10"
       />
   <EditText
       android:id="@+id/password_field"
+      android:hint="@string/password"
       android:layout_height="wrap_content"
       android:layout_width="wrap_content"
       android:minEms="10"
