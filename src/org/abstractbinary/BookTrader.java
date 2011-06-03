@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,37 +14,20 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
 import java.util.HashMap;
-import org.apache.http.Header;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.client.protocol.ClientContext;
-import android.net.http.AndroidHttpClient;
+import java.util.Map;
+
 import org.apache.http.client.CookieStore;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.cookie.Cookie;
-import android.os.Handler;
-import android.os.Message;
+import org.apache.http.HttpResponse;
 
 public class BookTrader extends Activity {
-    /* Remote API */
-    static final String LOGIN_URL = "http://146.169.25.146:6543/users/login";
-
     /* Debugging */
+
     static final String TAG = "BookTrader";
 
     /* Login-state stuff */
@@ -52,12 +37,9 @@ public class BookTrader extends Activity {
     int state;
     Map<Integer, View> loginStates = new HashMap<Integer, View>();
 
-    /* Network communications */
-    HttpClient httpClient = AndroidHttpClient.newInstance("BookTrader/0.1");
-    HttpContext httpContext = new BasicHttpContext();
-    static final int LOGIN_RESPONSE = 0;
-    static final int LOGIN_ERROR = 1;
-    Handler loginHandler;
+    /* Remote API */
+    BookTraderAPI api;
+    Handler requestHandler;
 
     /* Dialogs */
     static final int DIALOG_LOGIN = 0;
@@ -87,22 +69,21 @@ public class BookTrader extends Activity {
         populateLoginStates();
         state = STATE_NOT_LOGGED_IN;
 
-        CookieStore cookieStore = new BasicCookieStore();
-        httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-
-        loginHandler = new Handler() {
+        requestHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
-                case LOGIN_RESPONSE:
+                case BookTraderAPI.LOGIN_RESPONSE:
                     BookTrader.this.handleLoginResponse((HttpResponse)msg.obj);
                     break;
-                case LOGIN_ERROR:
+                case BookTraderAPI.LOGIN_ERROR:
                     BookTrader.this.handleLoginFailure((Exception)msg.obj);
                     break;
                 }
             }
         };
+
+        api = new BookTraderAPI(requestHandler);
 
         Log.v(TAG, "BookTrader running...");
     }
@@ -136,7 +117,7 @@ public class BookTrader extends Activity {
                         password = passwordField.getText().toString();
                         Log.v(TAG, "New login info: " + username);
                         dialog.dismiss();
-                        doLogin();
+                        api.doLogin(username, password);
                     }
             });
 
@@ -197,44 +178,11 @@ public class BookTrader extends Activity {
         loginStates.put(STATE_LOGGED_IN, findViewById(R.id.logged_in_view));
     }
 
-    /** Perform the remote login and switch to login state if successful.
-     *  Cheers for:
-     *  <a href="http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient">Executing a HTTP POST Request with HttpClient</a> */
-    void doLogin() {
-        final HttpPost httpPost = new HttpPost(LOGIN_URL);
-
-        List<NameValuePair> values = new ArrayList<NameValuePair>();
-        values.add(new BasicNameValuePair("username", username));
-        values.add(new BasicNameValuePair("password", password));
-        values.add(new BasicNameValuePair("Login", "Login"));
-        values.add(new BasicNameValuePair("came_from", "/"));
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(values));
-        } catch (Exception e) {
-            handleLoginFailure(e);
-        }
-
-        Thread t = new Thread(new Runnable() {
-                public void run() {
-                    Handler handler = BookTrader.this.loginHandler;
-                    try {
-                        HttpResponse response = httpClient.execute(httpPost, httpContext);
-                        handler.sendMessage(Message.obtain(handler, LOGIN_RESPONSE, response));
-                    } catch (Exception e) {
-                        handler.sendMessage(Message.obtain(handler, LOGIN_ERROR, e));
-                    }
-                }
-            });
-        t.start();
-    }
-
     void handleLoginResponse(HttpResponse response) {
         Log.v(TAG, "login request done with " + response.getStatusLine());
-        //Log.v(TAG, "response string: " + responseToString(response));
-        CookieStore cookieJar = (CookieStore)httpContext.getAttribute(ClientContext.COOKIE_STORE);
+        CookieStore cookieJar = (CookieStore)api.getHttpContext().getAttribute(ClientContext.COOKIE_STORE);
         boolean loggedIn = false;
         for (Cookie c : cookieJar.getCookies()) {
-            Log.v(TAG, "cookie; " + c.getName() + ": " + c.getValue());
             if (c.getName().equals("auth_tkt")) {
                 loggedIn = true;
             }
