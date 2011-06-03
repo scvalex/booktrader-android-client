@@ -153,7 +153,7 @@ public class BookTrader extends Activity {
             HttpResponse response = httpClient.execute(httpPost);
             Log.v(TAG, "login request done with " + response.getStatusLine());
 
-            Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Logged in (" + response.getStatusLine() + ")", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Log.v(TAG, "login failed with " + e);
             Toast.makeText(this, "Login failed :(", Toast.LENGTH_LONG).show();
