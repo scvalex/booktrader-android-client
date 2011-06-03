@@ -24,6 +24,9 @@ public class BookTrader extends Activity {
     FrameLayout menuBar;
     Button loginButton;
 
+    /* Internal gubbins */
+    String apiKey = "Your Key";
+
 
     /* Application life-cycle */
 
@@ -45,7 +48,7 @@ public class BookTrader extends Activity {
 
     @Override
     protected Dialog onCreateDialog(int id) {
-        Dialog dialog;
+        final Dialog dialog;
         switch (id) {
         case DIALOG_LOGIN:
             dialog = new Dialog(this);
@@ -55,15 +58,16 @@ public class BookTrader extends Activity {
 
             final EditText apiKeyField =
                 (EditText)dialog.findViewById(R.id.api_key_field);
+            apiKeyField.setText(apiKey);
             final Button button =
                 (Button)dialog.findViewById(R.id.login_dialog_button);
             button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.v(TAG, "API key changed to: " +
-                              apiKeyField.getText());
-                        Toast.makeText(BookTrader.this, "API Key changed!",
-                                       Toast.LENGTH_SHORT).show();
+                        apiKey = apiKeyField.getText().toString();
+                        Log.v(TAG, "API key changed to: " + apiKey);
+                        dialog.dismiss();
+                        doLogin();
                     }
             });
 
@@ -109,5 +113,10 @@ public class BookTrader extends Activity {
         View v = menuBar.getChildAt(menuBar.getChildCount() - 1);
         menuBar.removeView(v);
         menuBar.addView(v, 0);
+    }
+
+    /** Perform the remote login and switch to login state if successful. */
+    void doLogin() {
+        Toast.makeText(this, "Doing login (and much more)...", Toast.LENGTH_SHORT).show();
     }
 }
