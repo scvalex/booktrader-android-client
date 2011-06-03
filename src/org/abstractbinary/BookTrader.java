@@ -2,8 +2,10 @@ package org.abstractbinary;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,7 +29,6 @@ import org.apache.http.HttpResponse;
 
 public class BookTrader extends Activity {
     /* Debugging */
-
     static final String TAG = "BookTrader";
 
     /* Login-state stuff */
@@ -43,6 +44,8 @@ public class BookTrader extends Activity {
 
     /* Dialogs */
     static final int DIALOG_LOGIN = 0;
+    static final int DIALOG_PERPETUUM = 1;
+    ProgressDialog perpetuumDialog;
 
     /* Often used widgets */
     FrameLayout menuBar;
@@ -79,6 +82,9 @@ public class BookTrader extends Activity {
                 case BookTraderAPI.LOGIN_ERROR:
                     BookTrader.this.handleLoginFailure((Exception)msg.obj);
                     break;
+                case BookTraderAPI.LOGIN_START:
+                    showDialog(DIALOG_PERPETUUM);
+                    break;
                 }
             }
         };
@@ -96,7 +102,7 @@ public class BookTrader extends Activity {
             dialog = new Dialog(this);
 
             dialog.setContentView(R.layout.login_dialog);
-            dialog.setTitle("Login");
+            dialog.setTitle(getResources().getText(R.string.log_in));
 
             final EditText usernameField =
                 (EditText)dialog.findViewById(R.id.username_field);
@@ -120,6 +126,12 @@ public class BookTrader extends Activity {
                         api.doLogin(username, password);
                     }
             });
+
+            break;
+        case DIALOG_PERPETUUM:
+            perpetuumDialog = new ProgressDialog(this);
+            dialog = perpetuumDialog;
+            perpetuumDialog.setMessage(getResources().getText(R.string.logging_in));
 
             break;
         default:
@@ -180,6 +192,7 @@ public class BookTrader extends Activity {
 
     void handleLoginResponse(HttpResponse response) {
         Log.v(TAG, "login request done with " + response.getStatusLine());
+        perpetuumDialog.dismiss();
         CookieStore cookieJar = (CookieStore)api.getHttpContext().getAttribute(ClientContext.COOKIE_STORE);
         boolean loggedIn = false;
         for (Cookie c : cookieJar.getCookies()) {
@@ -198,6 +211,7 @@ public class BookTrader extends Activity {
 
     void handleLoginFailure(Exception e) {
         Log.v(TAG, "login failed with " + e);
+        perpetuumDialog.dismiss();
         Toast.makeText(this, "Login failed :(", Toast.LENGTH_LONG).show();
         switchState(STATE_LOGGING_IN);
     }

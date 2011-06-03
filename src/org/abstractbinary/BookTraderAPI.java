@@ -25,7 +25,8 @@ class BookTraderAPI {
 
     /* Internal API */
     static final int LOGIN_RESPONSE = 0;
-    static final int LOGIN_ERROR = 1;
+    static final int LOGIN_ERROR    = 1;
+    static final int LOGIN_START    = 2;
 
     Handler handler;
 
@@ -57,24 +58,29 @@ class BookTraderAPI {
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(values));
         } catch (Exception e) {
-            handler.sendMessage(Message.obtain(handler, LOGIN_ERROR, e));
+            sendMessage(LOGIN_ERROR, e);
         }
 
         Thread t = new Thread(new Runnable() {
                 public void run() {
                     try {
                         HttpResponse response = httpClient.execute(httpPost, httpContext);
-                        handler.sendMessage(Message.obtain(handler, LOGIN_RESPONSE, response));
+                        sendMessage(LOGIN_RESPONSE, response);
                     } catch (Exception e) {
-                        handler.sendMessage(Message.obtain(handler, LOGIN_ERROR, e));
+                        sendMessage(LOGIN_ERROR, e);
                     }
                 }
             });
+        sendMessage(LOGIN_START, null);
         t.start();
     }
 
     /** Return the current HttpContext */
     HttpContext getHttpContext() {
         return httpContext;
+    }
+
+    void sendMessage(int what, Object obj) {
+        handler.sendMessage(Message.obtain(handler, what, obj));
     }
 }
