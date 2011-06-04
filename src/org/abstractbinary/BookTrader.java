@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -52,8 +53,8 @@ public class BookTrader extends Activity {
     Button loginButton;
 
     /* Internal gubbins */
-    String username = null;
-    String password = null;
+    String username;
+    String password;
 
 
     /* Application life-cycle */
@@ -88,10 +89,24 @@ public class BookTrader extends Activity {
                 }
             }
         };
-
         api = new BookTraderAPI(requestHandler);
 
+        SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
+        username = settings.getString("username", null);
+        password = settings.getString("password", null);
+
         Log.v(TAG, "BookTrader running...");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.v(TAG, "Saving preferences...");
+        SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("username", username);
+        editor.putString("password", password);
+        editor.commit();
     }
 
     @Override
@@ -142,8 +157,8 @@ public class BookTrader extends Activity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        Log.v(TAG, "screen orientation changed");
         super.onConfigurationChanged(newConfig);
+        Log.v(TAG, "screen orientation changed");
     }
 
 
