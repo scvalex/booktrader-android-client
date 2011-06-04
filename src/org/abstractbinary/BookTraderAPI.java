@@ -2,9 +2,11 @@ package org.abstractbinary;
 
 import android.os.Handler;
 import android.os.Message;
+import android.net.Uri;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.util.Log;
 
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -25,10 +27,14 @@ import org.apache.http.protocol.HttpContext;
 
 
 class BookTraderAPI {
+    /* Debugging */
+    static final String TAG = "BookTraderAPI";
+
     /* Remote API */
     static final String BASE_URL = "http://abstractbinary.org:6543";
     static final String LOGIN_URL = BASE_URL + "/users/login";
     static final String LOGOUT_URL = BASE_URL + "/users/logut";
+    static final String SEARCH_URL = BASE_URL + "/books/search";
 
     /* Internal API */
     static final int LOGIN_RESPONSE  = 0;
@@ -37,6 +43,9 @@ class BookTraderAPI {
     static final int LOGOUT_START    = 3;
     static final int LOGOUT_FINISHED = 4;
     static final int LOGOUT_ERROR    = 5;
+    static final int SEARCH_START    = 6;
+    static final int SEARCH_FINISHED = 7;
+    static final int SEARCH_FAILED   = 8;
 
     Handler handler;
 
@@ -59,7 +68,7 @@ class BookTraderAPI {
         httpClient = new DefaultHttpClient(params);
     }
 
-    /** Perform the remote login and switch to login state if successful.
+    /** Perform the remote login.
      *  Cheers for:
      *  <a href="http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient">Executing a HTTP POST Request with HttpClient</a> */
     void doLogin(String username, String password) {
@@ -104,6 +113,27 @@ class BookTraderAPI {
                 }
             });
         sendMessage(LOGOUT_START, null);
+        t.start();
+    }
+
+    /** Perform the search query. */
+    void doSearch(String query) {
+        Uri.Builder uri = new Uri.Builder();
+        uri.appendQueryParameter("q", query);
+        String searchUrl = SEARCH_URL + uri.build().toString();
+        final HttpGet httpGet = new HttpGet(searchUrl);
+
+        Thread t = new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        HttpResponse response = httpClient.execute(httpGet, httpContext);
+                        sendMessage(SEARCH_FINISHED, response);
+                    } catch (Exception e) {
+                        sendMessage(SEARCH_FAILED, e);
+                    }
+                }
+            });
+        sendMessage(SEARCH_START, null);
         t.start();
     }
 

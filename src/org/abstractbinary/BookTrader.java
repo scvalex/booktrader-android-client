@@ -119,6 +119,15 @@ public class BookTrader extends Activity {
                 case BookTraderAPI.LOGOUT_ERROR:
                     BookTrader.this.handleLogoutError((Exception)msg.obj);
                     break;
+                case BookTraderAPI.SEARCH_START:
+                    showDialog(DIALOG_PERPETUUM);
+                    break;
+                case BookTraderAPI.SEARCH_FINISHED:
+                    BookTrader.this.handleSearchResult((HttpResponse)msg.obj);
+                    break;
+                case BookTraderAPI.SEARCH_FAILED:
+                    BookTrader.this.handleSearchFailed((Exception)msg.obj);
+                    break;
                 }
             }
         };
@@ -223,7 +232,9 @@ public class BookTrader extends Activity {
 
     /** Called when the search button is pressed. */
     public void search(View v) {
-        Toast.makeText(this, "Search!", Toast.LENGTH_SHORT).show();
+        String query = searchField.getText().toString();
+        if (query.length() > 0)
+            api.doSearch(query);
     }
 
 
@@ -305,6 +316,19 @@ public class BookTrader extends Activity {
             perpetuumDialog.dismiss();
         Toast.makeText(this, "Logout failed :(", Toast.LENGTH_LONG).show();
         clearPrivateData();
+    }
+
+    void handleSearchResult(HttpResponse response) {
+        if (perpetuumDialog != null)
+            perpetuumDialog.dismiss();
+        Toast.makeText(BookTrader.this, "Searched!", Toast.LENGTH_SHORT).show();
+    }
+
+    void handleSearchFailed(Exception e) {
+        Log.v(TAG, "search failed with " + e);
+        if (perpetuumDialog != null)
+            perpetuumDialog.dismiss();
+        Toast.makeText(BookTrader.this, "Failed!", Toast.LENGTH_SHORT).show();
     }
 
     /** Clears internal stores of private data.  Used when logging out. */
