@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -119,6 +120,11 @@ public class BookTrader extends Activity {
             dialog.setContentView(R.layout.login_dialog);
             dialog.setTitle(getResources().getText(R.string.log_in));
 
+            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    public void onDismiss(DialogInterface dialog) {
+                        BookTrader.this.switchState(STATE_NOT_LOGGED_IN);
+                    }
+            });
             final EditText usernameField =
                 (EditText)dialog.findViewById(R.id.username_field);
             if (username != null) {
