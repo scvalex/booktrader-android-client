@@ -7,4 +7,6 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="logging_in">Logging in</string>
+    <string name="search">Search</string>
+    <string name="keywords">Keywords</string>
 </resources>

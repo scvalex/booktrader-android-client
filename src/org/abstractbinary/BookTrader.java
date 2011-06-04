@@ -5,13 +5,15 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.inputmethod.EditorInfo;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,6 +59,8 @@ public class BookTrader extends Activity {
     Button loginButton;
     Button logoutButton;
     TextView usernameLabel;
+    EditText searchField;
+    Button searchButton;
 
     /* Internal gubbins */
     String username, password;
@@ -76,6 +80,19 @@ public class BookTrader extends Activity {
         loginButton = (Button)findViewById(R.id.login_button);
         logoutButton = (Button)findViewById(R.id.logout_button);
         usernameLabel = (TextView)findViewById(R.id.user_label);
+
+        searchField = (EditText)findViewById(R.id.search_field);
+        searchButton = (Button)findViewById(R.id.search_button);
+        searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                public boolean onEditorAction(TextView v, int actionId,
+                                              KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        searchButton.performClick();
+                        return true;
+                    }
+                    return false;
+                }
+            });
 
         populateLoginStates();
         state = STATE_NOT_LOGGED_IN;
@@ -202,6 +219,11 @@ public class BookTrader extends Activity {
     /** Called when the login button is pressed. */
     public void logOut(View v) {
         switchState(STATE_LOGGING_OUT);
+    }
+
+    /** Called when the search button is pressed. */
+    public void search(View v) {
+        Toast.makeText(this, "Search!", Toast.LENGTH_SHORT).show();
     }
 
 

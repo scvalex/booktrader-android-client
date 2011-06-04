@@ -8,7 +8,7 @@
   <FrameLayout
       android:id="@+id/menu_bar"
       android:layout_width="fill_parent"
-      android:layout_height="60dip"
+      android:layout_height="wrap_content"
       >
     <LinearLayout
         android:id="@+id/logged_in_view"
@@ -50,6 +50,26 @@
           />
     </LinearLayout>
   </FrameLayout>
+  <LinearLayout
+      android:layout_height="wrap_content"
+      android:layout_width="fill_parent"
+      android:orientation="horizontal"
+      >
+    <EditText
+        android:id="@+id/search_field"
+        android:imeOptions="actionSearch"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:hint="@string/keywords"
+        />
+    <Button
+        android:id="@+id/search_button"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:onClick="search"
+        android:text="@string/search"
+        />
+  </LinearLayout>
   <TextView
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"

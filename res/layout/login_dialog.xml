@@ -9,6 +9,7 @@
   <EditText
       android:id="@+id/username_field"
       android:hint="@string/username"
+      android:imeOptions="actionNext"
       android:layout_height="wrap_content"
       android:layout_width="wrap_content"
       android:lines="1"
@@ -17,6 +18,7 @@
   <EditText
       android:id="@+id/password_field"
       android:hint="@string/password"
+      android:imeOptions="actionDone"
       android:layout_height="wrap_content"
       android:layout_width="wrap_content"
       android:lines="1"
