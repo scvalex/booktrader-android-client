@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -37,6 +38,7 @@ public class BookTrader extends Activity {
     static final int STATE_NOT_LOGGED_IN = 0;
     static final int STATE_LOGGING_IN = 1;
     static final int STATE_LOGGED_IN = 2;
+    static final int STATE_LOGGING_OUT = 3;
     int state;
     Map<Integer, View> loginStates = new HashMap<Integer, View>();
 
@@ -52,10 +54,12 @@ public class BookTrader extends Activity {
     /* Often used widgets */
     FrameLayout menuBar;
     Button loginButton;
+    Button logoutButton;
+    TextView usernameLabel;
 
     /* Internal gubbins */
-    String username;
-    String password;
+    String username, password;
+    String username_try, password_try;
 
 
     /* Application life-cycle */
@@ -68,8 +72,9 @@ public class BookTrader extends Activity {
         setContentView(R.layout.main);
 
         menuBar = (FrameLayout)findViewById(R.id.menu_bar);
-
         loginButton = (Button)findViewById(R.id.login_button);
+        logoutButton = (Button)findViewById(R.id.logout_button);
+        usernameLabel = (TextView)findViewById(R.id.user_label);
 
         populateLoginStates();
         state = STATE_NOT_LOGGED_IN;
@@ -87,6 +92,15 @@ public class BookTrader extends Activity {
                 case BookTraderAPI.LOGIN_START:
                     showDialog(DIALOG_PERPETUUM);
                     break;
+                case BookTraderAPI.LOGOUT_START:
+                    showDialog(DIALOG_PERPETUUM);
+                    break;
+                case BookTraderAPI.LOGOUT_FINISHED:
+                    BookTrader.this.handleLogoutFinished();
+                    break;
+                case BookTraderAPI.LOGOUT_ERROR:
+                    BookTrader.this.handleLogoutError((Exception)msg.obj);
+                    break;
                 }
             }
         };
@@ -103,19 +117,19 @@ public class BookTrader extends Activity {
     protected void onStart() {
         super.onStart();
 
-        if (username != null && password != null)
+        switchState(STATE_NOT_LOGGED_IN);
+
+        if (username != null && password != null) {
+            username_try = username;
+            password_try = password;
             api.doLogin(username, password);
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.v(TAG, "Saving preferences...");
-        SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString("username", username);
-        editor.putString("password", password);
-        editor.commit();
+        savePreferences();
     }
 
     @Override
@@ -148,11 +162,11 @@ public class BookTrader extends Activity {
             button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        username = usernameField.getText().toString();
-                        password = passwordField.getText().toString();
+                        username_try = usernameField.getText().toString();
+                        password_try = passwordField.getText().toString();
                         Log.v(TAG, "New login info: " + username);
                         dialog.dismiss();
-                        api.doLogin(username, password);
+                        api.doLogin(username_try, password_try);
                     }
             });
 
@@ -183,20 +197,18 @@ public class BookTrader extends Activity {
         switchState(STATE_LOGGING_IN);
     }
 
+    /** Called when the login button is pressed. */
+    public void logOut(View v) {
+        switchState(STATE_LOGGING_OUT);
+    }
+
 
     /* Helpers */
 
     /** Set NEWSTATE as the current state and show the appropriate View. */
     void switchState(int newState) {
-        switch (state) {
-        default:
-            loginButton.setEnabled(false);
-            break;
-        }
-
-        View v = loginStates.get(newState);
-        menuBar.removeView(v);
-        menuBar.addView(v);
+        loginStates.get(state).setVisibility(View.INVISIBLE);
+        loginStates.get(newState).setVisibility(View.VISIBLE);
 
         state = newState;
         Log.v(TAG, "Now in state " + state);
@@ -205,8 +217,8 @@ public class BookTrader extends Activity {
         case STATE_LOGGING_IN:
             showDialog(DIALOG_LOGIN);
             break;
-        case STATE_NOT_LOGGED_IN:
-            loginButton.setEnabled(true);
+        case STATE_LOGGING_OUT:
+            api.doLogout();
             break;
         }
     }
@@ -215,12 +227,13 @@ public class BookTrader extends Activity {
     void populateLoginStates() {
         loginStates.clear();
         loginStates.put(STATE_NOT_LOGGED_IN, findViewById(R.id.not_logged_in_view));
-        loginStates.put(STATE_LOGGING_IN, findViewById(R.id.logging_in_view));
+        loginStates.put(STATE_LOGGING_IN, findViewById(R.id.not_logged_in_view));
         loginStates.put(STATE_LOGGED_IN, findViewById(R.id.logged_in_view));
+        loginStates.put(STATE_LOGGING_OUT, findViewById(R.id.logged_in_view));
     }
 
+    /** Called when the API signals that login finished without error. */
     void handleLoginResponse(HttpResponse response) {
-        Log.v(TAG, "login request done with " + response.getStatusLine());
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
         CookieStore cookieJar = (CookieStore)api.getHttpContext().getAttribute(ClientContext.COOKIE_STORE);
@@ -232,13 +245,18 @@ public class BookTrader extends Activity {
         }
 
         if (loggedIn) {
-            Toast.makeText(this, "Logged in (" + response.getStatusLine() + ")", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Let's get literate!", Toast.LENGTH_SHORT).show();
+            username = username_try;
+            password = password_try;
+            usernameLabel.setText(username);
+            savePreferences();
             switchState(STATE_LOGGED_IN);
         } else {
             switchState(STATE_LOGGING_IN);
         }
     }
 
+    /** Called when the API signals that an error occured during login. */
     void handleLoginFailure(Exception e) {
         Log.v(TAG, "login failed with " + e);
         if (perpetuumDialog != null)
@@ -247,6 +265,43 @@ public class BookTrader extends Activity {
         switchState(STATE_LOGGING_IN);
     }
 
+    /** Called when the API signals logout finished. */
+    void handleLogoutFinished() {
+        if (perpetuumDialog != null)
+            perpetuumDialog.dismiss();
+        clearPrivateData();
+        Toast.makeText(this, "Bye bye", Toast.LENGTH_LONG).show();
+        switchState(STATE_NOT_LOGGED_IN);
+    }
+
+    /** Called when the API signals that an error occured during logout. */
+    void handleLogoutError(Exception e) {
+        Log.v(TAG, "logout failed with " + e);
+        if (perpetuumDialog != null)
+            perpetuumDialog.dismiss();
+        Toast.makeText(this, "Logout failed :(", Toast.LENGTH_LONG).show();
+        clearPrivateData();
+    }
+
+    /** Clears internal stores of private data.  Used when logging out. */
+    void clearPrivateData() {
+        username = null;
+        password = null;
+        getPreferences(Context.MODE_PRIVATE).edit().clear().commit();
+    }
+
+    void savePreferences() {
+        Log.v(TAG, "Saving preferences...");
+        SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        if (username != null)
+            editor.putString("username", username);
+        if (password != null)
+            editor.putString("password", password);
+        editor.commit();
+    }
+
+    /** Return the String body of a HttpResponse. */
     String responseToString(HttpResponse response) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         response.getEntity().writeTo(stream);

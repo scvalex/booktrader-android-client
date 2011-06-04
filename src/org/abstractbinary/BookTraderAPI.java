@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.HttpResponse;
@@ -21,12 +22,17 @@ import org.apache.http.protocol.HttpContext;
 
 class BookTraderAPI {
     /* Remote API */
-    static final String LOGIN_URL = "http://abstractbinary.org:6543/users/login";
+    static final String BASE_URL = "http://abstractbinary.org:6543";
+    static final String LOGIN_URL = BASE_URL + "/users/login";
+    static final String LOGOUT_URL = BASE_URL + "/users/logut";
 
     /* Internal API */
-    static final int LOGIN_RESPONSE = 0;
-    static final int LOGIN_ERROR    = 1;
-    static final int LOGIN_START    = 2;
+    static final int LOGIN_RESPONSE  = 0;
+    static final int LOGIN_ERROR     = 1;
+    static final int LOGIN_START     = 2;
+    static final int LOGOUT_START    = 3;
+    static final int LOGOUT_FINISHED = 4;
+    static final int LOGOUT_ERROR    = 5;
 
     Handler handler;
 
@@ -71,6 +77,24 @@ class BookTraderAPI {
                 }
             });
         sendMessage(LOGIN_START, null);
+        t.start();
+    }
+
+    /** Perform the remote logout and switch to not logged in state. */
+    void doLogout() {
+        final HttpGet httpGet = new HttpGet(LOGOUT_URL);
+
+        Thread t = new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        HttpResponse response = httpClient.execute(httpGet, httpContext);
+                        sendMessage(LOGOUT_FINISHED, null);
+                    } catch (Exception e) {
+                        sendMessage(LOGOUT_ERROR, e);
+                    }
+                }
+            });
+        sendMessage(LOGOUT_START, null);
         t.start();
     }
 

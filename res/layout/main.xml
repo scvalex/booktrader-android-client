@@ -7,7 +7,6 @@
     >
   <FrameLayout
       android:id="@+id/menu_bar"
-      xmlns:android="http://schemas.android.com/apk/res/android"
       android:layout_width="fill_parent"
       android:layout_height="60dip"
       >
@@ -16,29 +15,22 @@
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
         android:orientation="horizontal"
+        android:visibility="invisible"
         >
       <TextView
           android:id="@+id/user_label"
-          android:background="@color/logged_in"
           android:gravity="center"
           android:layout_gravity="center"
           android:layout_height="fill_parent"
-          android:layout_width="fill_parent"
+          android:layout_width="wrap_content"
           />
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/logging_in_view"
-        android:layout_height="fill_parent"
-        android:layout_width="fill_parent"
-        android:orientation="horizontal"
-        >
-      <TextView
-          android:background="@color/logging_in"
-          android:gravity="center"
-          android:layout_gravity="center"
+      <Button
+          android:id="@+id/logout_button"
+          android:layout_gravity="right"
           android:layout_height="fill_parent"
-          android:layout_width="fill_parent"
-          android:text="Logging in"
+          android:layout_width="wrap_content"
+          android:onClick="logOut"
+          android:text="@string/log_out"
           />
     </LinearLayout>
     <LinearLayout
@@ -46,6 +38,7 @@
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
         android:orientation="horizontal"
+        android:visibility="invisible"
         >
       <Button
           android:id="@+id/login_button"

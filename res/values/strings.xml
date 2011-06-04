@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">BookTrader</string>
     <string name="log_in">Login</string>
+    <string name="log_out">Logout</string>
     <string name="api_key">API Key</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
