@@ -45,6 +45,7 @@ public class BookTrader extends Activity {
     /* Remote API */
     BookTraderAPI api;
     Handler requestHandler;
+    boolean loggedIn;
 
     /* Dialogs */
     static final int DIALOG_LOGIN = 0;
@@ -110,6 +111,8 @@ public class BookTrader extends Activity {
         username = settings.getString("username", null);
         password = settings.getString("password", null);
 
+        switchState(STATE_NOT_LOGGED_IN);
+
         Log.v(TAG, "BookTrader running...");
     }
 
@@ -117,12 +120,11 @@ public class BookTrader extends Activity {
     protected void onStart() {
         super.onStart();
 
-        switchState(STATE_NOT_LOGGED_IN);
-
-        if (username != null && password != null) {
+        if (!loggedIn && username != null && password != null) {
+            switchState(STATE_NOT_LOGGED_IN);
             username_try = username;
             password_try = password;
-            api.doLogin(username, password);
+            api.doLogin(username_try, password_try);
         }
     }
 
@@ -164,7 +166,7 @@ public class BookTrader extends Activity {
                     public void onClick(View v) {
                         username_try = usernameField.getText().toString();
                         password_try = passwordField.getText().toString();
-                        Log.v(TAG, "New login info: " + username);
+                        Log.v(TAG, "New login info: " + username_try);
                         dialog.dismiss();
                         api.doLogin(username_try, password_try);
                     }
@@ -237,7 +239,7 @@ public class BookTrader extends Activity {
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
         CookieStore cookieJar = (CookieStore)api.getHttpContext().getAttribute(ClientContext.COOKIE_STORE);
-        boolean loggedIn = false;
+        loggedIn = false;
         for (Cookie c : cookieJar.getCookies()) {
             if (c.getName().equals("auth_tkt")) {
                 loggedIn = true;
@@ -287,6 +289,7 @@ public class BookTrader extends Activity {
     void clearPrivateData() {
         username = null;
         password = null;
+        api = new BookTraderAPI(requestHandler);
         getPreferences(Context.MODE_PRIVATE).edit().clear().commit();
     }
 

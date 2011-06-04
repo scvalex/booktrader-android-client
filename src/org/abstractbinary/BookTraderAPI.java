@@ -1,6 +1,5 @@
 package org.abstractbinary;
 
-import android.net.http.AndroidHttpClient;
 import android.os.Handler;
 import android.os.Message;
 
@@ -15,10 +14,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.NameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+
 
 class BookTraderAPI {
     /* Remote API */
@@ -37,7 +41,7 @@ class BookTraderAPI {
     Handler handler;
 
     /* Network communications */
-    HttpClient httpClient = AndroidHttpClient.newInstance("BookTrader/0.1");
+    HttpClient httpClient;
     HttpContext httpContext = new BasicHttpContext();
 
     private BookTraderAPI() {
@@ -48,6 +52,11 @@ class BookTraderAPI {
 
         CookieStore cookieStore = new BasicCookieStore();
         httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+
+        HttpParams params = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(params, 4000);
+        HttpConnectionParams.setSoTimeout(params, 4000);
+        httpClient = new DefaultHttpClient(params);
     }
 
     /** Perform the remote login and switch to login state if successful.
