@@ -24,6 +24,8 @@ import android.widget.Toast;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -202,7 +204,7 @@ public class BookTrader extends Activity {
         case DIALOG_PERPETUUM:
             perpetuumDialog = new ProgressDialog(this);
             dialog = perpetuumDialog;
-            perpetuumDialog.setMessage(getResources().getText(R.string.logging_in));
+            perpetuumDialog.setMessage(getResources().getText(R.string.loading));
 
             break;
         default:
@@ -321,7 +323,15 @@ public class BookTrader extends Activity {
     void handleSearchResult(HttpResponse response) {
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
-        Toast.makeText(this, "Searched!", Toast.LENGTH_SHORT).show();
+        try {
+            JSONObject json = new JSONObject(responseToString(response));
+            if (json.getString("status").equals("error")) {
+                handleSearchFailed(new RuntimeException(json.getString("reason")));
+            }
+            Log.v(TAG, "Found " + json.getString("total_items") + " books!");
+        } catch (Exception e) {
+            handleSearchFailed(e);
+        }
     }
 
     void handleSearchFailed(Exception e) {

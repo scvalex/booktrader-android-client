@@ -28,7 +28,7 @@ import org.apache.http.protocol.HttpContext;
 
 class BookTraderAPI {
     /* Debugging */
-    static final String TAG = "BookTraderAPI";
+    static final String TAG = "BookTrader";
 
     /* Remote API */
     static final String BASE_URL = "http://abstractbinary.org:6543";
@@ -119,8 +119,11 @@ class BookTraderAPI {
     /** Perform the search query. */
     void doSearch(String query) {
         Uri.Builder uri = new Uri.Builder();
-        uri.appendQueryParameter("q", query);
+        uri.appendQueryParameter("query", query);
+        uri.appendQueryParameter("format", "json");
+        uri.appendQueryParameter("Search", "Search");
         String searchUrl = SEARCH_URL + uri.build().toString();
+        Log.v(TAG, "querrying: " + searchUrl);
         final HttpGet httpGet = new HttpGet(searchUrl);
 
         Thread t = new Thread(new Runnable() {
