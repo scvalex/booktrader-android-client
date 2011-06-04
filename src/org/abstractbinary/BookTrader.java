@@ -102,10 +102,10 @@ public class BookTrader extends Activity {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                 case BookTraderAPI.LOGIN_RESPONSE:
-                    BookTrader.this.handleLoginResponse((HttpResponse)msg.obj);
+                    handleLoginResponse((HttpResponse)msg.obj);
                     break;
                 case BookTraderAPI.LOGIN_ERROR:
-                    BookTrader.this.handleLoginFailure((Exception)msg.obj);
+                    handleLoginFailure((Exception)msg.obj);
                     break;
                 case BookTraderAPI.LOGIN_START:
                     showDialog(DIALOG_PERPETUUM);
@@ -114,19 +114,19 @@ public class BookTrader extends Activity {
                     showDialog(DIALOG_PERPETUUM);
                     break;
                 case BookTraderAPI.LOGOUT_FINISHED:
-                    BookTrader.this.handleLogoutFinished();
+                    handleLogoutFinished();
                     break;
                 case BookTraderAPI.LOGOUT_ERROR:
-                    BookTrader.this.handleLogoutError((Exception)msg.obj);
+                    handleLogoutError((Exception)msg.obj);
                     break;
                 case BookTraderAPI.SEARCH_START:
                     showDialog(DIALOG_PERPETUUM);
                     break;
                 case BookTraderAPI.SEARCH_FINISHED:
-                    BookTrader.this.handleSearchResult((HttpResponse)msg.obj);
+                    handleSearchResult((HttpResponse)msg.obj);
                     break;
                 case BookTraderAPI.SEARCH_FAILED:
-                    BookTrader.this.handleSearchFailed((Exception)msg.obj);
+                    handleSearchFailed((Exception)msg.obj);
                     break;
                 }
             }
@@ -172,7 +172,7 @@ public class BookTrader extends Activity {
 
             dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     public void onDismiss(DialogInterface dialog) {
-                        BookTrader.this.switchState(STATE_NOT_LOGGED_IN);
+                        switchState(STATE_NOT_LOGGED_IN);
                     }
             });
             final EditText usernameField =
@@ -321,14 +321,14 @@ public class BookTrader extends Activity {
     void handleSearchResult(HttpResponse response) {
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
-        Toast.makeText(BookTrader.this, "Searched!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Searched!", Toast.LENGTH_SHORT).show();
     }
 
     void handleSearchFailed(Exception e) {
         Log.v(TAG, "search failed with " + e);
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
-        Toast.makeText(BookTrader.this, "Failed!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Failed!", Toast.LENGTH_SHORT).show();
     }
 
     /** Clears internal stores of private data.  Used when logging out. */
