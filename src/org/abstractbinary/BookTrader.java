@@ -100,6 +100,14 @@ public class BookTrader extends Activity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (username != null && password != null)
+            api.doLogin(username, password);
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         Log.v(TAG, "Saving preferences...");
@@ -213,7 +221,8 @@ public class BookTrader extends Activity {
 
     void handleLoginResponse(HttpResponse response) {
         Log.v(TAG, "login request done with " + response.getStatusLine());
-        perpetuumDialog.dismiss();
+        if (perpetuumDialog != null)
+            perpetuumDialog.dismiss();
         CookieStore cookieJar = (CookieStore)api.getHttpContext().getAttribute(ClientContext.COOKIE_STORE);
         boolean loggedIn = false;
         for (Cookie c : cookieJar.getCookies()) {
@@ -232,7 +241,8 @@ public class BookTrader extends Activity {
 
     void handleLoginFailure(Exception e) {
         Log.v(TAG, "login failed with " + e);
-        perpetuumDialog.dismiss();
+        if (perpetuumDialog != null)
+            perpetuumDialog.dismiss();
         Toast.makeText(this, "Login failed :(", Toast.LENGTH_LONG).show();
         switchState(STATE_LOGGING_IN);
     }
