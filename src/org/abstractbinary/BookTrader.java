@@ -72,32 +72,6 @@ public class BookTrader extends Activity {
     String username, password;
     String username_try, password_try;
 
-    class BookAdapter extends BaseAdapter {
-        Context context;
-
-        public BookAdapter(Context context) {
-            super();
-
-            this.context = context;
-        }
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
-        }
-
-        public long getItemId(int position) {
-            return -1;
-        }
-
-        public Object getItem(int position) {
-            return null;
-        }
-
-        public int getCount() {
-            return 0;
-        }
-    }
-
 
     /* Application life-cycle */
 
