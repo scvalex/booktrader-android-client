@@ -70,10 +70,16 @@
         android:text="@string/search"
         />
   </LinearLayout>
-  <TextView
+  <GridView
+      android:id="@+id/book_table"
+      android:columnWidth="90dip"
+      android:gravity="center"
+      android:horizontalSpacing="10dip"
+      android:layout_height="fill_parent"
       android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      android:text="Hello World, BookTrader"
+      android:numColumns="auto_fit"
+      android:stretchMode="columnWidth"
+      android:verticalSpacing="10dip"
       />
 </LinearLayout>
 

@@ -15,9 +15,11 @@ import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,7 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.HttpResponse;
+import android.view.ViewGroup;
 
 public class BookTrader extends Activity {
     /* Debugging */
@@ -63,10 +66,37 @@ public class BookTrader extends Activity {
     TextView usernameLabel;
     EditText searchField;
     Button searchButton;
+    GridView bookTable;
 
     /* Internal gubbins */
     String username, password;
     String username_try, password_try;
+
+    class BookAdapter extends BaseAdapter {
+        Context context;
+
+        public BookAdapter(Context context) {
+            super();
+
+            this.context = context;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return null;
+        }
+
+        public long getItemId(int position) {
+            return -1;
+        }
+
+        public Object getItem(int position) {
+            return null;
+        }
+
+        public int getCount() {
+            return 0;
+        }
+    }
 
 
     /* Application life-cycle */
@@ -95,6 +125,9 @@ public class BookTrader extends Activity {
                     return false;
                 }
             });
+
+        bookTable = (GridView)findViewById(R.id.book_table);
+        bookTable.setAdapter(new BookAdapter(this));
 
         populateLoginStates();
         state = STATE_NOT_LOGGED_IN;
@@ -329,6 +362,8 @@ public class BookTrader extends Activity {
                 handleSearchFailed(new RuntimeException(json.getString("reason")));
             }
             Log.v(TAG, "Found " + json.getString("total_items") + " books!");
+            Toast.makeText(this, "Found " + json.getString("total_items") +
+                           " books!", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             handleSearchFailed(e);
         }
