@@ -1,4 +1,4 @@
-package org.abstractbinary;
+package org.abstractbinary.booktrader;
 
 import android.app.Activity;
 import android.app.Dialog;

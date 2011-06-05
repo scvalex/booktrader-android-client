@@ -1,4 +1,4 @@
-package org.abstractbinary;
+package org.abstractbinary.booktrader;
 
 import android.os.Handler;
 import android.os.Message;

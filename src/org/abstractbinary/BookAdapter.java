@@ -1,4 +1,4 @@
-package org.abstractbinary;
+package org.abstractbinary.booktrader;
 
 import android.content.Context;
 import android.view.View;
