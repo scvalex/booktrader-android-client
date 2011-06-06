@@ -27,6 +27,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -164,6 +165,18 @@ class BookTraderAPI {
         }
         SearchResult r = new SearchResult();
         r.totalItems = Integer.valueOf(json.getString("total_items"));
+        JSONArray jsonResult = json.getJSONArray("result");
+        for (int i = 0; i < jsonResult.length(); ++i) {
+            JSONObject jsonBook = jsonResult.getJSONObject(i);
+            JSONArray jsonAuthors = jsonBook.getJSONArray("authors");
+            List<String> authors = new ArrayList<String>();
+            for (int j = 0; j < jsonAuthors.length(); ++i)
+                authors.add(jsonAuthors.getString(j));
+            r.books.add(new SearchResult.Book(jsonBook.getString("title"),
+                                              jsonBook.getString("subtitle"),
+                                              jsonBook.getString("publisher"),
+                                              authors));
+        }
         return r;
     }
 
