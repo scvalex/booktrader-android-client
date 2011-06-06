@@ -1,12 +1,14 @@
 package org.abstractbinary.booktrader;
 
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.net.Uri;
+import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import android.util.Log;
 
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -25,6 +27,8 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 class BookTraderAPI {
@@ -141,7 +145,9 @@ class BookTraderAPI {
                 public void run() {
                     try {
                         HttpResponse response = httpClient.execute(httpGet, httpContext);
-                        sendMessage(SEARCH_FINISHED, response);
+                        SearchResult result = makeResult(response);
+
+                        sendMessage(SEARCH_FINISHED, result);
                     } catch (Exception e) {
                         sendMessage(SEARCH_FAILED, e);
                     }
@@ -151,7 +157,24 @@ class BookTraderAPI {
         t.start();
     }
 
+    SearchResult makeResult(HttpResponse response) throws IOException, JSONException {
+        JSONObject json = new JSONObject(responseToString(response));
+        if (json.getString("status").equals("error")) {
+            throw new RuntimeException(json.getString("reason"));
+        }
+        SearchResult r = new SearchResult();
+        r.totalItems = Integer.valueOf(json.getString("total_items"));
+        return r;
+    }
+
     void sendMessage(int what, Object obj) {
         handler.sendMessage(Message.obtain(handler, what, obj));
+    }
+
+    /** Return the String body of a HttpResponse. */
+    String responseToString(HttpResponse response) throws IOException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        response.getEntity().writeTo(stream);
+        return stream.toString();
     }
 }

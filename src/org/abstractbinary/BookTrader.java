@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,19 +24,9 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.HttpResponse;
-import android.view.ViewGroup;
 
 public class BookTrader extends Activity {
     /* Debugging */
@@ -132,7 +123,7 @@ public class BookTrader extends Activity {
                     showDialog(DIALOG_PERPETUUM);
                     break;
                 case BookTraderAPI.SEARCH_FINISHED:
-                    handleSearchResult((HttpResponse)msg.obj);
+                    handleSearchResult((SearchResult)msg.obj);
                     break;
                 case BookTraderAPI.SEARCH_FAILED:
                     handleSearchFailed((Exception)msg.obj);
@@ -318,16 +309,12 @@ public class BookTrader extends Activity {
         clearPrivateData();
     }
 
-    void handleSearchResult(HttpResponse response) {
+    void handleSearchResult(SearchResult result) {
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
         try {
-            JSONObject json = new JSONObject(responseToString(response));
-            if (json.getString("status").equals("error")) {
-                handleSearchFailed(new RuntimeException(json.getString("reason")));
-            }
-            Log.v(TAG, "Found " + json.getString("total_items") + " books!");
-            Toast.makeText(this, "Found " + json.getString("total_items") +
+            Log.v(TAG, "Found " + result.totalItems + " books!");
+            Toast.makeText(this, "Found " + result.totalItems +
                            " books!", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             handleSearchFailed(e);
@@ -358,12 +345,5 @@ public class BookTrader extends Activity {
         if (password != null)
             editor.putString("password", password);
         editor.commit();
-    }
-
-    /** Return the String body of a HttpResponse. */
-    String responseToString(HttpResponse response) throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        response.getEntity().writeTo(stream);
-        return stream.toString();
     }
 }
