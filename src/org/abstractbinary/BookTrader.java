@@ -110,8 +110,8 @@ public class BookTrader extends Activity {
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
-                case BookTraderAPI.LOGIN_RESPONSE:
-                    handleLoginResponse((HttpResponse)msg.obj);
+                case BookTraderAPI.LOGIN_DONE:
+                    handleLoginDone();
                     break;
                 case BookTraderAPI.LOGIN_ERROR:
                     handleLoginFailure((Exception)msg.obj);
@@ -277,27 +277,18 @@ public class BookTrader extends Activity {
     }
 
     /** Called when the API signals that login finished without error. */
-    void handleLoginResponse(HttpResponse response) {
+    void handleLoginDone() {
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
-        CookieStore cookieJar = (CookieStore)api.getHttpContext().getAttribute(ClientContext.COOKIE_STORE);
-        loggedIn = false;
-        for (Cookie c : cookieJar.getCookies()) {
-            if (c.getName().equals("auth_tkt")) {
-                loggedIn = true;
-            }
-        }
 
-        if (loggedIn) {
-            Toast.makeText(this, "Let's get literate!", Toast.LENGTH_SHORT).show();
-            username = username_try;
-            password = password_try;
-            usernameLabel.setText(username);
-            savePreferences();
-            switchState(STATE_LOGGED_IN);
-        } else {
-            switchState(STATE_LOGGING_IN);
-        }
+        loggedIn = true;
+
+        Toast.makeText(this, "Let's get literate!", Toast.LENGTH_SHORT).show();
+        username = username_try;
+        password = password_try;
+        usernameLabel.setText(username);
+        savePreferences();
+        switchState(STATE_LOGGED_IN);
     }
 
     /** Called when the API signals that an error occured during login. */

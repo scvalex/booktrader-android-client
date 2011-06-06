@@ -14,6 +14,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -37,7 +38,7 @@ class BookTraderAPI {
     static final String SEARCH_URL = BASE_URL + "/books/search";
 
     /* Internal API */
-    static final int LOGIN_RESPONSE  = 0;
+    static final int LOGIN_DONE      = 0;
     static final int LOGIN_ERROR     = 1;
     static final int LOGIN_START     = 2;
     static final int LOGOUT_START    = 3;
@@ -88,7 +89,17 @@ class BookTraderAPI {
                 public void run() {
                     try {
                         HttpResponse response = httpClient.execute(httpPost, httpContext);
-                        sendMessage(LOGIN_RESPONSE, response);
+                        CookieStore cookieJar = (CookieStore)httpContext.getAttribute(ClientContext.COOKIE_STORE);
+                        boolean loggedIn = false;
+                        for (Cookie c : cookieJar.getCookies()) {
+                            if (c.getName().equals("auth_tkt")) {
+                                loggedIn = true;
+                            }
+                        }
+                        if (loggedIn)
+                            sendMessage(LOGIN_DONE, response);
+                        else
+                            sendMessage(LOGIN_ERROR, new RuntimeException("no auth ticket"));
                     } catch (Exception e) {
                         sendMessage(LOGIN_ERROR, e);
                     }
@@ -138,11 +149,6 @@ class BookTraderAPI {
             });
         sendMessage(SEARCH_START, null);
         t.start();
-    }
-
-    /** Return the current HttpContext */
-    HttpContext getHttpContext() {
-        return httpContext;
     }
 
     void sendMessage(int what, Object obj) {
