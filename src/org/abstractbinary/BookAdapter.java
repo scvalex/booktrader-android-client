@@ -1,12 +1,17 @@
 package org.abstractbinary.booktrader;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 class BookAdapter extends BaseAdapter {
+    /* Debugging */
+    static final String TAG = "BookTrader";
+
     Context context;
+    SearchResult result = null;
 
     public BookAdapter(Context context) {
         super();
@@ -15,18 +20,35 @@ class BookAdapter extends BaseAdapter {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
+        if (result == null)
+            return null;
+
+        if (convertView != null)
+            return convertView;
+
+        return new View(context);
     }
 
     public long getItemId(int position) {
-        return -1;
+        if (result == null)
+            return -1;
+        return position;        // FIXME: wtf is this?
     }
 
     public Object getItem(int position) {
-        return null;
+        if (result == null || position >= result.books.size())
+            return null;
+        return result.books.get(position);
     }
 
     public int getCount() {
-        return 0;
+        if (result == null)
+            return 0;
+        return result.books.size();
+    }
+
+    public void displaySearchResult(SearchResult result) {
+        this.result = result;
+        notifyDataSetChanged();
     }
 }

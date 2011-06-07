@@ -62,6 +62,7 @@ public class BookTrader extends Activity {
     /* Internal gubbins */
     String username, password;
     String username_try, password_try;
+    BookAdapter bookAdapter;
 
 
     /* Application life-cycle */
@@ -91,8 +92,9 @@ public class BookTrader extends Activity {
                 }
             });
 
+        bookAdapter = new BookAdapter(this);
         bookTable = (GridView)findViewById(R.id.book_table);
-        bookTable.setAdapter(new BookAdapter(this));
+        bookTable.setAdapter(bookAdapter);
 
         populateLoginStates();
         state = STATE_NOT_LOGGED_IN;
@@ -312,13 +314,10 @@ public class BookTrader extends Activity {
     void handleSearchResult(SearchResult result) {
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
-        try {
-            Log.v(TAG, "Found " + result.totalItems + " books!");
-            Toast.makeText(this, "Found " + result.totalItems +
-                           " books!", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            handleSearchFailed(e);
-        }
+        Log.v(TAG, "Found " + result.totalItems + " books!");
+        Toast.makeText(this, "Found " + result.totalItems +
+                       " books!", Toast.LENGTH_SHORT).show();
+        bookAdapter.displaySearchResult(result);
     }
 
     void handleSearchFailed(Exception e) {

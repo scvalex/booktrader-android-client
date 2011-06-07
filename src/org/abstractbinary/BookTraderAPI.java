@@ -147,7 +147,6 @@ class BookTraderAPI {
                     try {
                         HttpResponse response = httpClient.execute(httpGet, httpContext);
                         SearchResult result = makeResult(response);
-
                         sendMessage(SEARCH_FINISHED, result);
                     } catch (Exception e) {
                         sendMessage(SEARCH_FAILED, e);
@@ -170,7 +169,7 @@ class BookTraderAPI {
             JSONObject jsonBook = jsonResult.getJSONObject(i);
             JSONArray jsonAuthors = jsonBook.getJSONArray("authors");
             List<String> authors = new ArrayList<String>();
-            for (int j = 0; j < jsonAuthors.length(); ++i)
+            for (int j = 0; j < jsonAuthors.length(); ++j)
                 authors.add(jsonAuthors.getString(j));
             r.books.add(new SearchResult.Book(jsonBook.getString("title"),
                                               jsonBook.getString("subtitle"),
