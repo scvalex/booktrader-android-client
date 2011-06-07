@@ -5,7 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 
@@ -26,11 +26,11 @@ class BookAdapter extends BaseAdapter {
         if (result == null || position >= result.books.size())
             return null;
 
-        LinearLayout bookThumb;
-        if (convertView == null || !(convertView instanceof LinearLayout))
-            bookThumb = (LinearLayout)View.inflate(context, R.layout.book_thumb, null);
+        FrameLayout bookThumb;
+        if (convertView == null || !(convertView instanceof FrameLayout))
+            bookThumb = (FrameLayout)View.inflate(context, R.layout.book_thumb, null);
         else
-            bookThumb = (LinearLayout)convertView;
+            bookThumb = (FrameLayout)convertView;
 
         ((TextView)bookThumb.findViewById(R.id.book_title)).setText(result.books.get(position).title);
 
