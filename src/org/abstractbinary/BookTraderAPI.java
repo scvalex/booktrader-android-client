@@ -174,7 +174,9 @@ class BookTraderAPI {
             r.books.add(new SearchResult.Book(jsonBook.getString("title"),
                                               jsonBook.getString("subtitle"),
                                               jsonBook.getString("publisher"),
-                                              authors));
+                                              authors,
+                                              jsonBook.getString("thumbnail"),
+                                              jsonBook.getString("smallThumbnail")));
         }
         return r;
     }
