@@ -26,6 +26,16 @@ public class SearchResult {
             this.thumbnailSource = thumbnailSource;
             this.smallThumbnailSource = smallThumbnailSource;
         }
+
+        /** Get the best known cover image.  Return null if does not exist. */
+        public String getBestCoverSource() {
+            String url = thumbnailSource;
+            if (url == null || url.length() == 0)
+                url = smallThumbnailSource;
+            if (url != null && url.length() > 0)
+                return url;
+            return null;
+        }
     }
 
     int totalItems;

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +60,15 @@ class BookAdapter extends BaseAdapter {
         else
             bookThumb = (FrameLayout)convertView;
 
-        ((TextView)bookThumb.findViewById(R.id.book_title)).setText(result.books.get(position).title);
+        SearchResult.Book book = (SearchResult.Book)getItem(position);
+        if (book.image != null) { // thumbnail
+            bookThumb.findViewById(R.id.book_cover_text).setVisibility(View.INVISIBLE);
+            ((ImageView)bookThumb.findViewById(R.id.book_cover_image)).setImageDrawable(book.image);
+        } else {                // no thumbnail
+            ((TextView)bookThumb.findViewById(R.id.book_title)).setText(book.title);
+            ((ImageView)bookThumb.findViewById(R.id.book_cover_image)).setImageDrawable(context.getResources().getDrawable(R.drawable.book_thumb));
+            bookThumb.findViewById(R.id.book_cover_text).setVisibility(View.VISIBLE);
+        }
 
         return bookThumb;
     }
@@ -90,10 +99,8 @@ class BookAdapter extends BaseAdapter {
 
         DownloadCache cache = DownloadCache.getInstance();
         for (SearchResult.Book book : result.books) {
-            String url = book.thumbnailSource;
-            if (url == null || url.length() == 0)
-                url = book.smallThumbnailSource;
-            if (url != null && url.length() > 0)
+            String url = book.getBestCoverSource();
+            if (url != null)
                 cache.getDrawable(url, downloadHandler);
         }
 
@@ -105,7 +112,13 @@ class BookAdapter extends BaseAdapter {
 
     void handleDownloadDone(DownloadCache.DownloadResult result) {
         Log.v(TAG, "image download done: " + result.url);
-        Toast.makeText(context, "image downloaded", Toast.LENGTH_SHORT).show();
+        for (SearchResult.Book book : this.result.books) {
+            if (book.getBestCoverSource() == result.url) {
+                book.image = (Drawable)result.result;
+                notifyDataSetChanged();
+                break;
+            }
+        }
     }
 
     void handleDownloadError(DownloadCache.DownloadResult result) {
