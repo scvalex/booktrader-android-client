@@ -65,7 +65,13 @@ class BookAdapter extends BaseAdapter {
             bookThumb.findViewById(R.id.book_cover_text).setVisibility(View.INVISIBLE);
             ((ImageView)bookThumb.findViewById(R.id.book_cover_image)).setImageDrawable(book.image);
         } else {                // no thumbnail
-            ((TextView)bookThumb.findViewById(R.id.book_title)).setText(book.title);
+            String coverText = book.title;
+            if (book.authors.size() > 0) {
+                coverText += "\nby\n";
+                for (String author : book.authors)
+                    coverText += author + ", ";
+            }
+            ((TextView)bookThumb.findViewById(R.id.book_title)).setText(coverText);
             ((ImageView)bookThumb.findViewById(R.id.book_cover_image)).setImageDrawable(context.getResources().getDrawable(R.drawable.book_thumb));
             bookThumb.findViewById(R.id.book_cover_text).setVisibility(View.VISIBLE);
         }
