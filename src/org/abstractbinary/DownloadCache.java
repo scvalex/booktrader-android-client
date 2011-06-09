@@ -23,17 +23,10 @@ class DownloadCache {
     static final String TAG = "BookTrader";
 
     /* Thread pool */
-    ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(1);
+    ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(4);
 
     /* Singleton */
-    private static DownloadCache instance;
-    static {
-        HttpParams params = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(params, 4000);
-        HttpConnectionParams.setSoTimeout(params, 4000);
-        instance = new DownloadCache(new DefaultHttpClient(params),
-                                     new BasicHttpContext());
-    };
+    private static DownloadCache instance = new DownloadCache(null, new BasicHttpContext());
 
     /* Common names */
     static final int DOWNLOAD_DONE = 0;
@@ -53,6 +46,9 @@ class DownloadCache {
         this.httpClient = client;
         this.httpContext = context;
 
+        pool.shutdown();
+        pool = new ScheduledThreadPoolExecutor(1);
+
         instance = this;
     }
 
@@ -66,7 +62,14 @@ class DownloadCache {
         pool.execute(new Runnable() {
                 public void run() {
                     try {
-                        HttpResponse response = httpClient.execute(httpGet, httpContext);
+                        HttpClient client = httpClient;
+                        if (client == null) {
+                            HttpParams params = new BasicHttpParams();
+                            HttpConnectionParams.setConnectionTimeout(params, 4000);
+                            HttpConnectionParams.setSoTimeout(params, 4000);
+                            client = new DefaultHttpClient(params);
+                        }
+                        HttpResponse response = client.execute(httpGet, httpContext);
                         Drawable drawable = Drawable.createFromStream(response.getEntity().getContent(), url);
                         sendMessage(handler, DOWNLOAD_DONE, drawable);
                     } catch (Exception e) {
