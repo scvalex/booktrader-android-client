@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -63,6 +64,7 @@ public class BookTrader extends Activity {
     String username, password;
     String username_try, password_try;
     BookAdapter bookAdapter;
+    SQLiteOpenHelper dbHelper;
 
 
     /* Application life-cycle */
@@ -138,6 +140,8 @@ public class BookTrader extends Activity {
         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
         username = settings.getString("username", null);
         password = settings.getString("password", null);
+
+        dbHelper = new BookTraderOpenHelper(this);
 
         switchState(STATE_NOT_LOGGED_IN);
 
