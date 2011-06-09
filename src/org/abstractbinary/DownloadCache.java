@@ -26,14 +26,13 @@ class DownloadCache {
     ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(4);
 
     /* Singleton */
-    private static DownloadCache instance = new DownloadCache(null, new BasicHttpContext());
+    private static DownloadCache instance = new DownloadCache(new BasicHttpContext());
 
     /* Common names */
     static final int DOWNLOAD_DONE = 0;
     static final int DOWNLOAD_ERROR = 1;
 
     /* net stuff */
-    HttpClient httpClient;
     HttpContext httpContext;
 
 
@@ -42,12 +41,8 @@ class DownloadCache {
     private DownloadCache() {
     }
 
-    public DownloadCache(HttpClient client, HttpContext context) {
-        this.httpClient = client;
+    public DownloadCache(HttpContext context) {
         this.httpContext = context;
-
-        pool.shutdown();
-        pool = new ScheduledThreadPoolExecutor(1);
 
         instance = this;
     }
@@ -62,14 +57,11 @@ class DownloadCache {
         pool.execute(new Runnable() {
                 public void run() {
                     try {
-                        HttpClient client = httpClient;
-                        if (client == null) {
-                            HttpParams params = new BasicHttpParams();
-                            HttpConnectionParams.setConnectionTimeout(params, 4000);
-                            HttpConnectionParams.setSoTimeout(params, 4000);
-                            client = new DefaultHttpClient(params);
-                        }
-                        HttpResponse response = client.execute(httpGet, httpContext);
+                        HttpParams params = new BasicHttpParams();
+                        HttpConnectionParams.setConnectionTimeout(params, 4000);
+                        HttpConnectionParams.setSoTimeout(params, 4000);
+                        HttpClient httpClient = new DefaultHttpClient(params);
+                        HttpResponse response = httpClient.execute(httpGet, httpContext);
                         Drawable drawable = Drawable.createFromStream(response.getEntity().getContent(), url);
                         sendMessage(handler, DOWNLOAD_DONE, drawable);
                     } catch (Exception e) {
