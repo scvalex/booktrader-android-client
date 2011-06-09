@@ -34,10 +34,10 @@ class BookAdapter extends BaseAdapter {
                 public void handleMessage(Message msg) {
                     switch (msg.what) {
                     case DownloadCache.DOWNLOAD_DONE:
-                        handleDownloadDone((Drawable)msg.obj);
+                        handleDownloadDone((DownloadCache.DownloadResult)msg.obj);
                         break;
                     case DownloadCache.DOWNLOAD_ERROR:
-                        handleDownloadError((Exception)msg.obj);
+                        handleDownloadError((DownloadCache.DownloadResult)msg.obj);
                         break;
                     default:
                         throw new RuntimeException("unknown message: " + msg.what);
@@ -103,12 +103,13 @@ class BookAdapter extends BaseAdapter {
 
     /* Internal gubbins */
 
-    void handleDownloadDone(Drawable image) {
-        Log.v(TAG, "image download done");
+    void handleDownloadDone(DownloadCache.DownloadResult result) {
+        Log.v(TAG, "image download done: " + result.url);
         Toast.makeText(context, "image downloaded", Toast.LENGTH_SHORT).show();
     }
 
-    void handleDownloadError(Exception e) {
-        Log.v(TAG, "image download failed: " + e);
+    void handleDownloadError(DownloadCache.DownloadResult result) {
+        Log.v(TAG, "image download failed: " + result.url +
+              " because " + (Exception)result.result);
     }
 }

@@ -19,6 +19,19 @@ import org.apache.http.protocol.HttpContext;
 
 
 class DownloadCache {
+    static class DownloadResult {
+        String url;
+        Object result;
+
+        private DownloadResult() {
+        }
+
+        public DownloadResult(String url, Object result) {
+            this.url = url;
+            this.result = result;
+        }
+    }
+
     /* Debugging */
     static final String TAG = "BookTrader";
 
@@ -63,9 +76,11 @@ class DownloadCache {
                         HttpClient httpClient = new DefaultHttpClient(params);
                         HttpResponse response = httpClient.execute(httpGet, httpContext);
                         Drawable drawable = Drawable.createFromStream(response.getEntity().getContent(), url);
-                        sendMessage(handler, DOWNLOAD_DONE, drawable);
+                        sendMessage(handler, DOWNLOAD_DONE,
+                                    new DownloadResult(url, drawable));
                     } catch (Exception e) {
-                        sendMessage(handler, DOWNLOAD_ERROR, e);
+                        sendMessage(handler, DOWNLOAD_ERROR,
+                                    new DownloadResult(url, e));
                     }
                 }
             });
