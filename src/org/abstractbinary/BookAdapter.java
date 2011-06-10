@@ -51,7 +51,7 @@ class BookAdapter extends BaseAdapter {
     /* Adapter methods */
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (result == null || position >= result.books.size())
+        if (result == null)
             return null;
 
         FrameLayout bookThumb;
@@ -86,15 +86,17 @@ class BookAdapter extends BaseAdapter {
     }
 
     public Object getItem(int position) {
-        if (result == null || position >= result.books.size())
+        if (result == null)
             return null;
+        if (position >= result.books.size())
+            return SearchResult.FILLER_BOOK;
         return result.books.get(position);
     }
 
     public int getCount() {
         if (result == null)
             return 0;
-        return result.books.size();
+        return result.totalItems;
     }
 
 

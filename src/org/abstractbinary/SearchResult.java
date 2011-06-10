@@ -38,6 +38,11 @@ public class SearchResult {
         }
     }
 
+    /** Used when we scroll past the last result in the search view. */
+    static final Book FILLER_BOOK = new Book("", "", "",
+                                             new ArrayList<String>(),
+                                             "", "");
+
     int totalItems;
     List<Book> books = new ArrayList<Book>();
 }
