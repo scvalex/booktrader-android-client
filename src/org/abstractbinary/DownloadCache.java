@@ -5,6 +5,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.apache.http.client.HttpClient;
@@ -39,7 +42,7 @@ class DownloadCache {
     ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(4);
 
     /* Singleton */
-    private static DownloadCache instance = new DownloadCache(new BasicHttpContext());
+    private static DownloadCache instance = new DownloadCache(null, null);
 
     /* Common names */
     static final int DOWNLOAD_DONE = 0;
@@ -48,14 +51,22 @@ class DownloadCache {
     /* net stuff */
     HttpContext httpContext;
 
+    /* Cache on db stuff */
+    BookTraderOpenHelper dbHelper;
+
 
     /* Public API */
 
     private DownloadCache() {
     }
 
-    public DownloadCache(HttpContext context) {
-        this.httpContext = context;
+    public DownloadCache(HttpContext httpContext,
+                         BookTraderOpenHelper dbHelper) {
+        if (httpContext == null)
+            this.httpContext = httpContext;
+        else
+            this.httpContext = new BasicHttpContext();
+        this.dbHelper = dbHelper;
 
         instance = this;
     }
@@ -65,6 +76,21 @@ class DownloadCache {
     }
 
     void getDrawable(final String url, final Handler handler) {
+        if (dbHelper != null) {
+            byte[] fromDb = dbHelper.cacheQuery(url);
+            if (fromDb != null) {
+                try {
+                    Drawable drawable = Drawable.createFromStream(new ByteArrayInputStream(fromDb), "cache on db");
+                    sendMessage(handler, DOWNLOAD_DONE,
+                                new DownloadResult(url, drawable));
+                    return;
+                } catch (Exception e) {
+                    // whoosh
+                    // fall back to normal HTTP request
+                }
+            }
+        }
+
         final HttpGet httpGet = new HttpGet(url);
 
         pool.execute(new Runnable() {
@@ -75,7 +101,17 @@ class DownloadCache {
                         HttpConnectionParams.setSoTimeout(params, 4000);
                         HttpClient httpClient = new DefaultHttpClient(params);
                         HttpResponse response = httpClient.execute(httpGet, httpContext);
-                        Drawable drawable = Drawable.createFromStream(response.getEntity().getContent(), url);
+                        InputStream fromDb;
+                        if (dbHelper != null) {
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            response.getEntity().writeTo(stream);
+                            fromDb = new ByteArrayInputStream(stream.toByteArray());
+                            dbHelper.cacheInsert(url, stream.toByteArray());
+                        } else {
+                            fromDb = response.getEntity().getContent();
+                        }
+
+                        Drawable drawable = Drawable.createFromStream(fromDb, url);
                         sendMessage(handler, DOWNLOAD_DONE,
                                     new DownloadResult(url, drawable));
                     } catch (Exception e) {

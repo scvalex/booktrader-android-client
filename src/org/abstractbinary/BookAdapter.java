@@ -117,7 +117,6 @@ class BookAdapter extends BaseAdapter {
     /* Internal gubbins */
 
     void handleDownloadDone(DownloadCache.DownloadResult result) {
-        Log.v(TAG, "image download done: " + result.url);
         for (SearchResult.Book book : this.result.books) {
             if (book.getBestCoverSource() == result.url) {
                 book.image = (Drawable)result.result;
