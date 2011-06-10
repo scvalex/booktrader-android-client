@@ -36,6 +36,9 @@ class BookTraderAPI {
     /* Debugging */
     static final String TAG = "BookTrader";
 
+    /* Singleton */
+    private static BookTraderAPI instance = new BookTraderAPI();
+
     /* Remote API */
     static final String BASE_URL = "http://abstractbinary.org:6543";
     static final String LOGIN_URL = BASE_URL + "/users/login";
@@ -53,18 +56,11 @@ class BookTraderAPI {
     static final int SEARCH_FINISHED = 7;
     static final int SEARCH_FAILED   = 8;
 
-    Handler handler;
-
     /* Network communications */
     HttpClient httpClient;
     HttpContext httpContext = new BasicHttpContext();
 
     private BookTraderAPI() {
-    }
-
-    public BookTraderAPI(Handler handler) {
-        this.handler = handler;
-
         CookieStore cookieStore = new BasicCookieStore();
         httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 
@@ -74,10 +70,18 @@ class BookTraderAPI {
         httpClient = new DefaultHttpClient(params);
     }
 
+    static public BookTraderAPI getInstance() {
+        return instance;
+    }
+
+    static public void reset() {
+        instance = new BookTraderAPI();
+    }
+
     /** Perform the remote login.
      *  Cheers for:
      *  <a href="http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient">Executing a HTTP POST Request with HttpClient</a> */
-    void doLogin(String username, String password) {
+    void doLogin(String username, String password, final Handler handler) {
         final HttpPost httpPost = new HttpPost(LOGIN_URL);
 
         List<NameValuePair> values = new ArrayList<NameValuePair>();
@@ -87,7 +91,7 @@ class BookTraderAPI {
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(values));
         } catch (Exception e) {
-            sendMessage(LOGIN_ERROR, e);
+            sendMessage(handler, LOGIN_ERROR, e);
         }
 
         Thread t = new Thread(new Runnable() {
@@ -102,38 +106,38 @@ class BookTraderAPI {
                             }
                         }
                         if (loggedIn)
-                            sendMessage(LOGIN_DONE, response);
+                            sendMessage(handler, LOGIN_DONE, response);
                         else
-                            sendMessage(LOGIN_ERROR, new RuntimeException("no auth ticket"));
+                            sendMessage(handler, LOGIN_ERROR, new RuntimeException("no auth ticket"));
                     } catch (Exception e) {
-                        sendMessage(LOGIN_ERROR, e);
+                        sendMessage(handler, LOGIN_ERROR, e);
                     }
                 }
             });
-        sendMessage(LOGIN_START, null);
+        sendMessage(handler, LOGIN_START, null);
         t.start();
     }
 
     /** Perform the remote logout and switch to not logged in state. */
-    void doLogout() {
+    void doLogout(final Handler handler) {
         final HttpGet httpGet = new HttpGet(LOGOUT_URL);
 
         Thread t = new Thread(new Runnable() {
                 public void run() {
                     try {
                         HttpResponse response = httpClient.execute(httpGet, httpContext);
-                        sendMessage(LOGOUT_FINISHED, null);
+                        sendMessage(handler, LOGOUT_FINISHED, null);
                     } catch (Exception e) {
-                        sendMessage(LOGOUT_ERROR, e);
+                        sendMessage(handler, LOGOUT_ERROR, e);
                     }
                 }
             });
-        sendMessage(LOGOUT_START, null);
+        sendMessage(handler, LOGOUT_START, null);
         t.start();
     }
 
     /** Perform the search query. */
-    void doSearch(String query) {
+    void doSearch(String query, final Handler handler) {
         Uri.Builder uri = new Uri.Builder();
         uri.appendQueryParameter("query", query);
         uri.appendQueryParameter("format", "json");
@@ -147,13 +151,13 @@ class BookTraderAPI {
                     try {
                         HttpResponse response = httpClient.execute(httpGet, httpContext);
                         SearchResult result = makeResult(response);
-                        sendMessage(SEARCH_FINISHED, result);
+                        sendMessage(handler, SEARCH_FINISHED, result);
                     } catch (Exception e) {
-                        sendMessage(SEARCH_FAILED, e);
+                        sendMessage(handler, SEARCH_FAILED, e);
                     }
                 }
             });
-        sendMessage(SEARCH_START, null);
+        sendMessage(handler, SEARCH_START, null);
         t.start();
     }
 
@@ -181,7 +185,7 @@ class BookTraderAPI {
         return r;
     }
 
-    void sendMessage(int what, Object obj) {
+    void sendMessage(Handler handler, int what, Object obj) {
         handler.sendMessage(Message.obtain(handler, what, obj));
     }
 

@@ -42,7 +42,7 @@ class DownloadCache {
     ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(4);
 
     /* Singleton */
-    private static DownloadCache instance = new DownloadCache(null, null);
+    private static DownloadCache instance = new DownloadCache();
 
     /* Common names */
     static final int DOWNLOAD_DONE = 0;
@@ -58,21 +58,19 @@ class DownloadCache {
     /* Public API */
 
     private DownloadCache() {
-    }
-
-    public DownloadCache(HttpContext httpContext,
-                         BookTraderOpenHelper dbHelper) {
-        if (httpContext == null)
-            this.httpContext = httpContext;
-        else
-            this.httpContext = new BasicHttpContext();
-        this.dbHelper = dbHelper;
-
-        instance = this;
+        httpContext = new BasicHttpContext();
     }
 
     static public DownloadCache getInstance() {
         return instance;
+    }
+
+    void setHttpContext(HttpContext newContext) {
+        this.httpContext = newContext;
+    }
+
+    void setDbHelper(BookTraderOpenHelper dbHelper) {
+        this.dbHelper = dbHelper;
     }
 
     void getDrawable(final String url, final Handler handler) {

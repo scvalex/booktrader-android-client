@@ -42,7 +42,6 @@ public class BookTrader extends Activity {
     Map<Integer, View> loginStates = new HashMap<Integer, View>();
 
     /* Remote API */
-    BookTraderAPI api;
     Handler requestHandler;
     boolean loggedIn;
 
@@ -64,7 +63,6 @@ public class BookTrader extends Activity {
     String username, password;
     String username_try, password_try;
     BookAdapter bookAdapter;
-    BookTraderOpenHelper dbHelper;
 
 
     /* Application life-cycle */
@@ -135,14 +133,12 @@ public class BookTrader extends Activity {
                 }
             }
         };
-        api = new BookTraderAPI(requestHandler);
 
         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
         username = settings.getString("username", null);
         password = settings.getString("password", null);
 
-        dbHelper = new BookTraderOpenHelper(this);
-        new DownloadCache(null, dbHelper);
+        DownloadCache.getInstance().setDbHelper(new BookTraderOpenHelper(this));
 
         switchState(STATE_NOT_LOGGED_IN);
 
@@ -157,7 +153,7 @@ public class BookTrader extends Activity {
             switchState(STATE_NOT_LOGGED_IN);
             username_try = username;
             password_try = password;
-            api.doLogin(username_try, password_try);
+            BookTraderAPI.getInstance().doLogin(username_try, password_try, requestHandler);
         }
     }
 
@@ -201,7 +197,7 @@ public class BookTrader extends Activity {
                         password_try = passwordField.getText().toString();
                         Log.v(TAG, "New login info: " + username_try);
                         dialog.dismiss();
-                        api.doLogin(username_try, password_try);
+                        BookTraderAPI.getInstance().doLogin(username_try, password_try, requestHandler);
                     }
             });
 
@@ -242,7 +238,7 @@ public class BookTrader extends Activity {
         String query = searchField.getText().toString();
         ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(searchField.getWindowToken(), 0);
         if (query.length() > 0)
-            api.doSearch(query);
+            BookTraderAPI.getInstance().doSearch(query, requestHandler);
     }
 
 
@@ -261,7 +257,7 @@ public class BookTrader extends Activity {
             showDialog(DIALOG_LOGIN);
             break;
         case STATE_LOGGING_OUT:
-            api.doLogout();
+            BookTraderAPI.getInstance().doLogout(requestHandler);
             break;
         }
     }
@@ -337,7 +333,7 @@ public class BookTrader extends Activity {
     void clearPrivateData() {
         username = null;
         password = null;
-        api = new BookTraderAPI(requestHandler);
+        BookTraderAPI.reset();
         getPreferences(Context.MODE_PRIVATE).edit().clear().commit();
     }
 
