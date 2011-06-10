@@ -45,8 +45,8 @@ class DownloadCache {
     private static DownloadCache instance = new DownloadCache();
 
     /* Common names */
-    static final int DOWNLOAD_DONE = 0;
-    static final int DOWNLOAD_ERROR = 1;
+    static final int DOWNLOAD_DONE  = 200;
+    static final int DOWNLOAD_ERROR = 201;
 
     /* net stuff */
     HttpContext httpContext;

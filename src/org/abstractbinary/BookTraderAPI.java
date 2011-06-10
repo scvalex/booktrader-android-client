@@ -46,15 +46,15 @@ class BookTraderAPI {
     static final String SEARCH_URL = BASE_URL + "/books/search";
 
     /* Internal API */
-    static final int LOGIN_DONE      = 0;
-    static final int LOGIN_ERROR     = 1;
-    static final int LOGIN_START     = 2;
-    static final int LOGOUT_START    = 3;
-    static final int LOGOUT_FINISHED = 4;
-    static final int LOGOUT_ERROR    = 5;
-    static final int SEARCH_START    = 6;
-    static final int SEARCH_FINISHED = 7;
-    static final int SEARCH_FAILED   = 8;
+    static final int LOGIN_DONE      = 100;
+    static final int LOGIN_ERROR     = 101;
+    static final int LOGIN_START     = 102;
+    static final int LOGOUT_START    = 103;
+    static final int LOGOUT_FINISHED = 104;
+    static final int LOGOUT_ERROR    = 105;
+    static final int SEARCH_START    = 106;
+    static final int SEARCH_FINISHED = 107;
+    static final int SEARCH_FAILED   = 108;
 
     /* Network communications */
     HttpClient httpClient;
@@ -97,8 +97,11 @@ class BookTraderAPI {
         Thread t = new Thread(new Runnable() {
                 public void run() {
                     try {
-                        HttpResponse response = httpClient.execute(httpPost, httpContext);
-                        CookieStore cookieJar = (CookieStore)httpContext.getAttribute(ClientContext.COOKIE_STORE);
+                        HttpResponse response =
+                            httpClient.execute(httpPost, httpContext);
+                        CookieStore cookieJar =
+                            (CookieStore)httpContext.getAttribute
+                            (ClientContext.COOKIE_STORE);
                         boolean loggedIn = false;
                         for (Cookie c : cookieJar.getCookies()) {
                             if (c.getName().equals("auth_tkt")) {
@@ -108,7 +111,8 @@ class BookTraderAPI {
                         if (loggedIn)
                             sendMessage(handler, LOGIN_DONE, response);
                         else
-                            sendMessage(handler, LOGIN_ERROR, new RuntimeException("no auth ticket"));
+                            sendMessage(handler, LOGIN_ERROR,
+                                        new RuntimeException("no auth tkt"));
                     } catch (Exception e) {
                         sendMessage(handler, LOGIN_ERROR, e);
                     }
@@ -125,7 +129,8 @@ class BookTraderAPI {
         Thread t = new Thread(new Runnable() {
                 public void run() {
                     try {
-                        HttpResponse response = httpClient.execute(httpGet, httpContext);
+                        HttpResponse response =
+                            httpClient.execute(httpGet, httpContext);
                         sendMessage(handler, LOGOUT_FINISHED, null);
                     } catch (Exception e) {
                         sendMessage(handler, LOGOUT_ERROR, e);
@@ -138,6 +143,17 @@ class BookTraderAPI {
 
     /** Perform the search query. */
     void doSearch(String query, final Handler handler) {
+        doSearch(query, new SearchResult(query), handler);
+    }
+
+    /** Get more search results for result. */
+    void moreSearchResults(SearchResult result, Handler handler) {
+        doSearch(result.query, result, handler);
+    }
+
+    /** Perform the search query by appending to RESULT. */
+    void doSearch(String query, final SearchResult result,
+                  final Handler handler) {
         Uri.Builder uri = new Uri.Builder();
         uri.appendQueryParameter("query", query);
         uri.appendQueryParameter("format", "json");
@@ -149,8 +165,9 @@ class BookTraderAPI {
         Thread t = new Thread(new Runnable() {
                 public void run() {
                     try {
-                        HttpResponse response = httpClient.execute(httpGet, httpContext);
-                        SearchResult result = makeResult(response);
+                        HttpResponse response =
+                            httpClient.execute(httpGet, httpContext);
+                        updateResult(result, response);
                         sendMessage(handler, SEARCH_FINISHED, result);
                     } catch (Exception e) {
                         sendMessage(handler, SEARCH_FAILED, e);
@@ -161,13 +178,15 @@ class BookTraderAPI {
         t.start();
     }
 
-    SearchResult makeResult(HttpResponse response) throws IOException, JSONException {
+    /** Update the given RESULT by adding new books from RESPONSE. */
+    void updateResult(SearchResult result, HttpResponse response)
+        throws IOException, JSONException
+    {
         JSONObject json = new JSONObject(responseToString(response));
         if (json.getString("status").equals("error")) {
             throw new RuntimeException(json.getString("reason"));
         }
-        SearchResult r = new SearchResult();
-        r.totalItems = Integer.valueOf(json.getString("total_items"));
+        result.totalItems = Integer.valueOf(json.getString("total_items"));
         JSONArray jsonResult = json.getJSONArray("result");
         for (int i = 0; i < jsonResult.length(); ++i) {
             JSONObject jsonBook = jsonResult.getJSONObject(i);
@@ -175,15 +194,18 @@ class BookTraderAPI {
             List<String> authors = new ArrayList<String>();
             for (int j = 0; j < jsonAuthors.length(); ++j)
                 authors.add(jsonAuthors.getString(j));
-            r.books.add(new SearchResult.Book(jsonBook.getString("title"),
-                                              jsonBook.getString("subtitle"),
-                                              jsonBook.getString("publisher"),
-                                              authors,
-                                              jsonBook.getString("thumbnail"),
-                                              jsonBook.getString("smallThumbnail")));
+            result.books.add
+                (new SearchResult.Book(jsonBook.getString("title"),
+                                       jsonBook.getString("subtitle"),
+                                       jsonBook.getString("publisher"),
+                                       authors,
+                                       jsonBook.getString("thumbnail"),
+                                       jsonBook.getString("smallThumbnail")));
         }
-        return r;
     }
+
+
+    /* Utility */
 
     void sendMessage(Handler handler, int what, Object obj) {
         handler.sendMessage(Message.obtain(handler, what, obj));

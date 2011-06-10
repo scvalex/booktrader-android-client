@@ -40,6 +40,15 @@ class BookAdapter extends BaseAdapter {
                     case DownloadCache.DOWNLOAD_ERROR:
                         handleDownloadError((DownloadCache.DownloadResult)msg.obj);
                         break;
+                    case BookTraderAPI.SEARCH_START:
+                        // wooho!
+                        break;
+                    case BookTraderAPI.SEARCH_FINISHED:
+                        handleSearchResult((SearchResult)msg.obj);
+                        break;
+                    case BookTraderAPI.SEARCH_FAILED:
+                        handleSearchFailed((Exception)msg.obj);
+                        break;
                     default:
                         throw new RuntimeException("unknown message: " + msg.what);
                     }
@@ -88,9 +97,7 @@ class BookAdapter extends BaseAdapter {
     public Object getItem(int position) {
         if (result == null)
             return null;
-        if (position >= result.books.size())
-            return SearchResult.FILLER_BOOK;
-        return result.books.get(position);
+        return result.get(position, downloadHandler);
     }
 
     public int getCount() {
@@ -131,5 +138,17 @@ class BookAdapter extends BaseAdapter {
     void handleDownloadError(DownloadCache.DownloadResult result) {
         Log.v(TAG, "image download failed: " + result.url +
               " because " + (Exception)result.result);
+    }
+
+    /** This is only called for *more* results, so the underlying
+     * RESULT should not have changed. */
+    void handleSearchResult(SearchResult result) {
+        if (result != this.result)
+            Log.v(TAG, "wtf?  got different search result: " + result.query);
+        displaySearchResult(result);
+    }
+
+    void handleSearchFailed(Exception e) {
+        Log.v(TAG, "fu.  more search results failed: " + e);
     }
 }
