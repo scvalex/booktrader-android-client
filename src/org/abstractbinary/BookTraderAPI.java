@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -60,6 +61,11 @@ class BookTraderAPI {
     HttpClient httpClient;
     HttpContext httpContext = new BasicHttpContext();
 
+    /* Thread pool */
+    /* Note that since we're using a shared HttpClient, we should not
+     * have a pool of more than *ONE* thread. */
+    ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(1);
+
     private BookTraderAPI() {
         CookieStore cookieStore = new BasicCookieStore();
         httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
@@ -94,7 +100,7 @@ class BookTraderAPI {
             sendMessage(handler, LOGIN_ERROR, e);
         }
 
-        Thread t = new Thread(new Runnable() {
+        pool.execute(new Runnable() {
                 public void run() {
                     try {
                         HttpResponse response =
@@ -119,14 +125,13 @@ class BookTraderAPI {
                 }
             });
         sendMessage(handler, LOGIN_START, null);
-        t.start();
     }
 
     /** Perform the remote logout and switch to not logged in state. */
     void doLogout(final Handler handler) {
         final HttpGet httpGet = new HttpGet(LOGOUT_URL);
 
-        Thread t = new Thread(new Runnable() {
+        pool.execute(new Runnable() {
                 public void run() {
                     try {
                         HttpResponse response =
@@ -138,31 +143,32 @@ class BookTraderAPI {
                 }
             });
         sendMessage(handler, LOGOUT_START, null);
-        t.start();
     }
 
     /** Perform the search query. */
     void doSearch(String query, final Handler handler) {
-        doSearch(query, new SearchResult(query), handler);
+        doSearch(query, new SearchResult(query), 0, handler);
     }
 
     /** Get more search results for result. */
-    void moreSearchResults(SearchResult result, Handler handler) {
-        doSearch(result.query, result, handler);
+    void moreSearchResults(SearchResult result, int startIndex,
+                           Handler handler) {
+        doSearch(result.query, result, startIndex, handler);
     }
 
     /** Perform the search query by appending to RESULT. */
     void doSearch(String query, final SearchResult result,
-                  final Handler handler) {
+                  int startIndex, final Handler handler) {
         Uri.Builder uri = new Uri.Builder();
         uri.appendQueryParameter("query", query);
+        uri.appendQueryParameter("start_index", String.valueOf(startIndex));
         uri.appendQueryParameter("format", "json");
         uri.appendQueryParameter("Search", "Search");
         String searchUrl = SEARCH_URL + uri.build().toString();
         Log.v(TAG, "querrying: " + searchUrl);
         final HttpGet httpGet = new HttpGet(searchUrl);
 
-        Thread t = new Thread(new Runnable() {
+        pool.execute(new Runnable() {
                 public void run() {
                     try {
                         HttpResponse response =
@@ -175,7 +181,6 @@ class BookTraderAPI {
                 }
             });
         sendMessage(handler, SEARCH_START, null);
-        t.start();
     }
 
     /** Update the given RESULT by adding new books from RESPONSE. */
@@ -194,13 +199,16 @@ class BookTraderAPI {
             List<String> authors = new ArrayList<String>();
             for (int j = 0; j < jsonAuthors.length(); ++j)
                 authors.add(jsonAuthors.getString(j));
-            result.books.add
-                (new SearchResult.Book(jsonBook.getString("title"),
-                                       jsonBook.getString("subtitle"),
-                                       jsonBook.getString("publisher"),
-                                       authors,
-                                       jsonBook.getString("thumbnail"),
-                                       jsonBook.getString("smallThumbnail")));
+            synchronized (result) {
+                result.books.add
+                    (new SearchResult.Book
+                     (jsonBook.getString("title"),
+                      jsonBook.getString("subtitle"),
+                      jsonBook.getString("publisher"),
+                      authors,
+                      jsonBook.getString("thumbnail"),
+                      jsonBook.getString("smallThumbnail")));
+            }
         }
     }
 

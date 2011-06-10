@@ -113,10 +113,12 @@ class BookAdapter extends BaseAdapter {
         this.result = result;
 
         DownloadCache cache = DownloadCache.getInstance();
-        for (SearchResult.Book book : result.books) {
-            String url = book.getBestCoverSource();
-            if (url != null)
-                cache.getDrawable(url, downloadHandler);
+        synchronized (result) {
+            for (SearchResult.Book book : result.books) {
+                String url = book.getBestCoverSource();
+                if (url != null)
+                    cache.getDrawable(url, downloadHandler);
+            }
         }
 
         notifyDataSetChanged();
@@ -126,11 +128,13 @@ class BookAdapter extends BaseAdapter {
     /* Internal gubbins */
 
     void handleDownloadDone(DownloadCache.DownloadResult result) {
-        for (SearchResult.Book book : this.result.books) {
-            if (book.getBestCoverSource() == result.url) {
-                book.image = (Drawable)result.result;
-                notifyDataSetChanged();
-                break;
+        synchronized (result) {
+            for (SearchResult.Book book : this.result.books) {
+                if (book.getBestCoverSource() == result.url) {
+                    book.image = (Drawable)result.result;
+                    notifyDataSetChanged();
+                    break;
+                }
             }
         }
     }

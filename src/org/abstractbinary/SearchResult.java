@@ -71,10 +71,11 @@ public class SearchResult {
     /** Get the book at INDEX.  If the book is not available yet,
      * return FILLER_BOOK and request it.  If the book is not in the
      * result, return null. */
-    public Book get(int index, Handler handler) {
+    public synchronized Book get(int index, Handler handler) {
         if (index >= books.size()) {
             Log.v(TAG, "getting more books... " + index);
-            BookTraderAPI.getInstance().moreSearchResults(this, handler);
+            BookTraderAPI.getInstance().moreSearchResults
+                (this, this.books.size(), handler);
             return FILLER_BOOK;
         }
         return books.get(index);
