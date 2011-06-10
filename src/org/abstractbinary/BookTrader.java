@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -239,6 +240,7 @@ public class BookTrader extends Activity {
     /** Called when the search button is pressed. */
     public void search(View v) {
         String query = searchField.getText().toString();
+        ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(searchField.getWindowToken(), 0);
         if (query.length() > 0)
             api.doSearch(query);
     }
