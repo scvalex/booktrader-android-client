@@ -207,6 +207,8 @@ class BookTraderAPI {
     void updateResult(SearchResult result, String response)
         throws IOException, JSONException
     {
+        Log.v(TAG, "Parsing JSON in " + Thread.currentThread().getId());
+
         JSONObject json = new JSONObject(response);
         if (json.getString("status").equals("error")) {
             throw new RuntimeException(json.getString("reason"));
