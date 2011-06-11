@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -96,6 +97,14 @@ public class BookTrader extends Activity {
         bookAdapter = new BookAdapter(this);
         bookTable = (GridView)findViewById(R.id.book_table);
         bookTable.setAdapter(bookAdapter);
+        bookTable.setOnItemClickListener
+            (new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+                        bookSelected(position);
+                    }
+                });
 
         populateLoginStates();
         state = STATE_NOT_LOGGED_IN;
@@ -247,6 +256,15 @@ public class BookTrader extends Activity {
             BookTraderAPI.getInstance().doSearch(query, requestHandler);
             savePreferences();
         }
+    }
+
+    /** Called when a book somewhere is selected. */
+    public void bookSelected(int position) {
+        SearchResult.Book book =
+            (SearchResult.Book)bookAdapter.getItem(position);
+        if (book == SearchResult.FILLER_BOOK)
+            return;
+        Toast.makeText(this, "Good choice: " + book.title, Toast.LENGTH_SHORT).show();
     }
 
 
