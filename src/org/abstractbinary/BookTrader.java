@@ -62,6 +62,7 @@ public class BookTrader extends Activity {
     /* Internal gubbins */
     String username, password;
     String username_try, password_try;
+    String lastSearch;
     BookAdapter bookAdapter;
 
 
@@ -134,11 +135,14 @@ public class BookTrader extends Activity {
             }
         };
 
+        DownloadCache.getInstance().setDbHelper(new BookTraderOpenHelper(this));
+
         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
         username = settings.getString("username", null);
         password = settings.getString("password", null);
-
-        DownloadCache.getInstance().setDbHelper(new BookTraderOpenHelper(this));
+        lastSearch = settings.getString("lastSearch", "Godel");
+        if (lastSearch != null)
+            BookTraderAPI.getInstance().doSearch(lastSearch, requestHandler);
 
         switchState(STATE_NOT_LOGGED_IN);
 
@@ -150,6 +154,7 @@ public class BookTrader extends Activity {
         super.onStart();
 
         if (!loggedIn && username != null && password != null) {
+            BookTraderAPI.reset();
             switchState(STATE_NOT_LOGGED_IN);
             username_try = username;
             password_try = password;
@@ -237,8 +242,10 @@ public class BookTrader extends Activity {
     public void search(View v) {
         String query = searchField.getText().toString();
         ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(searchField.getWindowToken(), 0);
-        if (query.length() > 0)
+        if (query.length() > 0) {
+            lastSearch = query;
             BookTraderAPI.getInstance().doSearch(query, requestHandler);
+        }
     }
 
 
@@ -333,6 +340,7 @@ public class BookTrader extends Activity {
     void clearPrivateData() {
         username = null;
         password = null;
+        lastSearch = null;
         BookTraderAPI.reset();
         getPreferences(Context.MODE_PRIVATE).edit().clear().commit();
     }
@@ -345,6 +353,8 @@ public class BookTrader extends Activity {
             editor.putString("username", username);
         if (password != null)
             editor.putString("password", password);
+        if (lastSearch != null)
+            editor.putString("lastSearch", lastSearch);
         editor.commit();
     }
 }
