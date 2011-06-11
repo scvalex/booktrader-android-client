@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.SharedPreferences;
@@ -264,6 +265,7 @@ public class BookTrader extends Activity {
             (SearchResult.Book)bookAdapter.getItem(position);
         if (book == SearchResult.FILLER_BOOK)
             return;
+        startActivity(new Intent(this, BookDetails.class));
         Toast.makeText(this, "Good choice: " + book.title, Toast.LENGTH_SHORT).show();
     }
 

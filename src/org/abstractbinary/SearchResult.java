@@ -15,6 +15,7 @@ public class SearchResult {
     static final String TAG = "BookTrader";
 
     public static class Book {
+        String identifier;
         String title;
         String subtitle;
         String publisher;
@@ -24,9 +25,11 @@ public class SearchResult {
         Drawable image;
 
         /** Note: call by name; be careful */
-        public Book(String title, String subtitle, String publisher,
+        public Book(String id, String title, String subtitle,
+                    String publisher,
                     List<String> authors, String thumbnailSource,
                     String smallThumbnailSource) {
+            this.identifier = id;
             this.title = title;
             this.subtitle = subtitle;
             this.publisher = publisher;
@@ -48,7 +51,7 @@ public class SearchResult {
 
 
     /** Used when we scroll past the last result in the search view. */
-    static final Book FILLER_BOOK = new Book("", "", "",
+    static final Book FILLER_BOOK = new Book("", "", "", "",
                                              new ArrayList<String>(),
                                              "", "");
 

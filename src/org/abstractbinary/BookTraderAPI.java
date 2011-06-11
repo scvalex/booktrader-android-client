@@ -223,7 +223,8 @@ class BookTraderAPI {
             synchronized (result) {
                 result.books.add
                     (new SearchResult.Book
-                     (jsonBook.getString("title"),
+                     (jsonBook.getString("identifier"),
+                      jsonBook.getString("title"),
                       jsonBook.getString("subtitle"),
                       jsonBook.getString("publisher"),
                       authors,
