@@ -2,27 +2,28 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/book_thumb"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content">
+    android:layout_height="200dip"
+    android:layout_width="150dip">
   <ImageView
       android:id="@+id/book_cover_image"
-      android:layout_height="200dip"
+      android:layout_height="fill_parent"
       android:src="@drawable/book_thumb"
-      android:layout_width="150dip"
+      android:layout_width="fill_parent"
       />
   <LinearLayout
       android:id="@+id/book_cover_text"
       android:orientation="vertical"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
       android:paddingLeft="30dip"
-      android:paddingRight="30dip"
-      android:paddingTop="50dip"
+      android:paddingRight="20dip"
+      android:paddingTop="40dip"
       >
     <TextView
         android:id="@+id/book_title"
+        android:gravity="center"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         />
   </LinearLayout>
 </FrameLayout>

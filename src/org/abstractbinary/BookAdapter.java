@@ -78,9 +78,14 @@ class BookAdapter extends BaseAdapter {
             String coverText = book.title;
             if (book.authors.size() > 0) {
                 coverText += "\nby\n";
-                for (String author : book.authors)
-                    coverText += author + ", ";
+                for (int i = 0; i < book.authors.size(); i++) {
+                    coverText += book.authors.get(i);
+                    if (i != book.authors.size() - 1)
+                        coverText += ", ";
+                }
             }
+            if (coverText.length() > 70)
+                coverText = coverText.substring(0, 70);
             ((TextView)bookThumb.findViewById(R.id.book_title)).setText(coverText);
             ((ImageView)bookThumb.findViewById(R.id.book_cover_image)).setImageDrawable(context.getResources().getDrawable(R.drawable.book_thumb));
             bookThumb.findViewById(R.id.book_cover_text).setVisibility(View.VISIBLE);
