@@ -22,6 +22,11 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <!--<rt.jar.path>${java.home}/lib/rt.jar</rt.jar.path>-->
+    <rt.jar.path>/opt/sun-jdk-1.6.0.23/jre/lib/rt.jar</rt.jar.path>
+  </properties>
+
   <build>
     <finalName>${project.artifactId}</finalName>
     <sourceDirectory>src</sourceDirectory>
@@ -62,7 +67,7 @@
         <configuration>
           <injar>android-classes</injar>
           <libs>
-            <lib>${java.home}/lib/rt.jar</lib>
+            <lib>${rt.jar.path}</lib>
           </libs>
           <obfuscate>false</obfuscate>
           <options>
@@ -81,6 +86,9 @@
             </option>
             <option>-dontskipnonpubliclibraryclasses</option>
             <option>-dontoptimize</option>
+            <option>-dontpreverify</option>
+            <option>-dontnote</option>
+            <option>-dontwarn</option>
             <option>-printmapping map.txt</option>
             <option>-printseeds seed.txt</option>
             <option>-ignorewarnings</option>
