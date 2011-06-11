@@ -50,7 +50,8 @@ class BookAdapter extends BaseAdapter {
                         handleSearchFailed((Exception)msg.obj);
                         break;
                     default:
-                        throw new RuntimeException("unknown message: " + msg.what);
+                        throw new RuntimeException("unknown message: " +
+                                                   msg.what);
                     }
                 }
             };

@@ -166,28 +166,48 @@ class BookTraderAPI {
         uri.appendQueryParameter("Search", "Search");
         String searchUrl = SEARCH_URL + uri.build().toString();
         Log.v(TAG, "querrying: " + searchUrl);
-        final HttpGet httpGet = new HttpGet(searchUrl);
 
-        pool.execute(new Runnable() {
-                public void run() {
-                    try {
-                        HttpResponse response =
-                            httpClient.execute(httpGet, httpContext);
-                        updateResult(result, response);
-                        sendMessage(handler, SEARCH_FINISHED, result);
-                    } catch (Exception e) {
-                        sendMessage(handler, SEARCH_FAILED, e);
+        Handler downloadHandler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    switch (msg.what) {
+                    case DownloadCache.DOWNLOAD_DONE:
+                        try {
+                            updateResult(result,
+                                         (String)(
+                                             (DownloadCache.DownloadResult)
+                                             msg.obj).result);
+                        } catch (Exception e) {
+                            BookTraderAPI.sendMessage(handler, SEARCH_FAILED,
+                                                      e);
+                        }
+                        BookTraderAPI.sendMessage(handler, SEARCH_FINISHED,
+                                                  result);
+                        break;
+                    case DownloadCache.DOWNLOAD_ERROR:
+                        BookTraderAPI.sendMessage
+                            (handler, SEARCH_FAILED,
+                             (Exception)(
+                                 (DownloadCache.DownloadResult)
+                                 msg.obj).result);
+                        break;
+                    default:
+                        throw new RuntimeException("unknown message: " +
+                                                   msg.what);
                     }
                 }
-            });
+            };
+
+        DownloadCache.getInstance().getString(searchUrl, downloadHandler);
+
         sendMessage(handler, SEARCH_START, null);
     }
 
     /** Update the given RESULT by adding new books from RESPONSE. */
-    void updateResult(SearchResult result, HttpResponse response)
+    void updateResult(SearchResult result, String response)
         throws IOException, JSONException
     {
-        JSONObject json = new JSONObject(responseToString(response));
+        JSONObject json = new JSONObject(response);
         if (json.getString("status").equals("error")) {
             throw new RuntimeException(json.getString("reason"));
         }
@@ -215,7 +235,7 @@ class BookTraderAPI {
 
     /* Utility */
 
-    void sendMessage(Handler handler, int what, Object obj) {
+    static void sendMessage(Handler handler, int what, Object obj) {
         handler.sendMessage(Message.obtain(handler, what, obj));
     }
 
