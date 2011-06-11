@@ -77,7 +77,7 @@ public class SearchResult {
      * return FILLER_BOOK and request it.  If the book is not in the
      * result, return null. */
     public synchronized Book get(int index, Handler handler) {
-        if (index >= books.size()) {
+        if (index >= books.size() - 5) {
             int nextIndex = this.books.size();
             if (!alreadyGetting.contains(nextIndex)) {
                 Log.v(TAG, "getting more books... " + index);
@@ -87,7 +87,8 @@ public class SearchResult {
                 BookTraderAPI.getInstance().moreSearchResults
                     (this, nextIndex, handler);
             }
-            return FILLER_BOOK;
+            if (index >= books.size())
+                return FILLER_BOOK;
         }
         return books.get(index);
     }
