@@ -162,6 +162,7 @@ class BookTraderAPI {
         Uri.Builder uri = new Uri.Builder();
         uri.appendQueryParameter("query", query);
         uri.appendQueryParameter("start_index", String.valueOf(startIndex));
+        uri.appendQueryParameter("limit", String.valueOf(20));
         uri.appendQueryParameter("format", "json");
         uri.appendQueryParameter("Search", "Search");
         String searchUrl = SEARCH_URL + uri.build().toString();
@@ -207,8 +208,6 @@ class BookTraderAPI {
     void updateResult(SearchResult result, String response)
         throws IOException, JSONException
     {
-        Log.v(TAG, "Parsing JSON in " + Thread.currentThread().getId());
-
         JSONObject json = new JSONObject(response);
         if (json.getString("status").equals("error")) {
             throw new RuntimeException(json.getString("reason"));

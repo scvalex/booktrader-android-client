@@ -77,7 +77,7 @@ public class SearchResult {
      * return FILLER_BOOK and request it.  If the book is not in the
      * result, return null. */
     public synchronized Book get(int index, Handler handler) {
-        if (index >= books.size() - 5) {
+        if (index >= books.size() - 10) {
             int nextIndex = this.books.size();
             if (!alreadyGetting.contains(nextIndex)) {
                 Log.v(TAG, "getting more books... " + index);

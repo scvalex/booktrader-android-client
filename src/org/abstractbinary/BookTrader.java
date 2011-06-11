@@ -153,8 +153,6 @@ public class BookTrader extends Activity {
     protected void onStart() {
         super.onStart();
 
-        Log.v(TAG, "UI thread is " + Thread.currentThread().getId());
-
         if (!loggedIn && username != null && password != null) {
             BookTraderAPI.reset();
             switchState(STATE_NOT_LOGGED_IN);
@@ -247,6 +245,7 @@ public class BookTrader extends Activity {
         if (query.length() > 0) {
             lastSearch = query;
             BookTraderAPI.getInstance().doSearch(query, requestHandler);
+            savePreferences();
         }
     }
 

@@ -75,6 +75,14 @@ class BookAdapter extends BaseAdapter {
             bookThumb.findViewById(R.id.book_cover_text).setVisibility(View.INVISIBLE);
             ((ImageView)bookThumb.findViewById(R.id.book_cover_image)).setImageDrawable(book.image);
         } else {                // no thumbnail
+            // Start fetching the cover
+            prefetchCover(position);
+            if (position % 2 == 0) {
+                for (int i = 2; i < 10; i++)
+                    prefetchCover(position + i);
+            }
+
+            // Display a generic cover in the meantime
             String coverText = book.title;
             if (book.authors.size() > 0) {
                 coverText += "\nby\n";
@@ -117,16 +125,6 @@ class BookAdapter extends BaseAdapter {
 
     public void displaySearchResult(SearchResult result) {
         this.result = result;
-
-        DownloadCache cache = DownloadCache.getInstance();
-        synchronized (result) {
-            for (SearchResult.Book book : result.books) {
-                String url = book.getBestCoverSource();
-                if (url != null)
-                    cache.getDrawable(url, downloadHandler);
-            }
-        }
-
         notifyDataSetChanged();
     }
 
@@ -148,6 +146,16 @@ class BookAdapter extends BaseAdapter {
     void handleDownloadError(DownloadCache.DownloadResult result) {
         Log.v(TAG, "image download failed: " + result.url +
               " because " + (Exception)result.result);
+        synchronized (result) {
+            for (SearchResult.Book book : this.result.books) {
+                if (book.getBestCoverSource() == result.url) {
+                    book.thumbnailSource = "";
+                    book.smallThumbnailSource = "";
+                    break;
+                }
+            }
+        }
+
     }
 
     /** This is only called for *more* results, so the underlying
@@ -160,5 +168,17 @@ class BookAdapter extends BaseAdapter {
 
     void handleSearchFailed(Exception e) {
         Log.v(TAG, "fu.  more search results failed: " + e);
+    }
+
+
+    /* Internal gubbins */
+
+    void prefetchCover(int position) {
+        SearchResult.Book book = (SearchResult.Book)getItem(position);
+        if (book != SearchResult.FILLER_BOOK && book.image == null) {
+            String url = book.getBestCoverSource();
+            if (url != null)
+                DownloadCache.getInstance().getDrawable(url, downloadHandler);
+        }
     }
 }

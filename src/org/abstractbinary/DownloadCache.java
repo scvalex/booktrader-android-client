@@ -10,6 +10,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -39,14 +42,17 @@ class DownloadCache {
     }
 
     interface ResponseHandler {
-        public void handleResponse(InputStream respStream);
+        public void handleCached(byte[] fromDb);
+        public void handleHttp(InputStream respStream);
     }
 
     /* Debugging */
     static final String TAG = "BookTrader";
 
     /* Thread pool */
-    ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(4);
+    ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(8);
+    Set<String> currentlyGetting =
+        Collections.synchronizedSet(new HashSet<String>());
 
     /* Singleton */
     private static DownloadCache instance = new DownloadCache();
@@ -83,16 +89,18 @@ class DownloadCache {
     /** Get URL's value as a String.  First try the cache.  Fall back
      * to normal HTTP requests. */
     void getString(final String url, final Handler handler) {
-        try {
-            sendMessage(handler, DOWNLOAD_DONE,
-                        new DownloadResult(url, new String(getCached(url))));
-            return;
-        } catch (Exception e) {
-            // whoosh
-        }
+        getCached(url, handler, new ResponseHandler() {
+                public void handleCached(byte[] fromDb) {
+                    try {
+                        sendMessage(handler, DOWNLOAD_DONE,
+                                    new DownloadResult(url, new String
+                                                       (fromDb)));
+                    } catch (Exception e) {
+                        // whoosh
+                    }
+                }
 
-        getHttp(url, handler, new ResponseHandler() {
-                public void handleResponse(InputStream respStream) {
+                public void handleHttp(InputStream respStream) {
                     try {
                         sendMessage
                             (handler, DOWNLOAD_DONE, new DownloadResult
@@ -109,18 +117,20 @@ class DownloadCache {
     /** Get URL's value as a Drawable.  First try the cache.  Fall
      * back to normal HTTP requests. */
     void getDrawable(final String url, final Handler handler) {
-        try {
-            sendMessage
-                (handler, DOWNLOAD_DONE, new DownloadResult
-                 (url, Drawable.createFromStream
-                  (new ByteArrayInputStream(getCached(url)), "cache on db")));
-            return;
-        } catch (Exception e) {
-            // whoosh
-        }
+        getCached(url, handler, new ResponseHandler() {
+                public void handleCached(byte[] fromDb) {
+                    try {
+                        sendMessage
+                            (handler, DOWNLOAD_DONE, new DownloadResult
+                             (url, Drawable.createFromStream
+                              (new ByteArrayInputStream(fromDb),
+                               "cache on db")));
+                    } catch (Exception e) {
+                        // whoosh
+                    }
+                }
 
-        getHttp(url, handler, new ResponseHandler() {
-                public void handleResponse(InputStream respStream) {
+                public void handleHttp(InputStream respStream) {
                     try {
                         sendMessage
                             (handler, DOWNLOAD_DONE, new DownloadResult
@@ -139,27 +149,37 @@ class DownloadCache {
     /* Internal gubbins */
 
     /** Get the requested URL from the cache.  If it doesn't exist or
-     * if the cache isn't installed, throw an error. */
-    byte[] getCached(String url) {
-        if (dbHelper == null)
-            throw new RuntimeException("no cache installed");
-
-        byte[] fromDb = dbHelper.cacheQuery(url);
-        if (fromDb == null)
-            throw new RuntimeException("not in cache");
-
-        return fromDb;
-    }
-
-    /** Get the requested URL via plain old HTTP.  Before executing
-     * the response handler, insert the data into the cache. */
-    void getHttp(final String url, final Handler handler,
-                 final ResponseHandler responseHandler) {
-        final HttpGet httpGet = new HttpGet(url);
-
+     * if the cache isn't installed, fall back to HTTP.  Before
+     * executing the response handler, insert the data into the
+     * cache. */
+    void getCached(final String url, final Handler handler,
+                     final ResponseHandler responseHandler) {
+        if (currentlyGetting.contains(url))
+            return;
+        currentlyGetting.add(url);
         pool.execute(new Runnable() {
                 public void run() {
                     try {
+                        try {
+                            if (dbHelper == null)
+                                throw new RuntimeException
+                                    ("no cache installed");
+
+                            byte[] fromDb = dbHelper.cacheQuery(url);
+                            if (fromDb == null)
+                                throw new RuntimeException("not in cache");
+
+                            responseHandler.handleCached(fromDb);
+
+                            currentlyGetting.remove(url);
+
+                            return;
+                        } catch (Exception e) {
+                            // fall back to http
+                        }
+
+                        final HttpGet httpGet = new HttpGet(url);
+
                         HttpParams params = new BasicHttpParams();
                         HttpConnectionParams.setConnectionTimeout(params, 4000);
                         HttpConnectionParams.setSoTimeout(params, 4000);
@@ -176,7 +196,9 @@ class DownloadCache {
                             fromDb = response.getEntity().getContent();
                         }
 
-                        responseHandler.handleResponse(fromDb);
+                        responseHandler.handleHttp(fromDb);
+
+                        currentlyGetting.remove(url);
                     } catch (Exception e) {
                         sendMessage(handler, DOWNLOAD_ERROR,
                                     new DownloadResult(url, e));
