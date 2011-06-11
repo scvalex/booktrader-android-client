@@ -13,6 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 class BookAdapter extends BaseAdapter {
     /* Debugging */
@@ -22,6 +25,9 @@ class BookAdapter extends BaseAdapter {
     Context context;
     SearchResult result = null;
     Handler downloadHandler;
+
+    /* Internal caches */
+    Map<String, Integer> positionOf = new HashMap<String, Integer>();
 
 
     /* Constructor */
@@ -133,12 +139,12 @@ class BookAdapter extends BaseAdapter {
 
     void handleDownloadDone(DownloadCache.DownloadResult result) {
         synchronized (result) {
-            for (SearchResult.Book book : this.result.books) {
-                if (book.getBestCoverSource() == result.url) {
-                    book.image = (Drawable)result.result;
-                    notifyDataSetChanged();
-                    break;
-                }
+            if (positionOf.containsKey(result.url)) {
+                SearchResult.Book book =
+                    this.result.books.get(positionOf.get(result.url));
+                book.image = (Drawable)result.result;
+                notifyDataSetChanged();
+                positionOf.remove(result.url);
             }
         }
     }
@@ -147,12 +153,12 @@ class BookAdapter extends BaseAdapter {
         Log.v(TAG, "image download failed: " + result.url +
               " because " + (Exception)result.result);
         synchronized (result) {
-            for (SearchResult.Book book : this.result.books) {
-                if (book.getBestCoverSource() == result.url) {
-                    book.thumbnailSource = "";
-                    book.smallThumbnailSource = "";
-                    break;
-                }
+            if (positionOf.containsKey(result.url)) {
+                SearchResult.Book book =
+                    this.result.books.get(positionOf.get(result.url));
+                book.thumbnailSource = "";
+                book.smallThumbnailSource = "";
+                positionOf.remove(result.url);
             }
         }
 
@@ -177,8 +183,10 @@ class BookAdapter extends BaseAdapter {
         SearchResult.Book book = (SearchResult.Book)getItem(position);
         if (book != SearchResult.FILLER_BOOK && book.image == null) {
             String url = book.getBestCoverSource();
-            if (url != null)
+            if (url != null) {
+                positionOf.put(url, position);
                 DownloadCache.getInstance().getDrawable(url, downloadHandler);
+            }
         }
     }
 }
