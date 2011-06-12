@@ -29,6 +29,8 @@ public class Book {
     String thumbnailSource;
     String smallThumbnailSource;
     Drawable image;
+    List<String> owners;
+    List<String> coveters;
 
     /** Note: call by name; be careful */
     public Book(String id, String title, String subtitle,
@@ -56,6 +58,16 @@ public class Book {
         this.publisher = jsonBook.getString("publisher");
         this.thumbnailSource = jsonBook.getString("thumbnail");
         this.smallThumbnailSource = jsonBook.getString("smallThumbnail");
+
+        JSONArray jsonOwners = jsonBook.getJSONArray("owners");
+        owners = new ArrayList<String>();
+        for (int j = 0; j < jsonOwners.length(); ++j)
+            owners.add(jsonOwners.getString(j));
+
+        JSONArray jsonCoveters = jsonBook.getJSONArray("coveters");
+        coveters = new ArrayList<String>();
+        for (int j = 0; j < jsonCoveters.length(); ++j)
+            coveters.add(jsonCoveters.getString(j));
     }
 
     /** Get the best known cover image.  Return null if does not exist. */

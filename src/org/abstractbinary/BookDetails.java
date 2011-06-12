@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +30,7 @@ public class BookDetails extends Activity {
     String bookIdentifier;
     Book book;
     Handler detailsHandler;
+    BookTraderAPI api;
 
     /* Activity life-cycle */
 
@@ -77,8 +80,8 @@ public class BookDetails extends Activity {
                 }
             };
 
-        BookTraderAPI.getInstance().doGetBookDetails(bookIdentifier,
-                                                     detailsHandler);
+        api = BookTraderAPI.getInstance();
+        api.doGetBookDetails(bookIdentifier, detailsHandler);
 
         bookTitleLabel.setText(bookIdentifier);
     }
@@ -122,6 +125,16 @@ public class BookDetails extends Activity {
         }
         ((TextView)findViewById(R.id.book_authors_label)).setText
             (authors.toString());
+        if (api.loggedIn && book.owners.contains(api.currentUser)) {
+            Button haveButton = (Button)findViewById(R.id.have_button);
+            haveButton.setText(getResources().getString
+                               (R.string.already_have));
+            haveButton.setEnabled(false);
+            findViewById(R.id.want_button).setVisibility(View.INVISIBLE);
+        }
+        if (api.loggedIn && book.coveters.contains(api.currentUser)) {
+            ((Button)findViewById(R.id.want_button)).setText(getResources().getString(R.string.already_want));
+        }
     }
 
     /** Called when the cover image has finished downloading */

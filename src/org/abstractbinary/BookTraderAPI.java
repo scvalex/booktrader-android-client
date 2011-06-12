@@ -65,6 +65,10 @@ class BookTraderAPI {
     HttpClient httpClient;
     HttpContext httpContext = new BasicHttpContext();
 
+    /* State */
+    boolean loggedIn;
+    String currentUser;
+
     /* Thread pool */
     /* Note that since we're using a shared HttpClient, we should not
      * have a pool of more than *ONE* thread. */
@@ -91,7 +95,8 @@ class BookTraderAPI {
     /** Perform the remote login.
      *  Cheers for:
      *  <a href="http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient">Executing a HTTP POST Request with HttpClient</a> */
-    void doLogin(String username, String password, final Handler handler) {
+    void doLogin(final String username, String password,
+                 final Handler handler) {
         final HttpPost httpPost = new HttpPost(LOGIN_URL);
 
         List<NameValuePair> values = new ArrayList<NameValuePair>();
@@ -112,17 +117,20 @@ class BookTraderAPI {
                         CookieStore cookieJar =
                             (CookieStore)httpContext.getAttribute
                             (ClientContext.COOKIE_STORE);
-                        boolean loggedIn = false;
+                        loggedIn = false;
+                        currentUser = null;
                         for (Cookie c : cookieJar.getCookies()) {
                             if (c.getName().equals("auth_tkt")) {
                                 loggedIn = true;
                             }
                         }
-                        if (loggedIn)
+                        if (loggedIn) {
+                            currentUser = username;
                             sendMessage(handler, LOGIN_DONE, response);
-                        else
+                        } else {
                             sendMessage(handler, LOGIN_ERROR,
                                         new RuntimeException("no auth tkt"));
+                        }
                     } catch (Exception e) {
                         sendMessage(handler, LOGIN_ERROR, e);
                     }

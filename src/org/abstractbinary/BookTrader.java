@@ -45,7 +45,6 @@ public class BookTrader extends Activity {
 
     /* Remote API */
     Handler requestHandler;
-    boolean loggedIn;
 
     /* Dialogs */
     static final int DIALOG_LOGIN = 0;
@@ -163,12 +162,15 @@ public class BookTrader extends Activity {
     protected void onStart() {
         super.onStart();
 
-        if (!loggedIn && username != null && password != null) {
+        if (!BookTraderAPI.getInstance().loggedIn &&
+            username != null && password != null)
+        {
             BookTraderAPI.reset();
             switchState(STATE_NOT_LOGGED_IN);
             username_try = username;
             password_try = password;
-            BookTraderAPI.getInstance().doLogin(username_try, password_try, requestHandler);
+            BookTraderAPI.getInstance().doLogin(username_try, password_try,
+                                                requestHandler);
         }
     }
 
@@ -298,8 +300,6 @@ public class BookTrader extends Activity {
     void handleLoginDone() {
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
-
-        loggedIn = true;
 
         Toast.makeText(this, "Let's get literate!", Toast.LENGTH_SHORT).show();
         username = username_try;
