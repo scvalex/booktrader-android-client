@@ -9,6 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class SearchResult {
     /* Debugging */
@@ -36,6 +40,20 @@ public class SearchResult {
             this.authors = authors;
             this.thumbnailSource = thumbnailSource;
             this.smallThumbnailSource = smallThumbnailSource;
+        }
+
+        /** JsonBook should hold the book entries at top-level. */
+        public Book(JSONObject jsonBook) throws JSONException {
+            JSONArray jsonAuthors = jsonBook.getJSONArray("authors");
+            authors = new ArrayList<String>();
+            for (int j = 0; j < jsonAuthors.length(); ++j)
+                authors.add(jsonAuthors.getString(j));
+            this.identifier = jsonBook.getString("identifier");
+            this.title = jsonBook.getString("title");
+            this.subtitle = jsonBook.getString("subtitle");
+            this.publisher = jsonBook.getString("publisher");
+            this.thumbnailSource = jsonBook.getString("thumbnail");
+            this.smallThumbnailSource = jsonBook.getString("smallThumbnail");
         }
 
         /** Get the best known cover image.  Return null if does not exist. */

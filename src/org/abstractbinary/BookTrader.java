@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -228,12 +227,6 @@ public class BookTrader extends Activity {
             throw new RuntimeException("Unknown dialog type: " + id);
         }
         return dialog;
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Log.v(TAG, "screen orientation changed");
     }
 
 

@@ -41,10 +41,11 @@ class BookTraderAPI {
     private static BookTraderAPI instance = new BookTraderAPI();
 
     /* Remote API */
-    static final String BASE_URL = "http://abstractbinary.org:6543";
-    static final String LOGIN_URL = BASE_URL + "/users/login";
+    static final String BASE_URL   = "http://abstractbinary.org:6543";
+    static final String LOGIN_URL  = BASE_URL + "/users/login";
     static final String LOGOUT_URL = BASE_URL + "/users/logut";
     static final String SEARCH_URL = BASE_URL + "/books/search";
+    static final String BOOKS_URL  = BASE_URL + "/books";
 
     /* Internal API */
     static final int LOGIN_DONE      = 100;
@@ -56,6 +57,9 @@ class BookTraderAPI {
     static final int SEARCH_START    = 106;
     static final int SEARCH_FINISHED = 107;
     static final int SEARCH_FAILED   = 108;
+    static final int DETAILS_START   = 109;
+    static final int DETAILS_GOT     = 110;
+    static final int DETAILS_ERROR   = 111;
 
     /* Network communications */
     HttpClient httpClient;
@@ -204,6 +208,30 @@ class BookTraderAPI {
         sendMessage(handler, SEARCH_START, null);
     }
 
+    /** Get the a book's details. */
+    void doGetBookDetails(String bookIdentifier, final Handler handler) {
+        final HttpGet httpGet = new HttpGet(BOOKS_URL +
+                                            "/" + bookIdentifier +
+                                            "?format=json");
+
+        pool.execute(new Runnable() {
+                public void run() {
+                    try {
+                        HttpResponse response =
+                            httpClient.execute(httpGet, httpContext);
+                        JSONObject json =
+                            new JSONObject(responseToString(response));
+                        json = json.getJSONObject("book");
+                        sendMessage(handler, DETAILS_GOT,
+                                    new SearchResult.Book(json));
+                    } catch (Exception e) {
+                        sendMessage(handler, DETAILS_ERROR, e);
+                    }
+                }
+            });
+        sendMessage(handler, DETAILS_START, null);
+    }
+
     /** Update the given RESULT by adding new books from RESPONSE. */
     void updateResult(SearchResult result, String response)
         throws IOException, JSONException
@@ -216,20 +244,8 @@ class BookTraderAPI {
         JSONArray jsonResult = json.getJSONArray("result");
         for (int i = 0; i < jsonResult.length(); ++i) {
             JSONObject jsonBook = jsonResult.getJSONObject(i);
-            JSONArray jsonAuthors = jsonBook.getJSONArray("authors");
-            List<String> authors = new ArrayList<String>();
-            for (int j = 0; j < jsonAuthors.length(); ++j)
-                authors.add(jsonAuthors.getString(j));
             synchronized (result) {
-                result.books.add
-                    (new SearchResult.Book
-                     (jsonBook.getString("identifier"),
-                      jsonBook.getString("title"),
-                      jsonBook.getString("subtitle"),
-                      jsonBook.getString("publisher"),
-                      authors,
-                      jsonBook.getString("thumbnail"),
-                      jsonBook.getString("smallThumbnail")));
+                result.books.add(new SearchResult.Book(jsonBook));
             }
         }
     }
