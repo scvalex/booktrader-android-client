@@ -60,6 +60,8 @@ class BookTraderAPI {
     static final int DETAILS_START   = 109;
     static final int DETAILS_GOT     = 110;
     static final int DETAILS_ERROR   = 111;
+    static final int DETAILS_HAVE    = 112;
+    static final int DETAILS_WANT    = 113;
 
     /* Network communications */
     HttpClient httpClient;
@@ -231,6 +233,43 @@ class BookTraderAPI {
                             new JSONObject(responseToString(response));
                         json = json.getJSONObject("book");
                         sendMessage(handler, DETAILS_GOT, new Book(json));
+                    } catch (Exception e) {
+                        sendMessage(handler, DETAILS_ERROR, e);
+                    }
+                }
+            });
+        sendMessage(handler, DETAILS_START, null);
+    }
+
+    /** Have a book. */
+    void doHave(String bookIdentifier, Handler handler) {
+        doSomething("have", DETAILS_HAVE, bookIdentifier, handler);
+    }
+
+    /** Have a book. */
+    void doWant(String bookIdentifier, Handler handler) {
+        doSomething("want", DETAILS_WANT, bookIdentifier, handler);
+    }
+
+    /** Do something naughty to a book. */
+    void doSomething(final String what, final int whatCode,
+                     final String bookIdentifier, final Handler handler) {
+        final HttpGet httpGet = new HttpGet(BOOKS_URL +
+                                            "/" + bookIdentifier +
+                                            "/" + what +
+                                            "?format=json");
+
+        pool.execute(new Runnable() {
+                public void run() {
+                    try {
+                        HttpResponse response =
+                            httpClient.execute(httpGet, httpContext);
+                        Log.v(TAG, "got " + bookIdentifier + " " + what);
+                        JSONObject json =
+                            new JSONObject(responseToString(response));
+                        if (json.getString("status").equals("error"))
+                            throw new RuntimeException("error having");
+                        sendMessage(handler, whatCode, new Book(json));
                     } catch (Exception e) {
                         sendMessage(handler, DETAILS_ERROR, e);
                     }

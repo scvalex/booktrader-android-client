@@ -59,7 +59,8 @@ public class BookDetails extends Activity {
                     case BookTraderAPI.DETAILS_ERROR:
                         if (loadingDialog != null)
                             loadingDialog.dismiss();
-                        Toast.makeText(BookDetails.this, "error getting book", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(BookDetails.this, "double trouble",
+                                       Toast.LENGTH_SHORT).show();
                         Log.v(TAG, "Failed to get book details: " +
                               (Exception)msg.obj);
                         break;
@@ -72,6 +73,12 @@ public class BookDetails extends Activity {
                         Log.v(TAG, "Failed to get cover: " +
                               (Exception)
                               ((DownloadCache.DownloadResult)msg.obj).result);
+                        break;
+                    case BookTraderAPI.DETAILS_HAVE:
+                        markHad();
+                        break;
+                    case BookTraderAPI.DETAILS_WANT:
+                        markWanted();
                         break;
                     default:
                         throw new RuntimeException("unknown message type: " +
@@ -125,20 +132,45 @@ public class BookDetails extends Activity {
         }
         ((TextView)findViewById(R.id.book_authors_label)).setText
             (authors.toString());
-        if (api.loggedIn && book.owners.contains(api.currentUser)) {
-            Button haveButton = (Button)findViewById(R.id.have_button);
-            haveButton.setText(getResources().getString
-                               (R.string.already_have));
-            haveButton.setEnabled(false);
-            findViewById(R.id.want_button).setVisibility(View.INVISIBLE);
-        }
-        if (api.loggedIn && book.coveters.contains(api.currentUser)) {
-            ((Button)findViewById(R.id.want_button)).setText(getResources().getString(R.string.already_want));
-        }
+        if (api.loggedIn && book.owners.contains(api.currentUser))
+            markHad();
+        if (api.loggedIn && book.coveters.contains(api.currentUser))
+            markWanted();
     }
+
+
+    /* Callbacks */
 
     /** Called when the cover image has finished downloading */
     void handleCoverDownloadDone(Drawable image) {
-        ((ImageView)findViewById(R.id.cover_view)).setImageDrawable(image);
+        if (image != null)
+            ((ImageView)findViewById
+             (R.id.cover_view)).setImageDrawable(image);
+    }
+
+    /** Called when the user the user clicks a have button */
+    public void have(View v) {
+        api.doHave(bookIdentifier, detailsHandler);
+    }
+
+    /** Called when the user the user clicks a have button */
+    public void want(View v) {
+        api.doWant(bookIdentifier, detailsHandler);
+    }
+
+
+    /* Utilities */
+
+    void markWanted() {
+        Button wantButton = (Button)findViewById(R.id.want_button);
+        wantButton.setText(getResources().getString(R.string.already_want));
+        wantButton.setEnabled(false);
+    }
+
+    void markHad() {
+        Button haveButton = (Button)findViewById(R.id.have_button);
+        haveButton.setText(getResources().getString(R.string.already_have));
+        haveButton.setEnabled(false);
+        findViewById(R.id.want_button).setVisibility(View.INVISIBLE);
     }
 }
