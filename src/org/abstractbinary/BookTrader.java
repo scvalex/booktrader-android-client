@@ -255,15 +255,13 @@ public class BookTrader extends Activity {
 
     /** Called when a book somewhere is selected. */
     public void bookSelected(int position) {
-        SearchResult.Book book =
-            (SearchResult.Book)bookAdapter.getItem(position);
-        if (book == SearchResult.FILLER_BOOK)
+        Book book = (Book)bookAdapter.getItem(position);
+        if (book == Book.FILLER_BOOK)
             return;
         startActivity(new Intent
                       (Intent.ACTION_VIEW,
                        Uri.withAppendedPath(Uri.EMPTY, book.identifier),
                        this, BookDetails.class));
-        Toast.makeText(this, "Good choice: " + book.title, Toast.LENGTH_SHORT).show();
     }
 
 

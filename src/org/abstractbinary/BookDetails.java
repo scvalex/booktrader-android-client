@@ -1,14 +1,16 @@
 package org.abstractbinary.booktrader;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 
 
 public class BookDetails extends Activity {
@@ -24,7 +26,7 @@ public class BookDetails extends Activity {
 
     /* Internal gubbins */
     String bookIdentifier;
-    SearchResult.Book book;
+    Book book;
     Handler detailsHandler;
 
     /* Activity life-cycle */
@@ -49,7 +51,7 @@ public class BookDetails extends Activity {
                         showDialog(DIALOG_LOADING);
                         break;
                     case BookTraderAPI.DETAILS_GOT:
-                        handleDetailsGot((SearchResult.Book)msg.obj);
+                        handleDetailsGot((Book)msg.obj);
                         break;
                     case BookTraderAPI.DETAILS_ERROR:
                         if (loadingDialog != null)
@@ -57,6 +59,16 @@ public class BookDetails extends Activity {
                         Toast.makeText(BookDetails.this, "error getting book", Toast.LENGTH_SHORT).show();
                         Log.v(TAG, "Failed to get book details: " +
                               (Exception)msg.obj);
+                        break;
+                    case DownloadCache.DOWNLOAD_DONE:
+                        handleCoverDownloadDone
+                            ((Drawable)
+                             ((DownloadCache.DownloadResult)msg.obj).result);
+                        break;
+                    case DownloadCache.DOWNLOAD_ERROR:
+                        Log.v(TAG, "Failed to get cover: " +
+                              (Exception)
+                              ((DownloadCache.DownloadResult)msg.obj).result);
                         break;
                     default:
                         throw new RuntimeException("unknown message type: " +
@@ -89,11 +101,13 @@ public class BookDetails extends Activity {
 
     /* Event handlers */
 
-    void handleDetailsGot(SearchResult.Book book) {
+    /** Called when the book details have been downloaded */
+    void handleDetailsGot(Book book) {
         if (loadingDialog != null)
             loadingDialog.dismiss();
 
         this.book = book;
+        book.getCover(detailsHandler);
 
         bookTitleLabel.setText(book.title);
         ((TextView)findViewById(R.id.book_subtitle_label)).setText
@@ -108,5 +122,10 @@ public class BookDetails extends Activity {
         }
         ((TextView)findViewById(R.id.book_authors_label)).setText
             (authors.toString());
+    }
+
+    /** Called when the cover image has finished downloading */
+    void handleCoverDownloadDone(Drawable image) {
+        ((ImageView)findViewById(R.id.cover_view)).setImageDrawable(image);
     }
 }

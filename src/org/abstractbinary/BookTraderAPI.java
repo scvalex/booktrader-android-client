@@ -222,8 +222,7 @@ class BookTraderAPI {
                         JSONObject json =
                             new JSONObject(responseToString(response));
                         json = json.getJSONObject("book");
-                        sendMessage(handler, DETAILS_GOT,
-                                    new SearchResult.Book(json));
+                        sendMessage(handler, DETAILS_GOT, new Book(json));
                     } catch (Exception e) {
                         sendMessage(handler, DETAILS_ERROR, e);
                     }
@@ -245,7 +244,7 @@ class BookTraderAPI {
         for (int i = 0; i < jsonResult.length(); ++i) {
             JSONObject jsonBook = jsonResult.getJSONObject(i);
             synchronized (result) {
-                result.books.add(new SearchResult.Book(jsonBook));
+                result.books.add(new Book(jsonBook));
             }
         }
     }

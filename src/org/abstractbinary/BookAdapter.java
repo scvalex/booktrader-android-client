@@ -76,7 +76,7 @@ class BookAdapter extends BaseAdapter {
         else
             bookThumb = (FrameLayout)convertView;
 
-        SearchResult.Book book = (SearchResult.Book)getItem(position);
+        Book book = (Book)getItem(position);
         if (book.image != null) { // thumbnail
             bookThumb.findViewById(R.id.book_cover_text).setVisibility(View.INVISIBLE);
             ((ImageView)bookThumb.findViewById(R.id.book_cover_image)).setImageDrawable(book.image);
@@ -140,8 +140,7 @@ class BookAdapter extends BaseAdapter {
     void handleDownloadDone(DownloadCache.DownloadResult result) {
         synchronized (result) {
             if (positionOf.containsKey(result.url)) {
-                SearchResult.Book book =
-                    this.result.books.get(positionOf.get(result.url));
+                Book book = this.result.books.get(positionOf.get(result.url));
                 book.image = (Drawable)result.result;
                 notifyDataSetChanged();
                 positionOf.remove(result.url);
@@ -154,8 +153,7 @@ class BookAdapter extends BaseAdapter {
               " because " + (Exception)result.result);
         synchronized (result) {
             if (positionOf.containsKey(result.url)) {
-                SearchResult.Book book =
-                    this.result.books.get(positionOf.get(result.url));
+                Book book = this.result.books.get(positionOf.get(result.url));
                 book.thumbnailSource = "";
                 book.smallThumbnailSource = "";
                 positionOf.remove(result.url);
@@ -180,12 +178,12 @@ class BookAdapter extends BaseAdapter {
     /* Internal gubbins */
 
     void prefetchCover(int position) {
-        SearchResult.Book book = (SearchResult.Book)getItem(position);
-        if (book != SearchResult.FILLER_BOOK && book.image == null) {
+        Book book = (Book)getItem(position);
+        if (book != Book.FILLER_BOOK && book.image == null) {
             String url = book.getBestCoverSource();
             if (url != null) {
                 positionOf.put(url, position);
-                DownloadCache.getInstance().getDrawable(url, downloadHandler);
+                book.getCover(downloadHandler);
             }
         }
     }
