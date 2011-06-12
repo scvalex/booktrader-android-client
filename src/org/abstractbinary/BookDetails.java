@@ -104,7 +104,7 @@ public class BookDetails extends Activity {
             if (i < book.authors.size() - 2)
                 authors.append(", ");
             if (i == book.authors.size() - 2)
-                authors.append(", and ");
+                authors.append(" and ");
         }
         ((TextView)findViewById(R.id.book_authors_label)).setText
             (authors.toString());
