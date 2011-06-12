@@ -10,4 +10,8 @@
     <string name="search">Search</string>
     <string name="keywords">Keywords</string>
     <string name="loading">Loading</string>
+    <string name="have">Have</string>
+    <string name="already_have">You have this book</string>
+    <string name="want">Want</string>
+    <string name="already_want">You want this book</string>
 </resources>

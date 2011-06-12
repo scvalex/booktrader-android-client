@@ -54,6 +54,7 @@ public class BookDetails extends Activity {
                     case BookTraderAPI.DETAILS_ERROR:
                         if (loadingDialog != null)
                             loadingDialog.dismiss();
+                        Toast.makeText(BookDetails.this, "error getting book", Toast.LENGTH_SHORT).show();
                         Log.v(TAG, "Failed to get book details: " +
                               (Exception)msg.obj);
                         break;
@@ -93,7 +94,19 @@ public class BookDetails extends Activity {
             loadingDialog.dismiss();
 
         this.book = book;
-        Toast.makeText(BookDetails.this, "details got", Toast.LENGTH_SHORT).show();
+
         bookTitleLabel.setText(book.title);
+        ((TextView)findViewById(R.id.book_subtitle_label)).setText
+            (book.subtitle);
+        StringBuilder authors = new StringBuilder();
+        for (int i = 0; i < book.authors.size(); i++) {
+            authors.append(book.authors.get(i));
+            if (i < book.authors.size() - 2)
+                authors.append(", ");
+            if (i == book.authors.size() - 2)
+                authors.append(", and ");
+        }
+        ((TextView)findViewById(R.id.book_authors_label)).setText
+            (authors.toString());
     }
 }

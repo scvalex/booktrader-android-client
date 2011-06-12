@@ -24,7 +24,7 @@
 
   <properties>
     <!--<rt.jar.path>${java.home}/lib/rt.jar</rt.jar.path>-->
-    <rt.jar.path>/opt/sun-jdk-1.6.0.23/jre/lib/rt.jar</rt.jar.path>
+    <rt.jar.path>/opt/sun-jdk-1.6.0.26/jre/lib/rt.jar</rt.jar.path>
   </properties>
 
   <build>
