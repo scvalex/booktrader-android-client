@@ -2,6 +2,7 @@ package org.abstractbinary.booktrader;
 
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,6 +49,7 @@ public class Book {
 
     /** JsonBook should hold the book entries at top-level. */
     public Book(JSONObject jsonBook) throws JSONException {
+        Log.v(TAG, jsonBook.toString());
         JSONArray jsonAuthors = jsonBook.getJSONArray("authors");
         authors = new ArrayList<String>();
         for (int j = 0; j < jsonAuthors.length(); ++j)

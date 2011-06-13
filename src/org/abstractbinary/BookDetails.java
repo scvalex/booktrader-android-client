@@ -75,9 +75,13 @@ public class BookDetails extends Activity {
                               ((DownloadCache.DownloadResult)msg.obj).result);
                         break;
                     case BookTraderAPI.DETAILS_HAVE:
+                        if (loadingDialog != null)
+                            loadingDialog.dismiss();
                         markHad();
                         break;
                     case BookTraderAPI.DETAILS_WANT:
+                        if (loadingDialog != null)
+                            loadingDialog.dismiss();
                         markWanted();
                         break;
                     default:

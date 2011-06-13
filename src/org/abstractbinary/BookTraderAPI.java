@@ -269,7 +269,7 @@ class BookTraderAPI {
                             new JSONObject(responseToString(response));
                         if (json.getString("status").equals("error"))
                             throw new RuntimeException("error having");
-                        sendMessage(handler, whatCode, new Book(json));
+                        sendMessage(handler, whatCode, null);
                     } catch (Exception e) {
                         sendMessage(handler, DETAILS_ERROR, e);
                     }
@@ -287,7 +287,7 @@ class BookTraderAPI {
             throw new RuntimeException(json.getString("reason"));
         }
         result.totalItems = Integer.valueOf(json.getString("total_items"));
-        JSONArray jsonResult = json.getJSONArray("result");
+        JSONArray jsonResult = json.getJSONArray("google_books");
         for (int i = 0; i < jsonResult.length(); ++i) {
             JSONObject jsonBook = jsonResult.getJSONObject(i);
             synchronized (result) {
