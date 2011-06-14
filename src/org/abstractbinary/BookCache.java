@@ -36,8 +36,7 @@ class BookCache {
                     BookTraderAPI.BookDetailsResult r;
                     switch (msg.what) {
                     case BookTraderAPI.DETAILS_START:
-                        r = (BookTraderAPI.BookDetailsResult)msg.obj;
-                        handleDetailsStarted(r.bookIdentifier);
+                        // already sent out; whoosh!
                         break;
                     case BookTraderAPI.DETAILS_GOT:
                         r = (BookTraderAPI.BookDetailsResult)msg.obj;
@@ -69,6 +68,7 @@ class BookCache {
      * Note that this might send *TWO* messages back (one for the
      * cache and one for the API). */
     void getBookDetails(String bookIdentifier, Handler handler) {
+        sendMessage(handler, BOOK_GET_STARTED, null);
         try {
             if (dbHelper == null)
                 throw new RuntimeException("no cache installed");
@@ -76,8 +76,6 @@ class BookCache {
             byte[] fromDb = dbHelper.cacheQuery(bookIdentifier);
             if (fromDb == null)
                 throw new RuntimeException("not in cache");
-
-            Log.v(TAG, "details cache hit: " + bookIdentifier);
 
             sendMessage(handler, BOOK_GOT, new Book
                         (new JSONObject(new String(fromDb))));
@@ -94,21 +92,15 @@ class BookCache {
 
     /* Handlers */
 
-    void handleDetailsStarted(String bookIdentifier) {
-        try {
-            Handler handler = requestHandlers.get(bookIdentifier);
-            sendMessage(handler, BOOK_GET_STARTED, null);
-        } catch (Exception e) {
-            // whoosh
-        }
-    }
-
     void handleDetailsGot(String bookIdentifier, Book book) {
         try {
             Handler handler = requestHandlers.get(bookIdentifier);
             sendMessage(handler, BOOK_GOT, book);
+            dbHelper.cacheRemove(bookIdentifier);
+            dbHelper.cacheInsert(bookIdentifier, book.jsonString.getBytes());
             requestHandlers.remove(bookIdentifier);
         } catch (Exception e) {
+            Log.v(TAG, "Except: " + e);
             // whoosh
         }
     }
@@ -119,6 +111,7 @@ class BookCache {
             sendMessage(handler, BOOK_GET_FAILED, exception);
             requestHandlers.remove(bookIdentifier);
         } catch (Exception e) {
+            Log.v(TAG, "Except: " + e);
             // whoosh
         }
     }

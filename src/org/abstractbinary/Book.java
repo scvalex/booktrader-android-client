@@ -17,35 +17,23 @@ public class Book {
     static final String TAG = "BookTrader";
 
     /** Used when we scroll past the last result in the search view. */
-    static final Book FILLER_BOOK = new Book("", "", "", "",
-                                             new ArrayList<String>(),
-                                             "", "");
+    static final Book FILLER_BOOK = new Book();
 
     /* Record fields */
-    String identifier;
-    String title;
-    String subtitle;
-    String publisher;
-    List<String> authors;
-    String thumbnailSource;
-    String smallThumbnailSource;
-    String description;
+    String identifier = "";
+    String title = "";
+    String subtitle = "";
+    String publisher = "";
+    List<String> authors = new ArrayList<String>();
+    String thumbnailSource = "";
+    String smallThumbnailSource = "";
+    String description = "";
     Drawable image;
-    List<String> owners;
-    List<String> coveters;
+    List<String> owners = new ArrayList<String>();
+    List<String> coveters = new ArrayList<String>();
+    String jsonString = "";
 
-    /** Note: call by name; be careful */
-    public Book(String id, String title, String subtitle,
-                String publisher,
-                List<String> authors, String thumbnailSource,
-                String smallThumbnailSource) {
-        this.identifier = id;
-        this.title = title;
-        this.subtitle = subtitle;
-        this.publisher = publisher;
-        this.authors = authors;
-        this.thumbnailSource = thumbnailSource;
-        this.smallThumbnailSource = smallThumbnailSource;
+    private Book() {
     }
 
     /** JsonBook should hold the book entries at top-level. */
@@ -61,6 +49,7 @@ public class Book {
         this.description = jsonBook.getString("description");
         this.thumbnailSource = jsonBook.getString("thumbnail");
         this.smallThumbnailSource = jsonBook.getString("smallThumbnail");
+        this.jsonString = jsonBook.toString();
 
         JSONArray jsonOwners = jsonBook.getJSONArray("owners");
         owners = new ArrayList<String>();
