@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,12 +26,16 @@ public class BookDetails extends Activity {
     /* Commonly used widgets */
     TextView bookTitleLabel;
     ProgressDialog loadingDialog;
+    ListView ownerList;
+    ListView coveterList;
 
     /* Internal gubbins */
     String bookIdentifier;
     Book book;
     Handler detailsHandler;
     BookTraderAPI api;
+    PeopleAdapter ownersAdapter;
+    PeopleAdapter covetersAdapter;
 
     /* Activity life-cycle */
 
@@ -95,6 +100,14 @@ public class BookDetails extends Activity {
             };
 
         api = BookTraderAPI.getInstance();
+
+        ownersAdapter = new PeopleAdapter(this);
+        ownerList = (ListView)findViewById(R.id.book_owners_list);
+        ownerList.setAdapter(ownersAdapter);
+
+        covetersAdapter = new PeopleAdapter(this);
+        coveterList = (ListView)findViewById(R.id.book_coveters_list);
+        coveterList.setAdapter(covetersAdapter);
 
         BookCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
 
