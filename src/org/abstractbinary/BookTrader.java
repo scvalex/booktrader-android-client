@@ -16,6 +16,9 @@ import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -231,6 +234,13 @@ public class BookTrader extends Activity {
         return dialog;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+    }
+
 
     /* Event handlers */
 
@@ -264,6 +274,21 @@ public class BookTrader extends Activity {
                       (Intent.ACTION_VIEW,
                        Uri.withAppendedPath(Uri.EMPTY, book.identifier),
                        this, BookDetails.class));
+    }
+
+    /** Called when a menu item is selected. */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.clear_cache_menu:
+            Toast.makeText(this, "Clearing the cache", Toast.LENGTH_SHORT).show();
+            return true;
+        case R.id.about_menu:
+            Toast.makeText(this, "fööt fööt fööt", Toast.LENGTH_SHORT).show();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
     }
 
 
