@@ -136,10 +136,15 @@ public class BookDetails extends Activity {
         }
         ((TextView)findViewById(R.id.book_authors_label)).setText
             (authors.toString());
-        if (api.loggedIn && book.owners.contains(api.currentUser))
-            markHad();
-        if (api.loggedIn && book.coveters.contains(api.currentUser))
-            markWanted();
+        if (api.loggedIn) {
+            if (book.owners.contains(api.currentUser))
+                markHad();
+            if (book.coveters.contains(api.currentUser))
+                markWanted();
+        } else {
+            ((Button)findViewById(R.id.want_button)).setEnabled(false);
+            ((Button)findViewById(R.id.have_button)).setEnabled(false);
+        }
         ((TextView)findViewById(R.id.book_description_text)).setText
             (book.description);
     }
@@ -171,6 +176,7 @@ public class BookDetails extends Activity {
         Button wantButton = (Button)findViewById(R.id.want_button);
         wantButton.setText(getResources().getString(R.string.already_want));
         wantButton.setEnabled(false);
+        ((Button)findViewById(R.id.have_button)).setEnabled(true);
     }
 
     void markHad() {
