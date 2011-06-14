@@ -158,6 +158,7 @@ class BookTraderAPI {
     void doLogout(final Handler handler) {
         final HttpGet httpGet = new HttpGet(LOGOUT_URL);
 
+        sendMessage(handler, LOGOUT_START, null);
         pool.execute(new Runnable() {
                 public void run() {
                     try {
@@ -169,7 +170,6 @@ class BookTraderAPI {
                     }
                 }
             });
-        sendMessage(handler, LOGOUT_START, null);
     }
 
     /** Perform the search query. */
@@ -226,9 +226,8 @@ class BookTraderAPI {
                 }
             };
 
-        DownloadCache.getInstance().getString(searchUrl, downloadHandler);
-
         sendMessage(handler, SEARCH_START, null);
+        DownloadCache.getInstance().getString(searchUrl, downloadHandler);
     }
 
     /** Get the a book's details. */
@@ -238,6 +237,8 @@ class BookTraderAPI {
                                             "/" + bookIdentifier +
                                             "?format=json");
 
+        sendMessage(handler, DETAILS_START,
+                    new BookDetailsResult(bookIdentifier, null));
         pool.execute(new Runnable() {
                 public void run() {
                     try {
@@ -255,8 +256,6 @@ class BookTraderAPI {
                     }
                 }
             });
-        sendMessage(handler, DETAILS_START,
-                    new BookDetailsResult(bookIdentifier, null));
     }
 
     /** Have a book. */
@@ -277,6 +276,7 @@ class BookTraderAPI {
                                             "/" + what +
                                             "?format=json");
 
+        sendMessage(handler, DETAILS_START, null);
         pool.execute(new Runnable() {
                 public void run() {
                     try {
@@ -293,7 +293,6 @@ class BookTraderAPI {
                     }
                 }
             });
-        sendMessage(handler, DETAILS_START, null);
     }
 
     /** Update the given RESULT by adding new books from RESPONSE. */
