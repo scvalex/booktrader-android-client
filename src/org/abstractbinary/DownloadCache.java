@@ -86,6 +86,10 @@ class DownloadCache {
         this.dbHelper = dbHelper;
     }
 
+    void clear() {
+        this.dbHelper.clearDownloadCache();
+    }
+
     /** Get URL's value as a String.  First try the cache.  Fall back
      * to normal HTTP requests. */
     void getString(final String url, final Handler handler) {

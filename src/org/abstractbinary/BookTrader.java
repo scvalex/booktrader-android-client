@@ -281,7 +281,8 @@ public class BookTrader extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.clear_cache_menu:
-            Toast.makeText(this, "Clearing the cache", Toast.LENGTH_SHORT).show();
+            DownloadCache.getInstance().clear();
+            Toast.makeText(this, "Cache cleared", Toast.LENGTH_SHORT).show();
             return true;
         case R.id.about_menu:
             Toast.makeText(this, "fööt fööt fööt", Toast.LENGTH_SHORT).show();

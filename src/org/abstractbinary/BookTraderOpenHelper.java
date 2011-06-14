@@ -46,6 +46,10 @@ class BookTraderOpenHelper extends SQLiteOpenHelper {
 
     /* Public API */
 
+    public void clearDownloadCache() {
+        getWritableDatabase().execSQL("DELETE FROM " + CACHE_TABLE_NAME + ";");
+    }
+
     /** Insert into cache. */
     public void cacheInsert(String key, byte[] value) {
         ContentValues values = new ContentValues();
