@@ -140,6 +140,8 @@ public class BookDetails extends Activity {
             markHad();
         if (api.loggedIn && book.coveters.contains(api.currentUser))
             markWanted();
+        ((TextView)findViewById(R.id.book_description_text)).setText
+            (book.description);
     }
 
 

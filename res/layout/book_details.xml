@@ -1,49 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
+    android:fillViewport="true"
     android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
     >
-  <ImageView
-      android:id="@+id/cover_view"
-      android:layout_height="200dip"
-      android:layout_width="wrap_content"
-      android:src="@drawable/book_thumb"
-      />
-  <TextView
-      android:id="@+id/book_title_label"
-      android:layout_height="wrap_content"
-      android:layout_width="fill_parent"
-      />
-  <TextView
-      android:id="@+id/book_subtitle_label"
-      android:layout_height="wrap_content"
-      android:layout_width="fill_parent"
-      />
-  <TextView
-      android:id="@+id/book_authors_label"
-      android:layout_height="wrap_content"
-      android:layout_width="fill_parent"
-      />
   <LinearLayout
-      android:orientation="horizontal"
+      android:orientation="vertical"
+      android:layout_height="fill_parent"
       android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
       >
-    <Button
-        android:id="@+id/have_button"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/cover_view"
+        android:layout_height="200dip"
         android:layout_width="wrap_content"
-        android:onClick="have"
-        android:text="@string/have"
+        android:src="@drawable/book_thumb"
         />
-    <Button
-        android:id="@+id/want_button"
+    <TextView
+        android:id="@+id/book_title_label"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:onClick="want"
-        android:text="@string/want"
+        android:layout_width="fill_parent"
+        />
+    <TextView
+        android:id="@+id/book_subtitle_label"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        />
+    <TextView
+        android:id="@+id/book_authors_label"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        >
+      <Button
+          android:id="@+id/have_button"
+          android:layout_height="wrap_content"
+          android:layout_width="wrap_content"
+          android:onClick="have"
+          android:text="@string/have"
+          />
+      <Button
+          android:id="@+id/want_button"
+          android:layout_height="wrap_content"
+          android:layout_width="wrap_content"
+          android:onClick="want"
+          android:text="@string/want"
+          />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/book_description_text"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        />
+    <ListView
+        android:id="@+id/book_owners_list"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        />
+    <ListView
+        android:id="@+id/book_coveters_list"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
         />
   </LinearLayout>
-</LinearLayout>
+</ScrollView>

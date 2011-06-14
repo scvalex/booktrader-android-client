@@ -29,6 +29,7 @@ public class Book {
     List<String> authors;
     String thumbnailSource;
     String smallThumbnailSource;
+    String description;
     Drawable image;
     List<String> owners;
     List<String> coveters;
@@ -58,6 +59,7 @@ public class Book {
         this.title = jsonBook.getString("title");
         this.subtitle = jsonBook.getString("subtitle");
         this.publisher = jsonBook.getString("publisher");
+        this.description = jsonBook.getString("description");
         this.thumbnailSource = jsonBook.getString("thumbnail");
         this.smallThumbnailSource = jsonBook.getString("smallThumbnail");
 
