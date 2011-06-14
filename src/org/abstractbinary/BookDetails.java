@@ -50,9 +50,11 @@ public class BookDetails extends Activity {
                 @Override
                 public void handleMessage(Message msg) {
                     switch (msg.what) {
+                    case BookTraderAPI.DETAILS_START:
                     case BookCache.BOOK_GET_STARTED:
                         showDialog(DIALOG_LOADING);
                         break;
+                    case BookTraderAPI.DETAILS_GOT:
                     case BookCache.BOOK_GOT:
                         handleDetailsGot((Book)msg.obj);
                         break;

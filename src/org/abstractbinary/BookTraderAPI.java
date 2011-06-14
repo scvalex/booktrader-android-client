@@ -124,6 +124,7 @@ class BookTraderAPI {
             sendMessage(handler, LOGIN_ERROR, e);
         }
 
+        sendMessage(handler, LOGIN_START, null);
         pool.execute(new Runnable() {
                 public void run() {
                     try {
@@ -151,7 +152,6 @@ class BookTraderAPI {
                     }
                 }
             });
-        sendMessage(handler, LOGIN_START, null);
     }
 
     /** Perform the remote logout and switch to not logged in state. */

@@ -25,11 +25,23 @@
       android:minEms="10"
       android:password="true"
       />
-  <Button
-      android:id="@+id/login_dialog_button"
-      android:layout_gravity="right"
+  <LinearLayout
       android:layout_height="wrap_content"
-      android:layout_width="wrap_content"
-      android:text="@string/log_in"
-      />
+      android:layout_width="fill_parent"
+      android:gravity="right"
+      android:orientation="horizontal"
+      >
+    <Button
+        android:id="@+id/login_cancel_button"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/cancel"
+        />
+    <Button
+        android:id="@+id/login_dialog_button"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/log_in"
+        />
+  </LinearLayout>
 </LinearLayout>

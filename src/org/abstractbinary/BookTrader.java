@@ -68,6 +68,7 @@ public class BookTrader extends Activity {
     String username_try, password_try;
     String lastSearch;
     BookAdapter bookAdapter;
+    boolean autoLogin;
 
 
     /* Application life-cycle */
@@ -174,6 +175,7 @@ public class BookTrader extends Activity {
             switchState(STATE_NOT_LOGGED_IN);
             username_try = username;
             password_try = password;
+            autoLogin = true;
             BookTraderAPI.getInstance().doLogin(username_try, password_try,
                                                 requestHandler);
         }
@@ -219,9 +221,19 @@ public class BookTrader extends Activity {
                         password_try = passwordField.getText().toString();
                         Log.v(TAG, "New login info: " + username_try);
                         dialog.dismiss();
+                        autoLogin = false;
                         BookTraderAPI.getInstance().doLogin(username_try, password_try, requestHandler);
                     }
-            });
+                });
+            Button cancel =
+                (Button)dialog.findViewById(R.id.login_cancel_button);
+            cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        switchState(STATE_NOT_LOGGED_IN);
+                        dialog.dismiss();
+                    }
+                });
 
             break;
         case DIALOG_PERPETUUM:
@@ -343,7 +355,8 @@ public class BookTrader extends Activity {
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
         Toast.makeText(this, "Login failed :(", Toast.LENGTH_LONG).show();
-        switchState(STATE_LOGGING_IN);
+        if (!autoLogin)
+            switchState(STATE_LOGGING_IN);
     }
 
     /** Called when the API signals logout finished. */

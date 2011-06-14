@@ -16,4 +16,5 @@
     <string name="already_want">You want this book</string>
     <string name="about">About</string>
     <string name="clear_cache">Clear cache</string>
+    <string name="cancel">Cancel</string>
 </resources>
