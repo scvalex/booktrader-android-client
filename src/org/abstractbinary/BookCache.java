@@ -89,6 +89,12 @@ class BookCache {
                                                      this.detailsHandler);
     }
 
+    /** Insert a book into the cache (or replace the existing one). */
+    void insertBook(Book book) {
+        dbHelper.cacheRemove(book.identifier);
+        dbHelper.cacheInsert(book.identifier, book.jsonString.getBytes());
+    }
+
 
     /* Handlers */
 
@@ -96,8 +102,7 @@ class BookCache {
         try {
             Handler handler = requestHandlers.get(bookIdentifier);
             sendMessage(handler, BOOK_GOT, book);
-            dbHelper.cacheRemove(bookIdentifier);
-            dbHelper.cacheInsert(bookIdentifier, book.jsonString.getBytes());
+            insertBook(book);
             requestHandlers.remove(bookIdentifier);
         } catch (Exception e) {
             Log.v(TAG, "Except: " + e);

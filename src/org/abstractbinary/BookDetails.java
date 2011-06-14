@@ -51,13 +51,12 @@ public class BookDetails extends Activity {
                 public void handleMessage(Message msg) {
                     switch (msg.what) {
                     case BookCache.BOOK_GET_STARTED:
-                        Log.v(TAG, "get started...");
                         showDialog(DIALOG_LOADING);
                         break;
                     case BookCache.BOOK_GOT:
-                        Log.v(TAG, "details got; rock on");
                         handleDetailsGot((Book)msg.obj);
                         break;
+                    case BookTraderAPI.DETAILS_ERROR:
                     case BookCache.BOOK_GET_FAILED:
                         if (loadingDialog != null)
                             loadingDialog.dismiss();
