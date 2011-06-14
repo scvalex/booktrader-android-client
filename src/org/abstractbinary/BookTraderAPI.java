@@ -47,6 +47,19 @@ class BookTraderAPI {
     static final String SEARCH_URL = BASE_URL + "/books/search";
     static final String BOOKS_URL  = BASE_URL + "/books";
 
+    static class BookDetailsResult {
+        String bookIdentifier;
+        Object result;
+
+        private BookDetailsResult() {
+        }
+
+        public BookDetailsResult(String bookIdentifier, Object result) {
+            this.bookIdentifier = bookIdentifier;
+            this.result = result;
+        }
+    }
+
     /* Internal API */
     static final int LOGIN_DONE      = 100;
     static final int LOGIN_ERROR     = 101;
@@ -219,7 +232,8 @@ class BookTraderAPI {
     }
 
     /** Get the a book's details. */
-    void doGetBookDetails(String bookIdentifier, final Handler handler) {
+    void doGetBookDetails(final String bookIdentifier,
+                          final Handler handler) {
         final HttpGet httpGet = new HttpGet(BOOKS_URL +
                                             "/" + bookIdentifier +
                                             "?format=json");
@@ -232,13 +246,17 @@ class BookTraderAPI {
                         JSONObject json =
                             new JSONObject(responseToString(response));
                         json = json.getJSONObject("book");
-                        sendMessage(handler, DETAILS_GOT, new Book(json));
+                        sendMessage(handler, DETAILS_GOT,
+                                    new BookDetailsResult(bookIdentifier,
+                                                          new Book(json)));
                     } catch (Exception e) {
-                        sendMessage(handler, DETAILS_ERROR, e);
+                        sendMessage(handler, DETAILS_ERROR,
+                                    new BookDetailsResult(bookIdentifier, e));
                     }
                 }
             });
-        sendMessage(handler, DETAILS_START, null);
+        sendMessage(handler, DETAILS_START,
+                    new BookDetailsResult(bookIdentifier, null));
     }
 
     /** Have a book. */
