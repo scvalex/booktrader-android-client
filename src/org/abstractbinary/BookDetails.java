@@ -92,7 +92,8 @@ public class BookDetails extends Activity {
             };
 
         api = BookTraderAPI.getInstance();
-        api.doGetBookDetails(bookIdentifier, detailsHandler);
+
+        BookCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
 
         bookTitleLabel.setText(bookIdentifier);
     }
