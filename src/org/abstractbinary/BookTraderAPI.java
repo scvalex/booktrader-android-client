@@ -118,6 +118,7 @@ class BookTraderAPI {
         values.add(new BasicNameValuePair("username", username));
         values.add(new BasicNameValuePair("password", password));
         values.add(new BasicNameValuePair("Login", "Login"));
+        values.add(new BasicNameValuePair("format", "json"));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(values));
         } catch (Exception e) {
@@ -148,6 +149,7 @@ class BookTraderAPI {
                                         new RuntimeException("no auth tkt"));
                         }
                     } catch (Exception e) {
+                        Log.v(TAG, "Login error " + e.getCause());
                         sendMessage(handler, LOGIN_ERROR, e);
                     }
                 }

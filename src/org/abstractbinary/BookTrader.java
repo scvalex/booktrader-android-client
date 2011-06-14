@@ -176,6 +176,7 @@ public class BookTrader extends Activity {
             username_try = username;
             password_try = password;
             autoLogin = true;
+            loginButton.setEnabled(false);
             BookTraderAPI.getInstance().doLogin(username_try, password_try,
                                                 requestHandler);
         }
@@ -222,6 +223,7 @@ public class BookTrader extends Activity {
                         Log.v(TAG, "New login info: " + username_try);
                         dialog.dismiss();
                         autoLogin = false;
+                        loginButton.setEnabled(false);
                         BookTraderAPI.getInstance().doLogin(username_try, password_try, requestHandler);
                     }
                 });
@@ -230,6 +232,7 @@ public class BookTrader extends Activity {
             cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        autoLogin = true;
                         switchState(STATE_NOT_LOGGED_IN);
                         dialog.dismiss();
                     }
@@ -317,7 +320,11 @@ public class BookTrader extends Activity {
         state = newState;
         Log.v(TAG, "Now in state " + state);
 
+        loginButton.setEnabled(false);
         switch (state) {
+        case STATE_NOT_LOGGED_IN:
+            loginButton.setEnabled(true);
+            break;
         case STATE_LOGGING_IN:
             showDialog(DIALOG_LOGIN);
             break;
