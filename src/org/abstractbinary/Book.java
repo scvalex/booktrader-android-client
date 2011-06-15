@@ -52,12 +52,10 @@ public class Book {
         this.jsonString = jsonBook.toString();
 
         JSONArray jsonOwners = jsonBook.getJSONArray("owners");
-        owners = new ArrayList<String>();
         for (int j = 0; j < jsonOwners.length(); ++j)
             owners.add(jsonOwners.getString(j));
 
         JSONArray jsonCoveters = jsonBook.getJSONArray("coveters");
-        coveters = new ArrayList<String>();
         for (int j = 0; j < jsonCoveters.length(); ++j)
             coveters.add(jsonCoveters.getString(j));
     }

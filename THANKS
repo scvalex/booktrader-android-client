@@ -1,0 +1,11 @@
+-*- mode: org; -*-
+
+* Third-party resources
+** res/drawable-hdpi/avatar.png
+   - License :: Public domain image by Tom Brough
+   - Source  :: Retrieved from the Open Clip Art Library:
+     http://www.openclipart.org/detail/90751
+** res/drawable-hdpi/book_thumb.png
+   * License :: Public domain image by gsagri04.
+   * Source  :: Retrieved from the Open Clip Art Library:
+     http://www.openclipart.org/detail/139537

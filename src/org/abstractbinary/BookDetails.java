@@ -139,6 +139,8 @@ public class BookDetails extends Activity {
 
         this.book = book;
         book.getCover(detailsHandler);
+        ownersAdapter.setData(book.owners);
+        covetersAdapter.setData(book.coveters);
 
         bookTitleLabel.setText(book.title);
         ((TextView)findViewById(R.id.book_subtitle_label)).setText
@@ -179,11 +181,13 @@ public class BookDetails extends Activity {
     /** Called when the user the user clicks a have button */
     public void have(View v) {
         api.doHave(bookIdentifier, detailsHandler);
+        BookCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
     }
 
     /** Called when the user the user clicks a have button */
     public void want(View v) {
         api.doWant(bookIdentifier, detailsHandler);
+        BookCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
     }
 
 

@@ -362,6 +362,7 @@ public class BookTrader extends Activity {
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
         Toast.makeText(this, "Login failed :(", Toast.LENGTH_LONG).show();
+        loginButton.setEnabled(true);
         if (!autoLogin)
             switchState(STATE_LOGGING_IN);
     }

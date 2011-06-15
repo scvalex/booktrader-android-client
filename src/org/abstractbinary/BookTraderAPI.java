@@ -60,21 +60,37 @@ class BookTraderAPI {
         }
     }
 
+    static class PersonResult {
+        String username;
+        Object result;
+
+        private PersonResult() {
+        }
+
+        public PersonResult(String username, Object result) {
+            this.username = username;
+            this.result = result;
+        }
+    }
+
     /* Internal API */
-    static final int LOGIN_DONE      = 100;
-    static final int LOGIN_ERROR     = 101;
-    static final int LOGIN_START     = 102;
-    static final int LOGOUT_START    = 103;
-    static final int LOGOUT_FINISHED = 104;
-    static final int LOGOUT_ERROR    = 105;
-    static final int SEARCH_START    = 106;
-    static final int SEARCH_FINISHED = 107;
-    static final int SEARCH_FAILED   = 108;
-    static final int DETAILS_START   = 109;
-    static final int DETAILS_GOT     = 110;
-    static final int DETAILS_ERROR   = 111;
-    static final int DETAILS_HAVE    = 112;
-    static final int DETAILS_WANT    = 113;
+    static final int LOGIN_DONE        = 100;
+    static final int LOGIN_ERROR       = 101;
+    static final int LOGIN_START       = 102;
+    static final int LOGOUT_START      = 103;
+    static final int LOGOUT_FINISHED   = 104;
+    static final int LOGOUT_ERROR      = 105;
+    static final int SEARCH_START      = 106;
+    static final int SEARCH_FINISHED   = 107;
+    static final int SEARCH_FAILED     = 108;
+    static final int DETAILS_START     = 109;
+    static final int DETAILS_GOT       = 110;
+    static final int DETAILS_ERROR     = 111;
+    static final int DETAILS_HAVE      = 112;
+    static final int DETAILS_WANT      = 113;
+    static final int PERSON_GET_START  = 114;
+    static final int PERSON_GOT        = 115;
+    static final int PERSON_GET_FAILED = 116;
 
     /* Network communications */
     HttpClient httpClient;
@@ -284,14 +300,45 @@ class BookTraderAPI {
                     try {
                         HttpResponse response =
                             httpClient.execute(httpGet, httpContext);
-                        Log.v(TAG, "got " + bookIdentifier + " " + what);
                         JSONObject json =
                             new JSONObject(responseToString(response));
                         if (json.getString("status").equals("error"))
-                            throw new RuntimeException("error having");
+                            throw new RuntimeException
+                                ("error having " + json.getString("reason"));
                         sendMessage(handler, whatCode, null);
                     } catch (Exception e) {
                         sendMessage(handler, DETAILS_ERROR, e);
+                    }
+                }
+            });
+    }
+
+    /** Get a person's details. */
+    void doGetPerson(final String username, final Handler handler) {
+        final HttpGet httpGet = new HttpGet(BASE_URL +
+                                            "/" + username +
+                                            "?format=json");
+
+        sendMessage(handler, PERSON_GET_START,
+                    new PersonResult(username, null));
+        pool.execute(new Runnable() {
+                public void run() {
+                    try {
+                        HttpResponse response =
+                            httpClient.execute(httpGet, httpContext);
+                        JSONObject json =
+                            new JSONObject(responseToString(response));
+                        if (json.getString("status").equals("error"))
+                            throw new RuntimeException
+                                ("error persing" + json.getString("reason"));
+                        sendMessage(handler, PERSON_GOT,
+                                    new PersonResult(username,
+                                                     new Person(username,
+                                                                json)));
+
+                    } catch (Exception e) {
+                        sendMessage(handler, PERSON_GET_FAILED,
+                                    new PersonResult(username, e));
                     }
                 }
             });
