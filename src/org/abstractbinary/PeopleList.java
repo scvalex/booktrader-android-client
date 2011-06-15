@@ -19,22 +19,24 @@ import java.util.List;
 import java.util.Map;
 
 
-class PeopleAdapter extends BaseAdapter {
+class PeopleList {
     /* Debugging */
     static final String TAG = "BookTrader";
 
     /* Internal gubbins */
+    LinearLayout host;
     Context context;
-    List<String> usernames = new ArrayList<String>();
-    Map<String, Person> people = new HashMap<String, Person>();
+    List<String> usernames;
+    Map<String, Person> people;
     Handler requestHandler;
 
 
     /* Public API */
 
-    public PeopleAdapter(Context context) {
+    public PeopleList(LinearLayout host, Context context) {
         super();
 
+        this.host = host;
         this.context = context;
 
         requestHandler = new Handler() {
@@ -71,63 +73,23 @@ class PeopleAdapter extends BaseAdapter {
     }
 
     public void setData(List<String> usernames) {
-        this.usernames.clear();
-        people.clear();
+        if (this.usernames != null)
+            this.host.removeAllViews();
+
+        this.usernames = new ArrayList<String>();
+        people = new HashMap<String, Person>();
         for (String username : usernames) {
             this.usernames.add(username);
-            BookTraderAPI.getInstance().doGetPerson(username, requestHandler);
-        }
-        notifyDataSetChanged();
-    }
-
-
-    /* Adapter methods. */
-
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (position >= getCount() || position < 0)
-            return null;
-
-        LinearLayout personRow;
-        if (!(convertView instanceof FrameLayout))
-            personRow = (LinearLayout)View.inflate(context,
-                                                   R.layout.person_row, null);
-        else
-            personRow = (LinearLayout)convertView;
-
-        Person person = (Person)getItem(position);
-        if (person != null && person.avatar != null) {
-            ((ImageView)personRow.findViewById
-             (R.id.person_avatar)).setImageDrawable(person.avatar);
-        } else {
+            LinearLayout personRow = (LinearLayout)View.inflate
+                (context, R.layout.person_row, null);
+            this.host.addView(personRow);
             ((ImageView)personRow.findViewById
              (R.id.person_avatar)).setImageDrawable
                 (context.getResources().getDrawable(R.drawable.avatar));
-        }
-        if (person != null) {
             ((TextView)personRow.findViewById
-             (R.id.person_username)).setText(person.username);
-        } else {
-            ((TextView)personRow.findViewById
-             (R.id.person_username)).setText(usernames.get(position));
+             (R.id.person_username)).setText(username);
+            BookTraderAPI.getInstance().doGetPerson(username, requestHandler);
         }
-
-        return personRow;
-    }
-
-    public long getItemId(int position) {
-        if (position >= getCount() || position < 0)
-            return -1;        // FIXME: What does this even do?
-        return position;
-    }
-
-    public Object getItem(int position) {
-        if (position >= getCount() || position < 0)
-            return null;
-        return people.get(usernames.get(position));
-    }
-
-    public int getCount() {
-        return usernames.size();
     }
 
 
@@ -137,7 +99,6 @@ class PeopleAdapter extends BaseAdapter {
         people.put(username, person);
         if (person.avatarSource.length() > 0)
             person.getAvatar(requestHandler);
-        notifyDataSetChanged();
     }
 
     void handlePersonGetFailed(String username, Exception exception) {
@@ -146,12 +107,15 @@ class PeopleAdapter extends BaseAdapter {
     }
 
     void handleDownloadDone(String url, Drawable image) {
-        for (Person p : people.values())
+        for (int i = 0; i < usernames.size(); ++i) {
+            Person p = people.get(usernames.get(i));
             if (p.avatarSource.equals(url)) {
                 p.avatar = image;
-                notifyDataSetChanged();
+                ((ImageView)host.getChildAt(i).findViewById
+                 (R.id.person_avatar)).setImageDrawable(p.avatar);
                 return;
             }
+        }
     }
 
     void handleDownloadError(String url, Exception e) {

@@ -56,15 +56,17 @@
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         />
-    <ListView
+    <LinearLayout
         android:id="@+id/book_owners_list"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
+        android:orientation="vertical"
         />
-    <ListView
+    <LinearLayout
         android:id="@+id/book_coveters_list"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
+        android:orientation="vertical"
         />
   </LinearLayout>
 </ScrollView>
