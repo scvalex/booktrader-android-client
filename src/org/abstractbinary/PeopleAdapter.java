@@ -1,6 +1,7 @@
 package org.abstractbinary.booktrader;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -39,17 +40,27 @@ class PeopleAdapter extends BaseAdapter {
         requestHandler = new Handler() {
                 @Override
                 public void handleMessage(Message msg) {
-                    BookTraderAPI.PersonResult r =
-                        (BookTraderAPI.PersonResult)msg.obj;
+                    BookTraderAPI.PersonResult r;
+                    DownloadCache.DownloadResult rd;
                     switch (msg.what) {
                     case BookTraderAPI.PERSON_GET_START:
                         // whoosh
                         break;
                     case BookTraderAPI.PERSON_GOT:
+                        r = (BookTraderAPI.PersonResult)msg.obj;
                         handlePersonGot(r.username, (Person)r.result);
                         break;
                     case BookTraderAPI.PERSON_GET_FAILED:
+                        r = (BookTraderAPI.PersonResult)msg.obj;
                         handlePersonGetFailed(r.username, (Exception)r.result);
+                        break;
+                    case DownloadCache.DOWNLOAD_DONE:
+                        rd = (DownloadCache.DownloadResult)msg.obj;
+                        handleDownloadDone(rd.url, (Drawable)rd.result);
+                        break;
+                    case DownloadCache.DOWNLOAD_ERROR:
+                        rd = (DownloadCache.DownloadResult)msg.obj;
+                        handleDownloadError(rd.url, (Exception)rd.result);
                         break;
                     default:
                         throw new RuntimeException("unknown message type" +
@@ -91,12 +102,13 @@ class PeopleAdapter extends BaseAdapter {
             ((ImageView)personRow.findViewById
              (R.id.person_avatar)).setImageDrawable
                 (context.getResources().getDrawable(R.drawable.avatar));
-            if (person != null)
-                ((TextView)personRow.findViewById
-                 (R.id.person_username)).setText(person.username);
-            else
-                ((TextView)personRow.findViewById
-                 (R.id.person_username)).setText(usernames.get(position));
+        }
+        if (person != null) {
+            ((TextView)personRow.findViewById
+             (R.id.person_username)).setText(person.username);
+        } else {
+            ((TextView)personRow.findViewById
+             (R.id.person_username)).setText(usernames.get(position));
         }
 
         return personRow;
@@ -123,11 +135,27 @@ class PeopleAdapter extends BaseAdapter {
 
     void handlePersonGot(String username, Person person) {
         people.put(username, person);
+        if (person.avatarSource.length() > 0)
+            person.getAvatar(requestHandler);
         notifyDataSetChanged();
     }
 
     void handlePersonGetFailed(String username, Exception exception) {
         Log.v(TAG, "failed to get " + username + ": " + exception);
         // whoosh
+    }
+
+    void handleDownloadDone(String url, Drawable image) {
+        for (Person p : people.values())
+            if (p.avatarSource.equals(url)) {
+                p.avatar = image;
+                notifyDataSetChanged();
+                return;
+            }
+    }
+
+    void handleDownloadError(String url, Exception e) {
+        Log.v(TAG, "failed to download " + url + " because " + e);
+        //whoosh
     }
 }

@@ -27,4 +27,8 @@ class Person {
         this.username = username;
         this.avatarSource = json.getString("gravatar");
     }
+
+    public void getAvatar(Handler handler) {
+        DownloadCache.getInstance().getDrawable(avatarSource, handler);
+    }
 }

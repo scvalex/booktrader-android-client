@@ -42,10 +42,11 @@ class BookTraderAPI {
 
     /* Remote API */
     static final String BASE_URL   = "http://abstractbinary.org:6543";
-    static final String LOGIN_URL  = BASE_URL + "/users/login";
-    static final String LOGOUT_URL = BASE_URL + "/users/logut";
-    static final String SEARCH_URL = BASE_URL + "/books/search";
+    static final String USERS_URL  = BASE_URL + "/users";
+    static final String LOGIN_URL  = USERS_URL + "/login";
+    static final String LOGOUT_URL = USERS_URL + "/logout";
     static final String BOOKS_URL  = BASE_URL + "/books";
+    static final String SEARCH_URL = BOOKS_URL + "/search";
 
     static class BookDetailsResult {
         String bookIdentifier;
@@ -315,7 +316,7 @@ class BookTraderAPI {
 
     /** Get a person's details. */
     void doGetPerson(final String username, final Handler handler) {
-        final HttpGet httpGet = new HttpGet(BASE_URL +
+        final HttpGet httpGet = new HttpGet(USERS_URL +
                                             "/" + username +
                                             "?format=json");
 
