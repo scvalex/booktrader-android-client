@@ -150,6 +150,13 @@ public class BookDetails extends Activity {
         }
         ((TextView)findViewById(R.id.book_authors_label)).setText
             (authors.toString());
+        Button wantButton = (Button)findViewById(R.id.want_button);
+        Button haveButton = (Button)findViewById(R.id.have_button);
+        haveButton.setEnabled(true);
+        haveButton.setText(getResources().getString(R.string.have));
+        wantButton.setEnabled(true);
+        wantButton.setText(getResources().getString(R.string.want));
+        wantButton.setVisibility(View.VISIBLE);
         if (api.loggedIn) {
             if (book.owners.contains(api.currentUser))
                 markHad();
@@ -192,7 +199,6 @@ public class BookDetails extends Activity {
         Button wantButton = (Button)findViewById(R.id.want_button);
         wantButton.setText(getResources().getString(R.string.already_want));
         wantButton.setEnabled(false);
-        ((Button)findViewById(R.id.have_button)).setEnabled(true);
     }
 
     void markHad() {
