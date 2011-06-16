@@ -10,14 +10,19 @@ import java.util.Map;
 import org.json.JSONObject;
 
 
-class BookCache {
+class ObjectCache {
     /* Debugging */
     static final String TAG = "BookTrader";
 
+    interface CacheHandler {
+        public void handleCached(byte[] fromDb) throws Exception;
+        public void getFromAPI();
+    }
+
     /* Static constants */
-    static final int BOOK_GET_STARTED = 300;
-    static final int BOOK_GOT         = 301;
-    static final int BOOK_GET_FAILED  = 302;
+    static final int OBJECT_GET_STARTED = 300;
+    static final int BOOK_GOT           = 301;
+    static final int BOOK_GET_FAILED    = 302;
 
     /* Cache on db stuff */
     BookTraderOpenHelper dbHelper;
@@ -27,9 +32,9 @@ class BookCache {
     Handler detailsHandler;
 
     /** Singleton */
-    static private BookCache instance = new BookCache();
+    static private ObjectCache instance = new ObjectCache();
 
-    private BookCache() {
+    private ObjectCache() {
         detailsHandler = new Handler() {
                 @Override
                 public void handleMessage(Message msg) {
@@ -56,7 +61,7 @@ class BookCache {
     }
 
     /* Public API */
-    static BookCache getInstance() {
+    static ObjectCache getInstance() {
         return instance;
     }
 
@@ -64,11 +69,31 @@ class BookCache {
         this.dbHelper = dbHelper;
     }
 
-    /** Get a book's details, first from cache, then from HTTP API.
+    /** Get a book's details. */
+    void getBookDetails(final String bookIdentifier, final Handler handler) {
+        getCached(bookIdentifier, handler,
+                  new CacheHandler() {
+                      public void handleCached(byte[] fromDb)
+                          throws Exception
+                      {
+                          sendMessage(handler, BOOK_GOT, new Book
+                                      (new JSONObject(new String(fromDb))));
+                      }
+
+                      public void getFromAPI() {
+                          BookTraderAPI.getInstance().doGetBookDetails
+                              (bookIdentifier, detailsHandler);
+
+                      }
+                  });
+    }
+
+    /** Get an object, first from cache, then from HTTP API.
      * Note that this might send *TWO* messages back (one for the
      * cache and one for the API). */
-    void getBookDetails(String bookIdentifier, Handler handler) {
-        sendMessage(handler, BOOK_GET_STARTED, null);
+    void getCached(String bookIdentifier, Handler handler,
+                   CacheHandler cacheHandler) {
+        sendMessage(handler, OBJECT_GET_STARTED, null);
         try {
             if (dbHelper == null)
                 throw new RuntimeException("no cache installed");
@@ -77,16 +102,14 @@ class BookCache {
             if (fromDb == null)
                 throw new RuntimeException("not in cache");
 
-            sendMessage(handler, BOOK_GOT, new Book
-                        (new JSONObject(new String(fromDb))));
+            cacheHandler.handleCached(fromDb);
         } catch (Exception e) {
         }
 
         // fall back to API regardless
 
         requestHandlers.put(bookIdentifier, handler);
-        BookTraderAPI.getInstance().doGetBookDetails(bookIdentifier,
-                                                     this.detailsHandler);
+        cacheHandler.getFromAPI();
     }
 
     /** Insert a book into the cache (or replace the existing one). */

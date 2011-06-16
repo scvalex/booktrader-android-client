@@ -150,7 +150,7 @@ public class BookTrader extends Activity {
 
         BookTraderOpenHelper dbHelper = new BookTraderOpenHelper(this);
         DownloadCache.getInstance().setDbHelper(dbHelper);
-        BookCache.getInstance().setDbHelper(dbHelper);
+        ObjectCache.getInstance().setDbHelper(dbHelper);
 
         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
         username = settings.getString("username", null);

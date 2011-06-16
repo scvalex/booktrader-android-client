@@ -57,15 +57,15 @@ public class BookDetails extends Activity {
                         loadingDialog.dismiss();
                     switch (msg.what) {
                     case BookTraderAPI.DETAILS_START:
-                    case BookCache.BOOK_GET_STARTED:
+                    case ObjectCache.OBJECT_GET_STARTED:
                         showDialog(DIALOG_LOADING);
                         break;
                     case BookTraderAPI.DETAILS_GOT:
-                    case BookCache.BOOK_GOT:
+                    case ObjectCache.BOOK_GOT:
                         handleDetailsGot((Book)msg.obj);
                         break;
                     case BookTraderAPI.DETAILS_ERROR:
-                    case BookCache.BOOK_GET_FAILED:
+                    case ObjectCache.BOOK_GET_FAILED:
                         Toast.makeText(BookDetails.this, "double trouble",
                                        Toast.LENGTH_SHORT).show();
                         Log.v(TAG, "Failed to get book details: " +
@@ -103,7 +103,7 @@ public class BookDetails extends Activity {
 
         coveterList  = new PeopleList((LinearLayout)findViewById(R.id.book_coveters_list), this);
 
-        BookCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
+        ObjectCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
 
         bookTitleLabel.setText(bookIdentifier);
     }
@@ -184,19 +184,19 @@ public class BookDetails extends Activity {
     /** Called when the user clicks a have button */
     public void have(View v) {
         api.doHave(bookIdentifier, detailsHandler);
-        BookCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
+        ObjectCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
     }
 
     /** Called when the user clicks a have button */
     public void want(View v) {
         api.doWant(bookIdentifier, detailsHandler);
-        BookCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
+        ObjectCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
     }
 
     /** Called when the user clicks the clear button */
     public void clear(View v) {
         api.doRemove(bookIdentifier, detailsHandler);
-        BookCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
+        ObjectCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
     }
 
 
