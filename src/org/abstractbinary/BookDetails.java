@@ -65,10 +65,10 @@ public class BookDetails extends Activity {
                         handleDetailsGot((Book)msg.obj);
                         break;
                     case BookTraderAPI.DETAILS_ERROR:
-                    case ObjectCache.BOOK_GET_FAILED:
+                    case ObjectCache.OBJECT_GET_FAILED:
                         Toast.makeText(BookDetails.this, "double trouble",
                                        Toast.LENGTH_SHORT).show();
-                        Log.v(TAG, "Failed to get book details: " +
+                        Log.v(TAG, "Failed to get object details: " +
                               (Exception)msg.obj);
                         break;
                     case DownloadCache.DOWNLOAD_DONE:
@@ -82,13 +82,16 @@ public class BookDetails extends Activity {
                               ((DownloadCache.DownloadResult)msg.obj).result);
                         break;
                     case BookTraderAPI.DETAILS_HAVE:
-                        markHad();
+                        ObjectCache.getInstance().getBookDetails
+                            ((String)msg.obj, detailsHandler);
                         break;
                     case BookTraderAPI.DETAILS_WANT:
-                        markWanted();
+                        ObjectCache.getInstance().getBookDetails
+                            ((String)msg.obj, detailsHandler);
                         break;
                     case BookTraderAPI.DETAILS_REMOVE:
-                        handleRemoved();
+                        ObjectCache.getInstance().getBookDetails
+                            ((String)msg.obj, detailsHandler);
                         break;
                     default:
                         throw new RuntimeException("unknown message type: " +
@@ -184,19 +187,16 @@ public class BookDetails extends Activity {
     /** Called when the user clicks a have button */
     public void have(View v) {
         api.doHave(bookIdentifier, detailsHandler);
-        ObjectCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
     }
 
     /** Called when the user clicks a have button */
     public void want(View v) {
         api.doWant(bookIdentifier, detailsHandler);
-        ObjectCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
     }
 
     /** Called when the user clicks the clear button */
     public void clear(View v) {
         api.doRemove(bookIdentifier, detailsHandler);
-        ObjectCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
     }
 
 
@@ -215,10 +215,5 @@ public class BookDetails extends Activity {
         haveButton.setEnabled(false);
         findViewById(R.id.want_button).setVisibility(View.INVISIBLE);
         findViewById(R.id.clear_button).setVisibility(View.VISIBLE);
-    }
-
-    void handleRemoved() {
-        Log.v(TAG, "book removed");
-        //whoosh
     }
 }

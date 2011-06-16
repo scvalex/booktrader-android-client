@@ -22,7 +22,8 @@ class ObjectCache {
     /* Static constants */
     static final int OBJECT_GET_STARTED = 300;
     static final int BOOK_GOT           = 301;
-    static final int BOOK_GET_FAILED    = 302;
+    static final int PERSON_GOT         = 302;
+    static final int OBJECT_GET_FAILED  = 303;
 
     /* Cache on db stuff */
     BookTraderOpenHelper dbHelper;
@@ -39,6 +40,7 @@ class ObjectCache {
                 @Override
                 public void handleMessage(Message msg) {
                     BookTraderAPI.BookDetailsResult r;
+                    BookTraderAPI.PersonResult rp;
                     switch (msg.what) {
                     case BookTraderAPI.DETAILS_START:
                         // already sent out; whoosh!
@@ -51,6 +53,17 @@ class ObjectCache {
                         r = (BookTraderAPI.BookDetailsResult)msg.obj;
                         handleDetailsError(r.bookIdentifier,
                                            (Exception)r.result);
+                        break;
+                    case BookTraderAPI.PERSON_GET_START:
+                        // whoosh!
+                        break;
+                    case BookTraderAPI.PERSON_GOT:
+                        rp = (BookTraderAPI.PersonResult)msg.obj;
+                        handlePersonGot(rp.username, rp);
+                        break;
+                    case BookTraderAPI.PERSON_GET_FAILED:
+                        rp = (BookTraderAPI.PersonResult)msg.obj;
+                        handlePersonError(rp.username, (Exception)rp.result);
                         break;
                     default:
                         throw new RuntimeException("unknown message type: " +
@@ -83,7 +96,28 @@ class ObjectCache {
                       public void getFromAPI() {
                           BookTraderAPI.getInstance().doGetBookDetails
                               (bookIdentifier, detailsHandler);
+                      }
+                  });
+    }
 
+    /** Get a person's details. */
+    void getPersonDetails(final String username, final Handler handler) {
+        getCached(username, handler,
+                  new CacheHandler() {
+                      public void handleCached(byte[] fromDb)
+                          throws Exception
+                      {
+                          sendMessage
+                              (handler, PERSON_GOT,
+                               new BookTraderAPI.PersonResult
+                               (username, new Person
+                                (username,
+                                 new JSONObject(new String(fromDb)))));
+                      }
+
+                      public void getFromAPI() {
+                          BookTraderAPI.getInstance().doGetPerson
+                              (username, detailsHandler);
                       }
                   });
     }
@@ -91,14 +125,13 @@ class ObjectCache {
     /** Get an object, first from cache, then from HTTP API.
      * Note that this might send *TWO* messages back (one for the
      * cache and one for the API). */
-    void getCached(String bookIdentifier, Handler handler,
-                   CacheHandler cacheHandler) {
+    void getCached(String key, Handler handler, CacheHandler cacheHandler) {
         sendMessage(handler, OBJECT_GET_STARTED, null);
         try {
             if (dbHelper == null)
                 throw new RuntimeException("no cache installed");
 
-            byte[] fromDb = dbHelper.cacheQuery(bookIdentifier);
+            byte[] fromDb = dbHelper.cacheQuery(key);
             if (fromDb == null)
                 throw new RuntimeException("not in cache");
 
@@ -108,7 +141,7 @@ class ObjectCache {
 
         // fall back to API regardless
 
-        requestHandlers.put(bookIdentifier, handler);
+        requestHandlers.put(key, handler);
         cacheHandler.getFromAPI();
     }
 
@@ -116,6 +149,12 @@ class ObjectCache {
     void insertBook(Book book) {
         dbHelper.cacheRemove(book.identifier);
         dbHelper.cacheInsert(book.identifier, book.jsonString.getBytes());
+    }
+
+    /** Insert a person into the cache (or replace the existing one). */
+    void insertPerson(Person person) {
+        dbHelper.cacheRemove(person.username);
+        dbHelper.cacheInsert(person.username, person.jsonString.getBytes());
     }
 
 
@@ -136,7 +175,7 @@ class ObjectCache {
     void handleDetailsError(String bookIdentifier, Exception exception) {
         try {
             Handler handler = requestHandlers.get(bookIdentifier);
-            sendMessage(handler, BOOK_GET_FAILED, exception);
+            sendMessage(handler, OBJECT_GET_FAILED, exception);
             requestHandlers.remove(bookIdentifier);
         } catch (Exception e) {
             Log.v(TAG, "Except: " + e);
@@ -144,6 +183,29 @@ class ObjectCache {
         }
     }
 
+    void handlePersonGot(String username,
+                         BookTraderAPI.PersonResult personResult) {
+        try {
+            Handler handler = requestHandlers.get(username);
+            sendMessage(handler, PERSON_GOT, personResult);
+            insertPerson((Person)personResult.result);
+            requestHandlers.remove(username);
+        } catch (Exception e) {
+            Log.v(TAG, "Except: " + e);
+            // whoosh
+        }
+    }
+
+    void handlePersonError(String username, Exception exception) {
+        try {
+            Handler handler = requestHandlers.get(username);
+            sendMessage(handler, OBJECT_GET_FAILED, exception);
+            requestHandlers.remove(username);
+        } catch (Exception e) {
+            Log.v(TAG, "Except: " + e);
+            // whoosh
+        }
+    }
 
     /* Utility */
 

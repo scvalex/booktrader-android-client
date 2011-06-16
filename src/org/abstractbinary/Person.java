@@ -14,6 +14,7 @@ class Person {
     String username = "";
     String avatarSource = "";
     Drawable avatar;
+    String jsonString;
 
 
     /* Public API */
@@ -26,6 +27,7 @@ class Person {
     {
         this.username = username;
         this.avatarSource = json.getString("gravatar");
+        this.jsonString = json.toString();
     }
 
     public void getAvatar(Handler handler) {

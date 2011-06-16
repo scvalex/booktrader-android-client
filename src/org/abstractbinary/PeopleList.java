@@ -45,16 +45,15 @@ class PeopleList {
                     BookTraderAPI.PersonResult r;
                     DownloadCache.DownloadResult rd;
                     switch (msg.what) {
-                    case BookTraderAPI.PERSON_GET_START:
+                    case ObjectCache.OBJECT_GET_STARTED:
                         // whoosh
                         break;
-                    case BookTraderAPI.PERSON_GOT:
+                    case ObjectCache.PERSON_GOT:
                         r = (BookTraderAPI.PersonResult)msg.obj;
                         handlePersonGot(r.username, (Person)r.result);
                         break;
-                    case BookTraderAPI.PERSON_GET_FAILED:
-                        r = (BookTraderAPI.PersonResult)msg.obj;
-                        handlePersonGetFailed(r.username, (Exception)r.result);
+                    case ObjectCache.OBJECT_GET_FAILED:
+                        handlePersonGetFailed((Exception)msg.obj);
                         break;
                     case DownloadCache.DOWNLOAD_DONE:
                         rd = (DownloadCache.DownloadResult)msg.obj;
@@ -73,6 +72,8 @@ class PeopleList {
     }
 
     public void setData(List<String> usernames) {
+        Log.v(TAG, "redisplaying data");
+
         if (this.usernames != null)
             this.host.removeAllViews();
 
@@ -88,7 +89,8 @@ class PeopleList {
                 (context.getResources().getDrawable(R.drawable.avatar));
             ((TextView)personRow.findViewById
              (R.id.person_username)).setText(username);
-            BookTraderAPI.getInstance().doGetPerson(username, requestHandler);
+            ObjectCache.getInstance().getPersonDetails(username,
+                                                       requestHandler);
         }
     }
 
@@ -101,14 +103,16 @@ class PeopleList {
             person.getAvatar(requestHandler);
     }
 
-    void handlePersonGetFailed(String username, Exception exception) {
-        Log.v(TAG, "failed to get " + username + ": " + exception);
+    void handlePersonGetFailed(Exception exception) {
+        Log.v(TAG, "failed to get: " + exception);
         // whoosh
     }
 
     void handleDownloadDone(String url, Drawable image) {
         for (int i = 0; i < usernames.size(); ++i) {
             Person p = people.get(usernames.get(i));
+            if (p == null)
+                continue;
             if (p.avatarSource.equals(url)) {
                 p.avatar = image;
                 ((ImageView)host.getChildAt(i).findViewById

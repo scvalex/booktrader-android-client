@@ -312,7 +312,7 @@ class BookTraderAPI {
                         if (json.getString("status").equals("error"))
                             throw new RuntimeException
                                 ("error having " + json.getString("reason"));
-                        sendMessage(handler, whatCode, null);
+                        sendMessage(handler, whatCode, bookIdentifier);
                     } catch (Exception e) {
                         sendMessage(handler, DETAILS_ERROR, e);
                     }
