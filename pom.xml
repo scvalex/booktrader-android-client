@@ -132,6 +132,7 @@
               -keep class org.abstractbinary.booktrader.BookDetails {
                   public void have(android.view.View);
                   public void want(android.view.View);
+                  public void clear(android.view.View);
               }
             </option>
             <option>-dontskipnonpubliclibraryclasses</option>

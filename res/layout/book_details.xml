@@ -50,6 +50,13 @@
           android:onClick="want"
           android:text="@string/want"
           />
+      <Button
+          android:id="@+id/clear_button"
+          android:layout_height="wrap_content"
+          android:layout_width="wrap_content"
+          android:onClick="clear"
+          android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
+          />
     </LinearLayout>
     <TextView
         android:id="@+id/book_description_text"

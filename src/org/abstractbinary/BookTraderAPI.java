@@ -89,9 +89,10 @@ class BookTraderAPI {
     static final int DETAILS_ERROR     = 111;
     static final int DETAILS_HAVE      = 112;
     static final int DETAILS_WANT      = 113;
-    static final int PERSON_GET_START  = 114;
-    static final int PERSON_GOT        = 115;
-    static final int PERSON_GET_FAILED = 116;
+    static final int DETAILS_REMOVE    = 114;
+    static final int PERSON_GET_START  = 115;
+    static final int PERSON_GOT        = 116;
+    static final int PERSON_GET_FAILED = 117;
 
     /* Network communications */
     HttpClient httpClient;
@@ -285,6 +286,11 @@ class BookTraderAPI {
     /** Have a book. */
     void doWant(String bookIdentifier, Handler handler) {
         doSomething("want", DETAILS_WANT, bookIdentifier, handler);
+    }
+
+    /** Have a book. */
+    void doRemove(String bookIdentifier, Handler handler) {
+        doSomething("remove", DETAILS_REMOVE, bookIdentifier, handler);
     }
 
     /** Do something naughty to a book. */

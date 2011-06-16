@@ -53,6 +53,8 @@ public class BookDetails extends Activity {
         detailsHandler = new Handler() {
                 @Override
                 public void handleMessage(Message msg) {
+                    if (loadingDialog != null)
+                        loadingDialog.dismiss();
                     switch (msg.what) {
                     case BookTraderAPI.DETAILS_START:
                     case BookCache.BOOK_GET_STARTED:
@@ -64,8 +66,6 @@ public class BookDetails extends Activity {
                         break;
                     case BookTraderAPI.DETAILS_ERROR:
                     case BookCache.BOOK_GET_FAILED:
-                        if (loadingDialog != null)
-                            loadingDialog.dismiss();
                         Toast.makeText(BookDetails.this, "double trouble",
                                        Toast.LENGTH_SHORT).show();
                         Log.v(TAG, "Failed to get book details: " +
@@ -82,14 +82,13 @@ public class BookDetails extends Activity {
                               ((DownloadCache.DownloadResult)msg.obj).result);
                         break;
                     case BookTraderAPI.DETAILS_HAVE:
-                        if (loadingDialog != null)
-                            loadingDialog.dismiss();
                         markHad();
                         break;
                     case BookTraderAPI.DETAILS_WANT:
-                        if (loadingDialog != null)
-                            loadingDialog.dismiss();
                         markWanted();
+                        break;
+                    case BookTraderAPI.DETAILS_REMOVE:
+                        handleRemoved();
                         break;
                     default:
                         throw new RuntimeException("unknown message type: " +
@@ -150,13 +149,15 @@ public class BookDetails extends Activity {
         }
         ((TextView)findViewById(R.id.book_authors_label)).setText
             (authors.toString());
-        Button wantButton = (Button)findViewById(R.id.want_button);
         Button haveButton = (Button)findViewById(R.id.have_button);
         haveButton.setEnabled(true);
         haveButton.setText(getResources().getString(R.string.have));
+        Button wantButton = (Button)findViewById(R.id.want_button);
         wantButton.setEnabled(true);
         wantButton.setText(getResources().getString(R.string.want));
         wantButton.setVisibility(View.VISIBLE);
+        Button clearButton = (Button)findViewById(R.id.clear_button);
+        clearButton.setVisibility(View.INVISIBLE);
         if (api.loggedIn) {
             if (book.owners.contains(api.currentUser))
                 markHad();
@@ -180,15 +181,21 @@ public class BookDetails extends Activity {
              (R.id.cover_view)).setImageDrawable(image);
     }
 
-    /** Called when the user the user clicks a have button */
+    /** Called when the user clicks a have button */
     public void have(View v) {
         api.doHave(bookIdentifier, detailsHandler);
         BookCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
     }
 
-    /** Called when the user the user clicks a have button */
+    /** Called when the user clicks a have button */
     public void want(View v) {
         api.doWant(bookIdentifier, detailsHandler);
+        BookCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
+    }
+
+    /** Called when the user clicks the clear button */
+    public void clear(View v) {
+        api.doRemove(bookIdentifier, detailsHandler);
         BookCache.getInstance().getBookDetails(bookIdentifier, detailsHandler);
     }
 
@@ -199,6 +206,7 @@ public class BookDetails extends Activity {
         Button wantButton = (Button)findViewById(R.id.want_button);
         wantButton.setText(getResources().getString(R.string.already_want));
         wantButton.setEnabled(false);
+        findViewById(R.id.clear_button).setVisibility(View.VISIBLE);
     }
 
     void markHad() {
@@ -206,5 +214,11 @@ public class BookDetails extends Activity {
         haveButton.setText(getResources().getString(R.string.already_have));
         haveButton.setEnabled(false);
         findViewById(R.id.want_button).setVisibility(View.INVISIBLE);
+        findViewById(R.id.clear_button).setVisibility(View.VISIBLE);
+    }
+
+    void handleRemoved() {
+        Log.v(TAG, "book removed");
+        //whoosh
     }
 }
