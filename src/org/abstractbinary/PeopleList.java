@@ -72,10 +72,19 @@ class PeopleList {
     }
 
     public void setData(List<String> usernames) {
-        Log.v(TAG, "redisplaying data");
-
-        if (this.usernames != null)
+        if (this.usernames != null) {
+            if (usernames.size() == this.usernames.size()) {
+                boolean same = true;
+                for (int i = 0; i < usernames.size(); ++i)
+                    if (!this.usernames.get(i).equals(usernames.get(i))) {
+                        same = false;
+                        break;
+                    }
+                if (same)
+                    return;
+            }
             this.host.removeAllViews();
+        }
 
         this.usernames = new ArrayList<String>();
         people = new HashMap<String, Person>();
@@ -86,7 +95,7 @@ class PeopleList {
             this.host.addView(personRow);
             ((ImageView)personRow.findViewById
              (R.id.person_avatar)).setImageDrawable
-                (context.getResources().getDrawable(R.drawable.avatar));
+                (context.getResources().getDrawable(R.drawable.transparent));
             ((TextView)personRow.findViewById
              (R.id.person_username)).setText(username);
             ObjectCache.getInstance().getPersonDetails(username,
