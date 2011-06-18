@@ -135,6 +135,11 @@
                   public void clear(android.view.View);
               }
             </option>
+            <option>
+              -keep class org.abstractbinary.booktrader.UserDetails {
+                  public void moreUser(android.view.View);
+              }
+            </option>
             <option>-dontskipnonpubliclibraryclasses</option>
             <option>-dontoptimize</option>
             <option>-dontpreverify</option>

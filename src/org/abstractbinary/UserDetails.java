@@ -1,19 +1,27 @@
 package org.abstractbinary.booktrader;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
 
 
 public class UserDetails extends Activity {
     /* Debugging */
     static final String TAG = "BookTrader";
+
+    /* Misc constants */
+    static final int DIALOG_ABOUT_USER = 0;
 
     /* Background downloading */
     Handler requestHandler;
@@ -23,6 +31,7 @@ public class UserDetails extends Activity {
     String username;
     TextView usernameLabel;
     ImageView avatarView;
+    Button aboutUserButton;
 
     /* Activity lifecycle */
 
@@ -37,6 +46,8 @@ public class UserDetails extends Activity {
         usernameLabel.setText(username);
 
         avatarView = (ImageView)findViewById(R.id.user_avatar_view);
+
+        aboutUserButton = (Button)findViewById(R.id.about_user_button);
 
         requestHandler = new Handler() {
                 @Override
@@ -72,6 +83,34 @@ public class UserDetails extends Activity {
         ObjectCache.getInstance().getPersonDetails(username, requestHandler);
     }
 
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        final Dialog dialog;
+        switch (id) {
+        case DIALOG_ABOUT_USER:
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(user.username + " (" + user.location + ")")
+                .setMessage(user.about)
+                .setNeutralButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            dialog = builder.create();
+            break;
+        default:
+            throw new RuntimeException("Unknown dialog type: " + id);
+        }
+        return dialog;
+    }
+
+
+    /* Callbacks */
+
+    public void moreUser(View v) {
+        showDialog(DIALOG_ABOUT_USER);
+    }
+
 
     /* Handlers */
 
@@ -79,8 +118,7 @@ public class UserDetails extends Activity {
         user = person;
         user.getAvatar(requestHandler);
         usernameLabel.setText(user.username);
-        ((TextView)findViewById(R.id.user_location_label)).setText(user.location);
-        ((TextView)findViewById(R.id.user_about_label)).setText(user.about);
+        aboutUserButton.setEnabled(true);
     }
 
     void handlePersonGetFailed(Exception exception) {
