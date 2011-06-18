@@ -46,7 +46,7 @@ class BookTraderAPI {
     static final String LOGIN_URL  = USERS_URL + "/login";
     static final String LOGOUT_URL = USERS_URL + "/logout";
     static final String BOOKS_URL  = BASE_URL + "/books";
-    static final String SEARCH_URL = BOOKS_URL + "/search";
+    static final String SEARCH_URL = BASE_URL + "/search";
 
     static class BookDetailsResult {
         String bookIdentifier;
@@ -208,6 +208,7 @@ class BookTraderAPI {
                   int startIndex, final Handler handler) {
         Uri.Builder uri = new Uri.Builder();
         uri.appendQueryParameter("query", query);
+        uri.appendQueryParameter("type", "books");
         uri.appendQueryParameter("start_index", String.valueOf(startIndex));
         uri.appendQueryParameter("limit", String.valueOf(20));
         uri.appendQueryParameter("format", "json");

@@ -13,6 +13,8 @@ class Person {
     /* Internal state */
     String username = "";
     String avatarSource = "";
+    String location = "Somewhere Far Away";
+    String about = "Proud to be a BookTrader!";
     Drawable avatar;
     String jsonString;
 
@@ -27,6 +29,8 @@ class Person {
     {
         this.username = username;
         this.avatarSource = json.getString("gravatar");
+        this.location = json.getString("location");
+        this.about = json.getString("about");
         this.jsonString = json.toString();
     }
 
