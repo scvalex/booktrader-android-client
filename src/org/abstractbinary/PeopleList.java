@@ -1,7 +1,9 @@
 package org.abstractbinary.booktrader;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -88,7 +90,7 @@ class PeopleList {
 
         this.usernames = new ArrayList<String>();
         people = new HashMap<String, Person>();
-        for (String username : usernames) {
+        for (final String username : usernames) {
             this.usernames.add(username);
             LinearLayout personRow = (LinearLayout)View.inflate
                 (context, R.layout.person_row, null);
@@ -100,6 +102,16 @@ class PeopleList {
              (R.id.person_username)).setText(username);
             ObjectCache.getInstance().getPersonDetails(username,
                                                        requestHandler);
+            personRow.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        context.startActivity
+                            (new Intent
+                             (Intent.ACTION_VIEW,
+                              Uri.withAppendedPath(Uri.EMPTY,
+                                                   username),
+                              context, UserDetails.class));
+                    }
+                });
         }
     }
 

@@ -84,6 +84,17 @@ public class BookTrader extends Activity {
         loginButton = (Button)findViewById(R.id.login_button);
         logoutButton = (Button)findViewById(R.id.logout_button);
         usernameLabel = (TextView)findViewById(R.id.user_label);
+        usernameLabel.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    BookTraderAPI api = BookTraderAPI.getInstance();
+                    if (!api.loggedIn)
+                        return;
+                    startActivity(new Intent
+                      (Intent.ACTION_VIEW,
+                       Uri.withAppendedPath(Uri.EMPTY, api.currentUser),
+                       BookTrader.this, UserDetails.class));
+                }
+            });
 
         searchField = (EditText)findViewById(R.id.search_field);
         searchButton = (Button)findViewById(R.id.search_button);

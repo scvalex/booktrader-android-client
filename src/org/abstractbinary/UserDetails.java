@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-class UserDetails extends Activity {
+public class UserDetails extends Activity {
     /* Debugging */
     static final String TAG = "BookTrader";
 
@@ -25,6 +25,8 @@ class UserDetails extends Activity {
         username = getIntent().getData().getPathSegments().get(0);
 
         usernameLabel = (TextView)findViewById(R.id.user_username_label);
+        usernameLabel.setText(username);
+
         avatarView = (ImageView)findViewById(R.id.user_avatar_view);
     }
 }
