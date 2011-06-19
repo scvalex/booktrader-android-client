@@ -1,45 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:fillViewport="true"
     android:layout_height="fill_parent"
     android:layout_width="fill_parent"
+    android:orientation="vertical"
     >
   <LinearLayout
-      android:orientation="vertical"
-      android:layout_height="fill_parent"
+      android:orientation="horizontal"
+      android:layout_height="wrap_content"
       android:layout_width="fill_parent"
       >
+    <ImageView
+        android:id="@+id/user_avatar_view"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:src="@drawable/avatar"
+        />
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         >
-      <ImageView
-          android:id="@+id/user_avatar_view"
-          android:layout_height="wrap_content"
-          android:layout_width="wrap_content"
-          android:src="@drawable/avatar"
-          />
-      <LinearLayout
-          android:orientation="vertical"
+      <TextView
+          android:id="@+id/user_username_label"
           android:layout_height="wrap_content"
           android:layout_width="fill_parent"
-          >
-        <TextView
-            android:id="@+id/user_username_label"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            />
-        <Button
-            android:id="@+id/about_user_button"
-            android:enabled="false"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:onClick="moreUser"
-            android:text="@string/more"
-            />
-      </LinearLayout>
+          />
+      <Button
+          android:id="@+id/about_user_button"
+          android:enabled="false"
+          android:layout_height="wrap_content"
+          android:layout_width="wrap_content"
+          android:onClick="moreUser"
+          android:text="@string/more"
+          />
     </LinearLayout>
   </LinearLayout>
-</ScrollView>
+  <GridView
+      android:id="@+id/owned_table"
+      android:columnWidth="150dip"
+      android:gravity="center"
+      android:horizontalSpacing="10dip"
+      android:layout_height="fill_parent"
+      android:layout_width="fill_parent"
+      android:numColumns="auto_fit"
+      android:stretchMode="columnWidth"
+      android:verticalSpacing="10dip"
+      />
+</LinearLayout>

@@ -26,7 +26,7 @@ public class SearchResult {
 
     /* Public API */
 
-    private SearchResult() {
+    protected SearchResult() {
     }
 
     public SearchResult(String query) {

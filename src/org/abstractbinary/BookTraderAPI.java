@@ -362,9 +362,9 @@ class BookTraderAPI {
         }
         result.totalItems = Integer.valueOf(json.getString("total_items"));
         JSONArray jsonResult = json.getJSONArray("google_books");
+        ObjectCache bc = ObjectCache.getInstance();
         for (int i = 0; i < jsonResult.length(); ++i) {
             JSONObject jsonBook = jsonResult.getJSONObject(i);
-            ObjectCache bc = ObjectCache.getInstance();
             synchronized (result) {
                 Book book = new Book(jsonBook);
                 bc.insertBook(book);

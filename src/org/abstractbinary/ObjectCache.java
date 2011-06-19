@@ -146,13 +146,13 @@ class ObjectCache {
     }
 
     /** Insert a book into the cache (or replace the existing one). */
-    void insertBook(Book book) {
+    synchronized void insertBook(Book book) {
         dbHelper.cacheRemove(book.identifier);
         dbHelper.cacheInsert(book.identifier, book.jsonString.getBytes());
     }
 
     /** Insert a person into the cache (or replace the existing one). */
-    void insertPerson(Person person) {
+    synchronized void insertPerson(Person person) {
         dbHelper.cacheRemove(person.username);
         dbHelper.cacheInsert(person.username, person.jsonString.getBytes());
     }

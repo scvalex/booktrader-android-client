@@ -4,16 +4,20 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Button;
 
 
 public class UserDetails extends Activity {
@@ -33,6 +37,10 @@ public class UserDetails extends Activity {
     ImageView avatarView;
     Button aboutUserButton;
 
+    GridView ownedTable;
+    BookAdapter ownedAdapter;
+
+
     /* Activity lifecycle */
 
     @Override
@@ -48,6 +56,18 @@ public class UserDetails extends Activity {
         avatarView = (ImageView)findViewById(R.id.user_avatar_view);
 
         aboutUserButton = (Button)findViewById(R.id.about_user_button);
+
+        ownedAdapter = new BookAdapter(this);
+        ownedTable = (GridView)findViewById(R.id.owned_table);
+        ownedTable.setAdapter(ownedAdapter);
+        ownedTable.setOnItemClickListener
+            (new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+                        bookSelected(ownedTable, position);
+                    }
+                });
 
         requestHandler = new Handler() {
                 @Override
@@ -107,18 +127,50 @@ public class UserDetails extends Activity {
 
     /* Callbacks */
 
+    /** Called when clicking on a user's ``more'' link. */
     public void moreUser(View v) {
         showDialog(DIALOG_ABOUT_USER);
     }
 
+    /** Called when clicking on a book in one of the tables. */
+    void bookSelected(View table, int position) {
+        if (table == ownedTable) {
+            Book book = (Book)ownedAdapter.getItem(position);
+            if (book == Book.FILLER_BOOK)
+                return;
+            startActivity(new Intent
+                          (Intent.ACTION_VIEW,
+                           Uri.withAppendedPath(Uri.EMPTY, book.identifier),
+                           this, BookDetails.class));
+        } else {
+            throw new RuntimeException("wtf?  Unknown widget.");
+        }
+    }
 
     /* Handlers */
 
     void handlePersonGot(String username, Person person) {
+        Person oldUser = user;
         user = person;
         user.getAvatar(requestHandler);
         usernameLabel.setText(user.username);
         aboutUserButton.setEnabled(true);
+        boolean same = false;
+        if (oldUser != null && oldUser.owned.size() == user.owned.size()) {
+            same = true;
+            for (int i = 0; i < user.owned.size(); ++i)
+                if (!(oldUser.owned.get(i).identifier.equals
+                      (user.owned.get(i).identifier))) {
+                    same = false;
+                    break;
+                }
+        }
+        if (!same) {
+            Log.v(TAG, "Person got; displaying " + user.owned.size() +
+                  " books...");
+            ownedAdapter.displaySearchResult
+                (new FixedSearchResult(user.owned));
+        }
     }
 
     void handlePersonGetFailed(Exception exception) {
