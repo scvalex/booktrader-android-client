@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,6 +69,20 @@ public class UserDetails extends Activity {
                         bookSelected(ownedTable, position);
                     }
                 });
+
+        TabHost host = (TabHost)findViewById(android.R.id.tabhost);
+        host.setup();
+
+        TabHost.TabSpec spec =
+            host.newTabSpec("owned");
+        spec.setIndicator("Owned");
+        spec.setContent(R.id.owned_table);
+        host.addTab(spec);
+
+        spec =
+            host.newTabSpec("wanted").setIndicator("Wanted")
+            .setContent(R.id.wanted_table);
+        host.addTab(spec);
 
         requestHandler = new Handler() {
                 @Override
@@ -146,6 +161,7 @@ public class UserDetails extends Activity {
             throw new RuntimeException("wtf?  Unknown widget.");
         }
     }
+
 
     /* Handlers */
 
