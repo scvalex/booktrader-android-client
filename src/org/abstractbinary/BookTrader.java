@@ -76,6 +76,7 @@ public class BookTrader extends Activity {
     String lastSearch;
     BookAdapter bookAdapter;
     boolean autoLogin;
+    boolean imFeelingLucky;
 
 
     /* Application life-cycle */
@@ -291,8 +292,9 @@ public class BookTrader extends Activity {
                 String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
 
                 Toast.makeText(this, "Got " + contents + " (" + format + ")",
-                               Toast.LENGTH_LONG).show();
+                               Toast.LENGTH_SHORT).show();
 
+                imFeelingLucky = true;
                 search(contents);
             } else if (resultCode == RESULT_CANCELED) {
                 // whoosh
@@ -318,6 +320,7 @@ public class BookTrader extends Activity {
 
     /** Called when the search button is pressed. */
     public void search(View v) {
+        imFeelingLucky = false;
         search(searchField.getText().toString());
     }
 
@@ -448,6 +451,13 @@ public class BookTrader extends Activity {
         Toast.makeText(this, "Found " + result.totalItems +
                        " books!", Toast.LENGTH_SHORT).show();
         bookAdapter.displaySearchResult(result);
+        if (imFeelingLucky && result.totalItems == 1) {
+            startActivity(new Intent
+                          (Intent.ACTION_VIEW,
+                           Uri.withAppendedPath(Uri.EMPTY,
+                                                result.get(0).identifier),
+                           this, BookDetails.class));
+        }
     }
 
     void handleSearchFailed(Exception e) {

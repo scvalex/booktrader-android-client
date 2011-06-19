@@ -52,4 +52,10 @@ public class SearchResult {
         }
         return books.get(index);
     }
+
+    public synchronized Book get(int index) {
+        if (index >= books.size())
+            return Book.FILLER_BOOK;
+        return books.get(index);
+    }
 }

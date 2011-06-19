@@ -16,8 +16,6 @@ public class FixedSearchResult extends SearchResult {
 
     /** Get the book at INDEX. */
     public synchronized Book get(int index, Handler handler) {
-        if (index >= books.size())
-            return Book.FILLER_BOOK;
-        return books.get(index);
+        return get(index);
     }
 }
