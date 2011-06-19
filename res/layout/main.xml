@@ -65,6 +65,14 @@
         android:hint="@string/keywords"
         />
     <Button
+        android:id="@+id/barcode_button"
+        android:drawableLeft="@android:drawable/ic_menu_camera"
+        android:enabled="false"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:onClick="scanBarcode"
+        />
+    <Button
         android:id="@+id/search_button"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"

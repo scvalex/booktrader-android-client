@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -32,6 +34,7 @@ import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 
 public class BookTrader extends Activity {
@@ -62,6 +65,10 @@ public class BookTrader extends Activity {
     EditText searchField;
     Button searchButton;
     GridView bookTable;
+
+    /* Barcodes, etc. */
+    static final String ZXING_URL = "com.google.zxing.client.android.SCAN";
+    static final int BARCODE_SCAN_ACTIVITY = 0;
 
     /* Internal gubbins */
     String username, password;
@@ -123,6 +130,11 @@ public class BookTrader extends Activity {
 
         populateLoginStates();
         state = STATE_NOT_LOGGED_IN;
+
+        if (isIntentAvailable(ZXING_URL)) {
+            Log.v(TAG, "ZXing present and accounted for!");
+            ((Button)findViewById(R.id.barcode_button)).setEnabled(true);
+        }
 
         requestHandler = new Handler() {
             @Override
@@ -269,6 +281,28 @@ public class BookTrader extends Activity {
         return true;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 Intent intent) {
+        switch (requestCode) {
+        case BARCODE_SCAN_ACTIVITY:
+            if (resultCode == RESULT_OK) {
+                String contents = intent.getStringExtra("SCAN_RESULT");
+                String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+
+                Toast.makeText(this, "Got " + contents + " (" + format + ")",
+                               Toast.LENGTH_LONG).show();
+
+                search(contents);
+            } else if (resultCode == RESULT_CANCELED) {
+                // whoosh
+            }
+            break;
+        default:
+            throw new RuntimeException("got result for unknown acitvity");
+        }
+    }
+
 
     /* Event handlers */
 
@@ -284,7 +318,10 @@ public class BookTrader extends Activity {
 
     /** Called when the search button is pressed. */
     public void search(View v) {
-        String query = searchField.getText().toString();
+        search(searchField.getText().toString());
+    }
+
+    public void search(String query) {
         ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(searchField.getWindowToken(), 0);
         if (query.length() > 0) {
             lastSearch = query;
@@ -318,6 +355,14 @@ public class BookTrader extends Activity {
         default:
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    /** Called when the barcode scan button is pressed. */
+    public void scanBarcode(View v) {
+        Intent zxingIntent = new Intent(ZXING_URL);
+        //zxingIntent.setPackage("com.google.zxing.client.android");
+        zxingIntent.putExtra("SCAN_MODE", "PRODUCT_MODE");
+        startActivityForResult(zxingIntent, BARCODE_SCAN_ACTIVITY);
     }
 
 
@@ -410,6 +455,15 @@ public class BookTrader extends Activity {
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
         Toast.makeText(this, "Failed!", Toast.LENGTH_SHORT).show();
+    }
+
+    /** Returns true if an intent is available. */
+    boolean isIntentAvailable(String url) {
+        Intent intent = new Intent(url);
+        List<ResolveInfo> list =
+            getPackageManager().queryIntentActivities
+            (intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return (list.size() > 0);
     }
 
     /** Clears internal stores of private data.  Used when logging out. */

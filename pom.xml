@@ -126,6 +126,7 @@
                   public void logIn(android.view.View);
                   public void logOut(android.view.View);
                   public void search(android.view.View);
+                  public void scanBarcode(android.view.View);
               }
             </option>
             <option>
