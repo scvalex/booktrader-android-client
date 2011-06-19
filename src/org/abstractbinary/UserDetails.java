@@ -191,7 +191,8 @@ public class UserDetails extends Activity {
         user.getAvatar(requestHandler);
 
         usernameLabel.setText(user.username);
-        aboutUserButton.setEnabled(true);
+        if (user.about.length() > 0 && user.location.length() > 0)
+            aboutUserButton.setEnabled(true);
 
         boolean same = false;
 
