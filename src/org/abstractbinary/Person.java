@@ -23,6 +23,7 @@ class Person {
     Drawable avatar;
     String jsonString;
     List<Book> owned = new ArrayList<Book>();
+    List<Book> wanted = new ArrayList<Book>();
 
 
     /* Public API */
@@ -38,13 +39,20 @@ class Person {
         this.location = json.getString("location");
         this.about = json.getString("about");
         this.jsonString = json.toString();
-        JSONArray jsonBooks = json.getJSONArray("owned");
         ObjectCache oc = ObjectCache.getInstance();
+        JSONArray jsonBooks = json.getJSONArray("owned");
         for (int i = 0; i < jsonBooks.length(); ++i) {
             JSONObject jsonBook = jsonBooks.getJSONObject(i);
             Book book = new Book(jsonBook);
             oc.insertBook(book);
             owned.add(book);
+        }
+        jsonBooks = json.getJSONArray("want");
+        for (int i = 0; i < jsonBooks.length(); ++i) {
+            JSONObject jsonBook = jsonBooks.getJSONObject(i);
+            Book book = new Book(jsonBook);
+            oc.insertBook(book);
+            wanted.add(book);
         }
     }
 

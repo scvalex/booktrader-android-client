@@ -40,6 +40,8 @@ public class UserDetails extends Activity {
 
     GridView ownedTable;
     BookAdapter ownedAdapter;
+    GridView wantedTable;
+    BookAdapter wantedAdapter;
 
 
     /* Activity lifecycle */
@@ -70,13 +72,24 @@ public class UserDetails extends Activity {
                     }
                 });
 
+        wantedAdapter = new BookAdapter(this);
+        wantedTable = (GridView)findViewById(R.id.wanted_table);
+        wantedTable.setAdapter(wantedAdapter);
+        wantedTable.setOnItemClickListener
+            (new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+                        bookSelected(wantedTable, position);
+                    }
+                });
+
         TabHost host = (TabHost)findViewById(android.R.id.tabhost);
         host.setup();
 
         TabHost.TabSpec spec =
-            host.newTabSpec("owned");
-        spec.setIndicator("Owned");
-        spec.setContent(R.id.owned_table);
+            host.newTabSpec("owned").setIndicator("Owned")
+            .setContent(R.id.owned_table);
         host.addTab(spec);
 
         spec =
@@ -114,6 +127,11 @@ public class UserDetails extends Activity {
                     }
                 }
             };
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
 
         ObjectCache.getInstance().getPersonDetails(username, requestHandler);
     }
@@ -149,17 +167,19 @@ public class UserDetails extends Activity {
 
     /** Called when clicking on a book in one of the tables. */
     void bookSelected(View table, int position) {
-        if (table == ownedTable) {
-            Book book = (Book)ownedAdapter.getItem(position);
-            if (book == Book.FILLER_BOOK)
-                return;
-            startActivity(new Intent
-                          (Intent.ACTION_VIEW,
-                           Uri.withAppendedPath(Uri.EMPTY, book.identifier),
-                           this, BookDetails.class));
-        } else {
+        Book book;
+        if (table == ownedTable)
+            book = (Book)ownedAdapter.getItem(position);
+        else if (table == wantedTable)
+            book = (Book)wantedAdapter.getItem(position);
+        else
             throw new RuntimeException("wtf?  Unknown widget.");
-        }
+        if (book == Book.FILLER_BOOK)
+            return;
+        startActivity(new Intent
+                      (Intent.ACTION_VIEW,
+                       Uri.withAppendedPath(Uri.EMPTY, book.identifier),
+                       this, BookDetails.class));
     }
 
 
@@ -169,9 +189,13 @@ public class UserDetails extends Activity {
         Person oldUser = user;
         user = person;
         user.getAvatar(requestHandler);
+
         usernameLabel.setText(user.username);
         aboutUserButton.setEnabled(true);
+
         boolean same = false;
+
+        // Owned list
         if (oldUser != null && oldUser.owned.size() == user.owned.size()) {
             same = true;
             for (int i = 0; i < user.owned.size(); ++i)
@@ -186,6 +210,23 @@ public class UserDetails extends Activity {
                   " books...");
             ownedAdapter.displaySearchResult
                 (new FixedSearchResult(user.owned));
+        }
+
+        // Wanted list
+        if (oldUser != null && oldUser.wanted.size() == user.wanted.size()) {
+            same = true;
+            for (int i = 0; i < user.wanted.size(); ++i)
+                if (!(oldUser.wanted.get(i).identifier.equals
+                      (user.wanted.get(i).identifier))) {
+                    same = false;
+                    break;
+                }
+        }
+        if (!same) {
+            Log.v(TAG, "Person got; displaying " + user.wanted.size() +
+                  " books...");
+            wantedAdapter.displaySearchResult
+                (new FixedSearchResult(user.wanted));
         }
     }
 
