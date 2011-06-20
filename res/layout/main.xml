@@ -17,6 +17,14 @@
         android:orientation="horizontal"
         android:visibility="invisible"
         >
+      <Button
+          android:id="@+id/inbox_button"
+          android:drawableLeft="@drawable/ic_menu_start_conversation"
+          android:enabled="false"
+          android:layout_height="wrap_content"
+          android:layout_width="wrap_content"
+          android:onClick="showMessages"
+        />
       <TextView
           android:id="@+id/user_label"
           android:gravity="center"
@@ -27,11 +35,11 @@
           />
       <Button
           android:id="@+id/logout_button"
+          android:drawableLeft="@drawable/ic_menu_login"
           android:layout_gravity="right"
           android:layout_height="fill_parent"
           android:layout_width="wrap_content"
           android:onClick="logOut"
-          android:text="@string/log_out"
           />
     </LinearLayout>
     <LinearLayout
@@ -56,6 +64,14 @@
       android:layout_width="fill_parent"
       android:orientation="horizontal"
       >
+    <Button
+        android:id="@+id/barcode_button"
+        android:drawableLeft="@drawable/ic_menu_camera"
+        android:enabled="false"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:onClick="scanBarcode"
+        />
     <EditText
         android:id="@+id/search_field"
         android:imeOptions="actionSearch"
@@ -65,19 +81,11 @@
         android:hint="@string/keywords"
         />
     <Button
-        android:id="@+id/barcode_button"
-        android:drawableLeft="@android:drawable/ic_menu_camera"
-        android:enabled="false"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:onClick="scanBarcode"
-        />
-    <Button
         android:id="@+id/search_button"
+        android:drawableLeft="@drawable/ic_menu_search"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:onClick="search"
-        android:text="@string/search"
         />
   </LinearLayout>
   <GridView
