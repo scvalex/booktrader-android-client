@@ -136,7 +136,14 @@ public class BookDetails extends Activity {
 
         this.book = book;
         book.getCover(detailsHandler);
+        findViewById(R.id.owners_container).setVisibility(View.VISIBLE);
+        if (book.owners.size() == 0)
+            findViewById(R.id.owners_container).setVisibility(View.INVISIBLE);
         ownerList.setData(book.owners);
+        findViewById(R.id.coveters_container).setVisibility(View.VISIBLE);
+        if (book.coveters.size() == 0)
+            findViewById(R.id.coveters_container).setVisibility
+                (View.INVISIBLE);
         coveterList.setData(book.coveters);
 
         bookTitleLabel.setText(book.title);

@@ -18,4 +18,6 @@
     <string name="clear_cache">Clear cache</string>
     <string name="cancel">Cancel</string>
     <string name="more">More</string>
+    <string name="owners">Owners</string>
+    <string name="coveters">Coveters</string>
 </resources>
