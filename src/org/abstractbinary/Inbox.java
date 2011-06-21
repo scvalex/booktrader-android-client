@@ -34,6 +34,7 @@ public class Inbox extends ListActivity {
         summaryText = (TextView)findViewById(R.id.summary_text);
 
         messagesAdapter = new MessagesAdapter(this);
+        setListAdapter(messagesAdapter);
 
         requestHandler = new Handler() {
             @Override
@@ -84,5 +85,6 @@ public class Inbox extends ListActivity {
     void handleMessagesGot(Messages messages) {
         summaryText.setText("Inbox: " + messages.all.size() +
                             " (" + messages.unread.size() + ")");
+        messagesAdapter.setData(messages);
     }
 }
