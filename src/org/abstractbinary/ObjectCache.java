@@ -24,6 +24,8 @@ class ObjectCache {
     static final int BOOK_GOT           = 301;
     static final int PERSON_GOT         = 302;
     static final int OBJECT_GET_FAILED  = 303;
+    static final int MESSAGES_GOT       = 304;
+    static final String MESSAGES_LIST_KEY = "/messages/list";
 
     /* Cache on db stuff */
     BookTraderOpenHelper dbHelper;
@@ -65,6 +67,15 @@ class ObjectCache {
                         rp = (BookTraderAPI.PersonResult)msg.obj;
                         handlePersonError(rp.username, (Exception)rp.result);
                         break;
+                    case BookTraderAPI.ALL_MESSAGES_START:
+                        // whoosh!
+                        break;
+                    case BookTraderAPI.MESSAGES_GOT:
+                        handleMessagesGot((Messages)msg.obj);
+                        break;
+                    case BookTraderAPI.MESSAGES_ERROR:
+                        handleMessagesError((Exception)msg.obj);
+                        break;
                     default:
                         throw new RuntimeException("unknown message type: " +
                                                    msg.what);
@@ -80,6 +91,26 @@ class ObjectCache {
 
     void setDbHelper(BookTraderOpenHelper dbHelper) {
         this.dbHelper = dbHelper;
+    }
+
+    /** Get al la user's details. */
+    void getAllMessages(final Handler handler) {
+        getCached(MESSAGES_LIST_KEY, handler,
+                  new CacheHandler() {
+                      public void handleCached(byte[] fromDb)
+                          throws Exception
+                      {
+                          sendMessage(handler, MESSAGES_GOT,
+                                      new Messages
+                                      (new JSONObject
+                                       (new String(fromDb))));
+                      }
+
+                      public void getFromAPI() {
+                          BookTraderAPI.getInstance().doGetAllMessages
+                              (detailsHandler);
+                      }
+                  });
     }
 
     /** Get a book's details. */
@@ -157,6 +188,12 @@ class ObjectCache {
         dbHelper.cacheInsert(person.username, person.jsonString.getBytes());
     }
 
+    synchronized void insertMessages(Messages messages) {
+        dbHelper.cacheRemove(MESSAGES_LIST_KEY);
+        dbHelper.cacheInsert(MESSAGES_LIST_KEY,
+                             messages.jsonString.getBytes());
+    }
+
 
     /* Handlers */
 
@@ -201,6 +238,29 @@ class ObjectCache {
             Handler handler = requestHandlers.get(username);
             sendMessage(handler, OBJECT_GET_FAILED, exception);
             requestHandlers.remove(username);
+        } catch (Exception e) {
+            Log.v(TAG, "Except: " + e);
+            // whoosh
+        }
+    }
+
+    void handleMessagesGot(Messages messages) {
+        try {
+            Handler handler = requestHandlers.get(MESSAGES_LIST_KEY);
+            sendMessage(handler, MESSAGES_GOT, messages);
+            insertMessages(messages);
+            requestHandlers.remove(MESSAGES_LIST_KEY);
+        } catch (Exception e) {
+            Log.v(TAG, "Except: " + e);
+            // whoosh
+        }
+    }
+
+    void handleMessagesError(Exception exception) {
+        try {
+            Handler handler = requestHandlers.get(MESSAGES_LIST_KEY);
+            sendMessage(handler, OBJECT_GET_FAILED, exception);
+            requestHandlers.remove(MESSAGES_LIST_KEY);
         } catch (Exception e) {
             Log.v(TAG, "Except: " + e);
             // whoosh

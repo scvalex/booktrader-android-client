@@ -47,6 +47,7 @@ class BookTraderAPI {
     static final String LOGOUT_URL = USERS_URL + "/logout";
     static final String BOOKS_URL  = BASE_URL + "/books";
     static final String SEARCH_URL = BASE_URL + "/search";
+    static final String MESSAGES_URL = BASE_URL + "/messages";
 
     static class BookDetailsResult {
         String bookIdentifier;
@@ -75,24 +76,27 @@ class BookTraderAPI {
     }
 
     /* Internal API */
-    static final int LOGIN_DONE        = 100;
-    static final int LOGIN_ERROR       = 101;
-    static final int LOGIN_START       = 102;
-    static final int LOGOUT_START      = 103;
-    static final int LOGOUT_FINISHED   = 104;
-    static final int LOGOUT_ERROR      = 105;
-    static final int SEARCH_START      = 106;
-    static final int SEARCH_FINISHED   = 107;
-    static final int SEARCH_FAILED     = 108;
-    static final int DETAILS_START     = 109;
-    static final int DETAILS_GOT       = 110;
-    static final int DETAILS_ERROR     = 111;
-    static final int DETAILS_HAVE      = 112;
-    static final int DETAILS_WANT      = 113;
-    static final int DETAILS_REMOVE    = 114;
-    static final int PERSON_GET_START  = 115;
-    static final int PERSON_GOT        = 116;
-    static final int PERSON_GET_FAILED = 117;
+    static final int LOGIN_DONE         = 100;
+    static final int LOGIN_ERROR        = 101;
+    static final int LOGIN_START        = 102;
+    static final int LOGOUT_START       = 103;
+    static final int LOGOUT_FINISHED    = 104;
+    static final int LOGOUT_ERROR       = 105;
+    static final int SEARCH_START       = 106;
+    static final int SEARCH_FINISHED    = 107;
+    static final int SEARCH_FAILED      = 108;
+    static final int DETAILS_START      = 109;
+    static final int DETAILS_GOT        = 110;
+    static final int DETAILS_ERROR      = 111;
+    static final int DETAILS_HAVE       = 112;
+    static final int DETAILS_WANT       = 113;
+    static final int DETAILS_REMOVE     = 114;
+    static final int PERSON_GET_START   = 115;
+    static final int PERSON_GOT         = 116;
+    static final int PERSON_GET_FAILED  = 117;
+    static final int ALL_MESSAGES_START = 118;
+    static final int MESSAGES_GOT       = 119;
+    static final int MESSAGES_ERROR     = 120;
 
     /* Network communications */
     HttpClient httpClient;
@@ -274,6 +278,29 @@ class BookTraderAPI {
                     } catch (Exception e) {
                         sendMessage(handler, DETAILS_ERROR,
                                     new BookDetailsResult(bookIdentifier, e));
+                    }
+                }
+            });
+    }
+
+    /** Get all a user's messages. */
+    void doGetAllMessages(final Handler handler) {
+        final HttpGet httpGet = new HttpGet(MESSAGES_URL +
+                                            "/list" +
+                                            "?format=json");
+
+        sendMessage(handler, ALL_MESSAGES_START, null);
+        pool.execute(new Runnable() {
+                public void run() {
+                    try {
+                        HttpResponse response =
+                            httpClient.execute(httpGet, httpContext);
+                        JSONObject json =
+                            new JSONObject(responseToString(response));
+                        sendMessage(handler, MESSAGES_GOT,
+                                    new Messages(json));
+                    } catch (Exception e) {
+                        sendMessage(handler, MESSAGES_ERROR, e);
                     }
                 }
             });

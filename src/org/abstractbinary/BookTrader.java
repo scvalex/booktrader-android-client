@@ -168,6 +168,18 @@ public class BookTrader extends Activity {
                 case BookTraderAPI.SEARCH_FAILED:
                     handleSearchFailed((Exception)msg.obj);
                     break;
+                case ObjectCache.OBJECT_GET_STARTED:
+                    // whoosh!
+                    break;
+                case ObjectCache.MESSAGES_GOT:
+                    handleMessagesGot((Messages)msg.obj);
+                    break;
+                case ObjectCache.OBJECT_GET_FAILED:
+                    Log.v(TAG, "blast it: " + (Exception)msg.obj);
+                    break;
+                default:
+                    throw new RuntimeException("trader got unknown msg: " +
+                                               msg.what);
                 }
             }
         };
@@ -413,6 +425,7 @@ public class BookTrader extends Activity {
         usernameLabel.setText(username);
         savePreferences();
         switchState(STATE_LOGGED_IN);
+        ObjectCache.getInstance().getAllMessages(requestHandler);
     }
 
     /** Called when the API signals that an error occured during login. */
@@ -465,6 +478,13 @@ public class BookTrader extends Activity {
         if (perpetuumDialog != null)
             perpetuumDialog.dismiss();
         Toast.makeText(this, "Failed!", Toast.LENGTH_SHORT).show();
+    }
+
+    void handleMessagesGot(Messages m) {
+        Log.v(TAG, "total messages: " + m.all.size() +
+              "; unread: " + m.unread.size());
+        Toast.makeText(this, "" + m.unread.size() + " unread messages",
+                       Toast.LENGTH_LONG).show();
     }
 
     /** Returns true if an intent is available. */
