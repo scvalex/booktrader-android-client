@@ -280,8 +280,8 @@ public class BookTrader extends Activity {
         case DIALOG_PERPETUUM:
             perpetuumDialog = new ProgressDialog(this);
             dialog = perpetuumDialog;
-            perpetuumDialog.setMessage(getResources().getText(R.string.loading));
-
+            perpetuumDialog.setMessage
+                (getResources().getText(R.string.loading));
             break;
         default:
             throw new RuntimeException("Unknown dialog type: " + id);
