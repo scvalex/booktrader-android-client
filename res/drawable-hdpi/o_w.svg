@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.1 r9760"
+   sodipodi:docname="o_w.svg">
+  <defs
+     id="defs4">
+    <filter
+       inkscape:collect="always"
+       id="filter4042">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.4635494"
+         id="feGaussianBlur4044" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter4046">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.45912531"
+         id="feGaussianBlur4048" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.979899"
+     inkscape:cx="109.96559"
+     inkscape:cy="72.066585"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1280"
+     inkscape:window-height="782"
+     inkscape:window-x="0"
+     inkscape:window-y="18"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1004.3622)">
+    <g
+       id="g4031"
+       style="filter:url(#filter4042)"
+       inkscape:export-filename="/home/scvalex/proj/booktrader-android-client/res/drawable-hdpi/wants.png"
+       inkscape:export-xdpi="86.012878"
+       inkscape:export-ydpi="86.012878">
+      <g
+         id="g3941">
+        <rect
+           style="fill:#909090;fill-opacity:1;stroke:#909090;stroke-width:2.16087699;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           id="rect3073"
+           width="45.839123"
+           height="45.839123"
+           x="1.0905915"
+           y="1005.9376"
+           ry="7.5761442" />
+        <path
+           style="font-size:45.70037842px;font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:URW Chancery L;-inkscape-font-specification:URW Chancery L Bold Italic"
+           d="m 42.46875,1011.5312 c -2.988953,0.3846 -6.046173,4.4719 -2.875,6.6563 0.639087,6.331 -3.896008,11.5119 -7.5,16.125 0.392326,-6.6688 0.768038,-13.3505 0.4375,-20.0313 -6.834899,3.5218 -10.251335,10.464 -14.25,16.5626 -0.09448,-5.8679 2.287576,-11.4548 7.34375,-14.8126 -7.597054,1.6298 -18.6650221,-1.9795 -23.25,6.4063 -5.0639832,5.2066 2.2655658,15.689 6.84375,7.6875 1.448695,-2.878 -3.8896407,-6.4779 1.21875,-7.7812 3.54717,-0.9863 -0.178443,5.513 0.375,7.4374 -1.1410647,6.3332 -2.2291091,12.4574 -2.4375,18.875 7.833507,-1.9287 10.278281,-9.7555 14.6875,-15.3437 2.568832,-2.7551 1.773085,3.3488 1.46875,4.375 0.0117,3.1959 -2.723728,10.2128 2.71875,9.5625 7.71843,-5.912 12.955815,-14.9278 18.34375,-22.9062 2.392584,-4.0402 3.728717,-12.7915 -3.125,-12.8126 z"
+           id="text3909"
+           inkscape:connector-curvature="0" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text3067"
+           y="1044.371"
+           x="-1.7517654"
+           style="font-size:45.70037841999999983px;font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#909090;fill-opacity:1;stroke:none;font-family:URW Chancery L;-inkscape-font-specification:URW Chancery L Bold Italic"
+           xml:space="preserve"><tspan
+             y="1044.371"
+             x="-1.7517654"
+             id="tspan3069"
+             sodipodi:role="line">W</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g4021"
+       style="filter:url(#filter4046)"
+       transform="translate(-36.870568,80.307127)"
+       inkscape:export-filename="/home/scvalex/proj/booktrader-android-client/res/drawable-hdpi/owns.png"
+       inkscape:export-xdpi="86.012878"
+       inkscape:export-ydpi="86.012878">
+      <rect
+         style="fill:#909090;fill-opacity:1;stroke:#909090;stroke-width:2.16087699;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect3884"
+         width="45.839123"
+         height="45.839123"
+         x="103.62107"
+         y="927.65082"
+         ry="7.5761442" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3888"
+         d="m 132.80495,927.58684 c -19.36866,0.23546 -35.163556,25.49423 -23.14169,41.90345 9.37363,8.50733 24.43648,2.15123 31.24781,-6.766 7.98112,-9.31508 10.38318,-26.63706 -1.07863,-34.12418 -2.23569,-1.04906 -4.55082,-1.21329 -7.02749,-1.01327 z m -2.77831,5.98154 c 9.50168,1.50915 10.39556,13.84297 7.38703,21.14784 -1.80736,7.52255 -10.84307,15.85635 -18.53296,10.68832 -9.9293,-9.45016 -2.35186,-30.71535 11.14593,-31.83616 z"
+         style="font-size:67.31858826px;font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:URW Chancery L;-inkscape-font-specification:URW Chancery L Bold Italic" />
+      <text
+         xml:space="preserve"
+         style="font-size:67.31858826px;font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#909090;fill-opacity:1;stroke:none;font-family:URW Chancery L;-inkscape-font-specification:URW Chancery L Bold Italic"
+         x="101.11722"
+         y="969.96082"
+         id="text3890"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3892"
+           x="101.11722"
+           y="969.96082">O</tspan></text>
+    </g>
+  </g>
+</svg>

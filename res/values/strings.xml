@@ -21,4 +21,6 @@
     <string name="owners">Owners</string>
     <string name="coveters">Coveters</string>
     <string name="send_message">Send Message</string>
+    <string name="owns">Owns</string>
+    <string name="wants">Wants</string>
 </resources>

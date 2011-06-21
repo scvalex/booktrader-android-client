@@ -88,12 +88,16 @@ public class UserDetails extends Activity {
         host.setup();
 
         TabHost.TabSpec spec =
-            host.newTabSpec("owned").setIndicator("Owned")
+            host.newTabSpec("owned")
+            .setIndicator(getResources().getString(R.string.owns),
+                          getResources().getDrawable(R.drawable.owns))
             .setContent(R.id.owned_table);
         host.addTab(spec);
 
         spec =
-            host.newTabSpec("wanted").setIndicator("Wanted")
+            host.newTabSpec("wanted")
+            .setIndicator(getResources().getString(R.string.wants),
+                          getResources().getDrawable(R.drawable.wants))
             .setContent(R.id.wanted_table);
         host.addTab(spec);
 
