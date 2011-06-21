@@ -20,7 +20,6 @@
       <Button
           android:id="@+id/inbox_button"
           android:drawableLeft="@drawable/ic_menu_start_conversation"
-          android:enabled="false"
           android:layout_height="wrap_content"
           android:layout_width="wrap_content"
           android:onClick="showMessages"

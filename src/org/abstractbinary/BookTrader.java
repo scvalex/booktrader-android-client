@@ -65,6 +65,7 @@ public class BookTrader extends Activity {
     EditText searchField;
     Button searchButton;
     GridView bookTable;
+    Button inboxButton;
 
     /* Barcodes, etc. */
     static final String ZXING_URL = "com.google.zxing.client.android.SCAN";
@@ -91,6 +92,7 @@ public class BookTrader extends Activity {
         menuBar = (FrameLayout)findViewById(R.id.menu_bar);
         loginButton = (Button)findViewById(R.id.login_button);
         logoutButton = (Button)findViewById(R.id.logout_button);
+        inboxButton = (Button)findViewById(R.id.inbox_button);
         usernameLabel = (TextView)findViewById(R.id.user_label);
         usernameLabel.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -380,6 +382,11 @@ public class BookTrader extends Activity {
         startActivityForResult(zxingIntent, BARCODE_SCAN_ACTIVITY);
     }
 
+    /** Called when the inbox button is pressed */
+    public void showMessages(View v) {
+        Toast.makeText(this, "Show inbox!", Toast.LENGTH_SHORT).show();
+    }
+
 
     /* Helpers */
 
@@ -483,6 +490,13 @@ public class BookTrader extends Activity {
     void handleMessagesGot(Messages m) {
         Log.v(TAG, "total messages: " + m.all.size() +
               "; unread: " + m.unread.size());
+        inboxButton.setCompoundDrawablesWithIntrinsicBounds
+            (R.drawable.ic_menu_start_conversation, 0, 0, 0);
+        if (m.unread.size() > 0) {
+            inboxButton.setCompoundDrawablesWithIntrinsicBounds
+                (R.drawable.ic_menu_notifications, 0, 0, 0);
+        }
+
         Toast.makeText(this, "" + m.unread.size() + " unread messages",
                        Toast.LENGTH_LONG).show();
     }

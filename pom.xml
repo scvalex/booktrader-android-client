@@ -127,6 +127,7 @@
                   public void logOut(android.view.View);
                   public void search(android.view.View);
                   public void scanBarcode(android.view.View);
+                  public void showMessages(android.view.View);
               }
             </option>
             <option>
