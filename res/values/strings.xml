@@ -23,4 +23,6 @@
     <string name="send_message">Send Message</string>
     <string name="owns">Owns</string>
     <string name="wants">Wants</string>
+    <string name="no_messages">No Messages :,(</string>
+    <string name="inbox">Inbox...</string>
 </resources>
