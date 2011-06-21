@@ -41,7 +41,7 @@ class BookTraderAPI {
     private static BookTraderAPI instance = new BookTraderAPI();
 
     /* Remote API */
-    static final String BASE_URL   = "http://abstractbinary.org:6543";
+    static final String BASE_URL   = "http://www.doc.ic.ac.uk/project/2010/271/g1027114";
     static final String USERS_URL  = BASE_URL + "/users";
     static final String LOGIN_URL  = USERS_URL + "/login";
     static final String LOGOUT_URL = USERS_URL + "/logout";
