@@ -384,7 +384,8 @@ public class BookTrader extends Activity {
 
     /** Called when the inbox button is pressed */
     public void showMessages(View v) {
-        Toast.makeText(this, "Show inbox!", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent
+                      (Intent.ACTION_VIEW, Uri.EMPTY, this, Inbox.class));
     }
 
 
