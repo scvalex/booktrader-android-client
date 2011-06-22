@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-class BookAdapter extends BaseAdapter {
+class BooksAdapter extends BaseAdapter {
     /* Debugging */
     static final String TAG = "BookTrader";
 
@@ -32,7 +32,7 @@ class BookAdapter extends BaseAdapter {
 
     /* Constructor */
 
-    public BookAdapter(Context context) {
+    public BooksAdapter(Context context) {
         this.context = context;
         downloadHandler = new Handler() {
                 @Override

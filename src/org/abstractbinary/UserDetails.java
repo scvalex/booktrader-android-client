@@ -39,9 +39,9 @@ public class UserDetails extends Activity {
     Button aboutUserButton;
 
     GridView ownedTable;
-    BookAdapter ownedAdapter;
+    BooksAdapter ownedAdapter;
     GridView wantedTable;
-    BookAdapter wantedAdapter;
+    BooksAdapter wantedAdapter;
 
 
     /* Activity lifecycle */
@@ -60,7 +60,7 @@ public class UserDetails extends Activity {
 
         aboutUserButton = (Button)findViewById(R.id.about_user_button);
 
-        ownedAdapter = new BookAdapter(this);
+        ownedAdapter = new BooksAdapter(this);
         ownedTable = (GridView)findViewById(R.id.owned_table);
         ownedTable.setAdapter(ownedAdapter);
         ownedTable.setOnItemClickListener
@@ -72,7 +72,7 @@ public class UserDetails extends Activity {
                     }
                 });
 
-        wantedAdapter = new BookAdapter(this);
+        wantedAdapter = new BooksAdapter(this);
         wantedTable = (GridView)findViewById(R.id.wanted_table);
         wantedTable.setAdapter(wantedAdapter);
         wantedTable.setOnItemClickListener

@@ -75,7 +75,7 @@ public class BookTrader extends Activity {
     String username, password;
     String username_try, password_try;
     String lastSearch;
-    BookAdapter bookAdapter;
+    BooksAdapter bookAdapter;
     boolean autoLogin;
     boolean imFeelingLucky;
 
@@ -119,7 +119,7 @@ public class BookTrader extends Activity {
                 }
             });
 
-        bookAdapter = new BookAdapter(this);
+        bookAdapter = new BooksAdapter(this);
         bookTable = (GridView)findViewById(R.id.book_table);
         bookTable.setAdapter(bookAdapter);
         bookTable.setOnItemClickListener
