@@ -72,7 +72,7 @@ class BookAdapter extends BaseAdapter {
             return null;
 
         FrameLayout bookThumb;
-        if (convertView == null || !(convertView instanceof FrameLayout))
+        if (convertView == null || convertView.getId() != R.layout.book_thumb)
             bookThumb = (FrameLayout)View.inflate(context, R.layout.book_thumb, null);
         else
             bookThumb = (FrameLayout)convertView;

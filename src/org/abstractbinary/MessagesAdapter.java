@@ -72,8 +72,7 @@ class MessagesAdapter extends BaseAdapter {
             return null;
 
         LinearLayout messageRow;
-        // FIXME user the id instead of instanceof to check
-        if (convertView == null || !(convertView instanceof LinearLayout))
+        if (convertView == null || convertView.getId() != R.layout.message_row)
             messageRow = (LinearLayout)View.inflate(context, R.layout.message_row, null);
         else
             messageRow = (LinearLayout)convertView;
