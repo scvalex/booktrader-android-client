@@ -95,7 +95,7 @@ class ObjectCache {
 
     /** Get al la user's details. */
     void getAllMessages(final Handler handler) {
-        getCached(MESSAGES_LIST_KEY, handler,
+        getCached(MESSAGES_LIST_KEY, handler, true,
                   new CacheHandler() {
                       public void handleCached(byte[] fromDb)
                           throws Exception
@@ -115,7 +115,7 @@ class ObjectCache {
 
     /** Get a book's details. */
     void getBookDetails(final String bookIdentifier, final Handler handler) {
-        getCached(bookIdentifier, handler,
+        getCached(bookIdentifier, handler, true,
                   new CacheHandler() {
                       public void handleCached(byte[] fromDb)
                           throws Exception
@@ -131,9 +131,15 @@ class ObjectCache {
                   });
     }
 
+    /** Get a person's details always refreshing. */
+    void getPersonDetails(String username, Handler handler) {
+        getPersonDetails(username, handler, true);
+    }
+
     /** Get a person's details. */
-    void getPersonDetails(final String username, final Handler handler) {
-        getCached(username, handler,
+    void getPersonDetails(final String username, final Handler handler,
+                          boolean refresh) {
+        getCached(username, handler, refresh,
                   new CacheHandler() {
                       public void handleCached(byte[] fromDb)
                           throws Exception
@@ -156,7 +162,8 @@ class ObjectCache {
     /** Get an object, first from cache, then from HTTP API.
      * Note that this might send *TWO* messages back (one for the
      * cache and one for the API). */
-    void getCached(String key, Handler handler, CacheHandler cacheHandler) {
+    void getCached(String key, Handler handler, boolean refresh,
+                   CacheHandler cacheHandler) {
         sendMessage(handler, OBJECT_GET_STARTED, null);
         try {
             if (dbHelper == null)
@@ -167,10 +174,11 @@ class ObjectCache {
                 throw new RuntimeException("not in cache");
 
             cacheHandler.handleCached(fromDb);
+
+            if (!refresh)
+                return;
         } catch (Exception e) {
         }
-
-        // fall back to API regardless
 
         requestHandlers.put(key, handler);
         cacheHandler.getFromAPI();
@@ -204,7 +212,8 @@ class ObjectCache {
             insertBook(book);
             requestHandlers.remove(bookIdentifier);
         } catch (Exception e) {
-            Log.v(TAG, "Except: " + e);
+            Log.e(TAG, "Nested exception getting details: " +
+                  e + " (" + e.getCause() + ")");
             // whoosh
         }
     }
@@ -215,7 +224,8 @@ class ObjectCache {
             sendMessage(handler, OBJECT_GET_FAILED, exception);
             requestHandlers.remove(bookIdentifier);
         } catch (Exception e) {
-            Log.v(TAG, "Except: " + e);
+            Log.e(TAG, "Nested exception err'ing details: " +
+                  e + " (" + e.getCause() + ")");
             // whoosh
         }
     }
@@ -224,11 +234,14 @@ class ObjectCache {
                          BookTraderAPI.PersonResult personResult) {
         try {
             Handler handler = requestHandlers.get(username);
+            if (handler == null)
+                Log.e(TAG, "Handler is null!");
             sendMessage(handler, PERSON_GOT, personResult);
             insertPerson((Person)personResult.result);
             requestHandlers.remove(username);
         } catch (Exception e) {
-            Log.v(TAG, "Except: " + e);
+            Log.e(TAG, "Nested exception getting person: " +
+                  e + " (" + e.getCause() + ")");
             // whoosh
         }
     }
@@ -239,7 +252,8 @@ class ObjectCache {
             sendMessage(handler, OBJECT_GET_FAILED, exception);
             requestHandlers.remove(username);
         } catch (Exception e) {
-            Log.v(TAG, "Except: " + e);
+            Log.e(TAG, "Nested exception err'ing person: " +
+                  e + " (" + e.getCause() + ")");
             // whoosh
         }
     }
@@ -251,7 +265,8 @@ class ObjectCache {
             insertMessages(messages);
             requestHandlers.remove(MESSAGES_LIST_KEY);
         } catch (Exception e) {
-            Log.v(TAG, "Except: " + e);
+            Log.e(TAG, "Nested exception getting messages: " +
+                  e + " (" + e.getCause() + ")");
             // whoosh
         }
     }
@@ -262,7 +277,8 @@ class ObjectCache {
             sendMessage(handler, OBJECT_GET_FAILED, exception);
             requestHandlers.remove(MESSAGES_LIST_KEY);
         } catch (Exception e) {
-            Log.v(TAG, "Except: " + e);
+            Log.e(TAG,  "Nested exception erring messages: " +
+                  e + " (" + e.getCause() + ")");
             // whoosh
         }
     }

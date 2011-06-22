@@ -8,10 +8,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 class MessagesAdapter extends BaseAdapter {
@@ -21,17 +24,19 @@ class MessagesAdapter extends BaseAdapter {
     /* Internal gubbins */
     Context context;
     Messages messages;
-    Handler downloadHandler;
+    Handler handler;
+    Map<String, Person> people = new HashMap<String, Person>();
 
     /* Constructor */
 
     public MessagesAdapter(Context context) {
         this.context = context;
 
-        downloadHandler = new Handler() {
+        handler = new Handler() {
                 @Override
                 public void handleMessage(Message msg) {
                     DownloadCache.DownloadResult r;
+                    BookTraderAPI.PersonResult rp;
                     switch (msg.what) {
                     case DownloadCache.DOWNLOAD_DONE:
                         r = (DownloadCache.DownloadResult)msg.obj;
@@ -40,6 +45,17 @@ class MessagesAdapter extends BaseAdapter {
                     case DownloadCache.DOWNLOAD_ERROR:
                         r = (DownloadCache.DownloadResult)msg.obj;
                         handleDownloadError(r.url, (Exception)r.result);
+                        break;
+                    case ObjectCache.OBJECT_GET_STARTED:
+                        //whooosh
+                        break;
+                    case ObjectCache.PERSON_GOT:
+                        rp = (BookTraderAPI.PersonResult)msg.obj;
+                        handlePersonGot(rp.username, (Person)rp.result);
+                        break;
+                    case ObjectCache.OBJECT_GET_FAILED:
+                        rp = (BookTraderAPI.PersonResult)msg.obj;
+                        handlePersonFailed(rp.username, (Exception)rp.result);
                         break;
                     default:
                         throw new RuntimeException("unknown message: " +
@@ -70,6 +86,16 @@ class MessagesAdapter extends BaseAdapter {
             String other = first.recipient;
             if (other.equals(BookTraderAPI.getInstance().currentUser))
                 other = first.sender;
+            if (people.containsKey(other)) {
+                Person p = people.get(other);
+                if (p.avatar != null) {
+                    ((ImageView)messageRow.findViewById
+                     (R.id.user_avatar_view)).setImageDrawable(p.avatar);
+                }
+            } else {
+                ObjectCache.getInstance().getPersonDetails(other, handler,
+                                                           false);
+            }
             ((TextView)messageRow.findViewById(R.id.message_subject)).setText(other);
         }
 
@@ -111,9 +137,25 @@ class MessagesAdapter extends BaseAdapter {
 
     void handleDownloadDone(String url, Drawable image) {
         Log.v(TAG, "image download done: " + url);
+        for (Person p : people.values())
+            if (p.avatarSource.equals(url)) {
+                p.avatar = image;
+                break;
+            }
+        notifyDataSetChanged();
     }
 
     void handleDownloadError(String url, Exception exception) {
         Log.w(TAG, "image download failed: " + url + " because " + exception);
+    }
+
+    void handlePersonGot(String username, Person person) {
+        Log.v(TAG, "person details got: " + username);
+        people.put(username, person);
+        person.getAvatar(handler);
+    }
+
+    void handlePersonFailed(String username, Exception exception) {
+        Log.w(TAG, "user get failed: " + username + " because " + exception);
     }
 }
