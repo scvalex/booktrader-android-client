@@ -33,18 +33,19 @@ class BookAdapter extends BaseAdapter {
     /* Constructor */
 
     public BookAdapter(Context context) {
-        super();
-
         this.context = context;
         downloadHandler = new Handler() {
                 @Override
                 public void handleMessage(Message msg) {
+                    DownloadCache.DownloadResult r;
                     switch (msg.what) {
                     case DownloadCache.DOWNLOAD_DONE:
-                        handleDownloadDone((DownloadCache.DownloadResult)msg.obj);
+                        r = (DownloadCache.DownloadResult)msg.obj;
+                        handleDownloadDone(r.url, (Drawable)r.result);
                         break;
                     case DownloadCache.DOWNLOAD_ERROR:
-                        handleDownloadError((DownloadCache.DownloadResult)msg.obj);
+                        r = (DownloadCache.DownloadResult)msg.obj;
+                        handleDownloadError(r.url, (Exception)r.result);
                         break;
                     case BookTraderAPI.SEARCH_START:
                         // wooho!
@@ -137,26 +138,25 @@ class BookAdapter extends BaseAdapter {
 
     /* Internal gubbins */
 
-    void handleDownloadDone(DownloadCache.DownloadResult result) {
+    void handleDownloadDone(String url, Drawable image) {
         synchronized (result) {
-            if (positionOf.containsKey(result.url)) {
-                Book book = this.result.books.get(positionOf.get(result.url));
-                book.image = (Drawable)result.result;
+            if (positionOf.containsKey(url)) {
+                Book book = this.result.books.get(positionOf.get(url));
+                book.image = image;
                 notifyDataSetChanged();
-                positionOf.remove(result.url);
+                positionOf.remove(url);
             }
         }
     }
 
-    void handleDownloadError(DownloadCache.DownloadResult result) {
-        Log.v(TAG, "image download failed: " + result.url +
-              " because " + (Exception)result.result);
+    void handleDownloadError(String url, Exception exception) {
+        Log.w(TAG, "image download failed: " + url + " because " + exception);
         synchronized (result) {
-            if (positionOf.containsKey(result.url)) {
-                Book book = this.result.books.get(positionOf.get(result.url));
+            if (positionOf.containsKey(url)) {
+                Book book = this.result.books.get(positionOf.get(url));
                 book.thumbnailSource = "";
                 book.smallThumbnailSource = "";
-                positionOf.remove(result.url);
+                positionOf.remove(url);
             }
         }
 

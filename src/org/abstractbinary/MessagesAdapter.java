@@ -1,6 +1,9 @@
 package org.abstractbinary.booktrader;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +21,32 @@ class MessagesAdapter extends BaseAdapter {
     /* Internal gubbins */
     Context context;
     Messages messages;
+    Handler downloadHandler;
 
     /* Constructor */
 
     public MessagesAdapter(Context context) {
         this.context = context;
+
+        downloadHandler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    DownloadCache.DownloadResult r;
+                    switch (msg.what) {
+                    case DownloadCache.DOWNLOAD_DONE:
+                        r = (DownloadCache.DownloadResult)msg.obj;
+                        handleDownloadDone(r.url, (Drawable)r.result);
+                        break;
+                    case DownloadCache.DOWNLOAD_ERROR:
+                        r = (DownloadCache.DownloadResult)msg.obj;
+                        handleDownloadError(r.url, (Exception)r.result);
+                        break;
+                    default:
+                        throw new RuntimeException("unknown message: " +
+                                                   msg.what);
+                    };
+                }
+            };
     }
 
     /* Adapter methods */
@@ -70,6 +94,7 @@ class MessagesAdapter extends BaseAdapter {
         return messages.all.size();
     }
 
+
     /* Public API */
 
     public void setData(Messages messages) {
@@ -79,5 +104,16 @@ class MessagesAdapter extends BaseAdapter {
         this.messages = messages;
 
         notifyDataSetChanged();
+    }
+
+
+    /* Handlers */
+
+    void handleDownloadDone(String url, Drawable image) {
+        Log.v(TAG, "image download done: " + url);
+    }
+
+    void handleDownloadError(String url, Exception exception) {
+        Log.w(TAG, "image download failed: " + url + " because " + exception);
     }
 }
