@@ -76,9 +76,12 @@ class MessagesAdapter extends BaseAdapter {
             messageRow = (LinearLayout)View.inflate(context, R.layout.message_row, null);
         else
             messageRow = (LinearLayout)convertView;
+        messageRow.setBackgroundResource(0);
 
         Messages.Message first =
             ((List<Messages.Message>)getItem(position)).get(0);
+        if (messages.unread.contains(first.conversation))
+            messageRow.setBackgroundResource(R.color.unread_background);
         String other = first.recipient;
         if (other.equals(BookTraderAPI.getInstance().currentUser))
             other = first.sender;

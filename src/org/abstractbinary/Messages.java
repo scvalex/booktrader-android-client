@@ -1,5 +1,7 @@
 package org.abstractbinary.booktrader;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,19 +15,25 @@ import org.json.JSONObject;
 
 
 class Messages {
+    /* Debugging */
+    static final String TAG = "BookTrader";
+
     static class Message {
         String identifier;
         String body;
         String subject;
         String sender;
         String recipient;
+        String conversation;
         List<Book> apples;
         List<Book> oranges;
 
         private Message() {
         }
 
-        public Message(JSONObject json) throws JSONException {
+        public Message(JSONObject json, String conversation)
+            throws JSONException
+        {
             this.identifier = json.getString("identifier");
             this.body = json.getString("body");
             this.subject = json.getString("subject");
@@ -35,6 +43,7 @@ class Messages {
                 this.apples = new ArrayList<Book>();
                 this.oranges = new ArrayList<Book>();
             }
+            this.conversation = conversation;
         }
     }
 
@@ -56,16 +65,15 @@ class Messages {
             all.add(convList.getString(i));
 
         JSONArray unreadList = json.getJSONArray("unread");
-        for (int i = 0; i < unreadList.length(); ++i) {
+        for (int i = 0; i < unreadList.length(); ++i)
             unread.add(unreadList.getString(i));
-        }
 
         JSONObject conversations = json.getJSONObject("conversations");
         for (String c : all) {
             List<Message> ms = new ArrayList<Message>();
             JSONArray msgs = conversations.getJSONArray(c);
             for (int i = 0; i < msgs.length(); ++i)
-                ms.add(new Message(msgs.getJSONObject(i)));
+                ms.add(new Message(msgs.getJSONObject(i), c));
             messages.put(c, ms);
         }
 
