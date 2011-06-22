@@ -5,10 +5,4 @@
       android:icon="@drawable/ic_menu_home"
       android:title="@string/home"
       />
-  <item
-      android:id="@+id/new_message_menu"
-      android:enabled="false"
-      android:icon="@drawable/ic_menu_compose_big"
-      android:title="@string/new_message"
-      />
 </menu>

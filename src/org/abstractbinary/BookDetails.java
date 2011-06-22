@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -180,6 +183,13 @@ public class BookDetails extends Activity {
             (book.description);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.book_details, menu);
+        return true;
+    }
+
 
     /* Callbacks */
 
@@ -204,6 +214,19 @@ public class BookDetails extends Activity {
     public void clear(View v) {
         api.doRemove(bookIdentifier, detailsHandler);
     }
+
+    /** Called when a menu item is selected. */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.goto_home_menu:
+            finish();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
 
 
     /* Utilities */
