@@ -59,7 +59,7 @@
           >
         <GridView
             android:id="@+id/owned_table"
-            android:columnWidth="150dip"
+            android:columnWidth="140dip"
             android:gravity="center"
             android:horizontalSpacing="10dip"
             android:layout_height="fill_parent"
@@ -70,7 +70,7 @@
             />
         <GridView
             android:id="@+id/wanted_table"
-            android:columnWidth="150dip"
+            android:columnWidth="140dip"
             android:gravity="center"
             android:horizontalSpacing="10dip"
             android:layout_height="fill_parent"

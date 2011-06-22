@@ -89,7 +89,7 @@
   </LinearLayout>
   <GridView
       android:id="@+id/book_table"
-      android:columnWidth="150dip"
+      android:columnWidth="140dip"
       android:gravity="center"
       android:horizontalSpacing="10dip"
       android:layout_height="fill_parent"

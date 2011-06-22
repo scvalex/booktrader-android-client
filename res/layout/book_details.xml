@@ -19,7 +19,7 @@
           android:id="@+id/cover_view"
           android:layout_gravity="center"
           android:layout_height="200dip"
-          android:layout_width="wrap_content"
+          android:layout_width="160dip"
           android:src="@drawable/book_thumb"
           />
       <LinearLayout
