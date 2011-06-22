@@ -228,7 +228,6 @@ public class BookDetails extends Activity {
     }
 
 
-
     /* Utilities */
 
     void markWanted() {

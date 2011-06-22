@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -161,6 +164,20 @@ public class UserDetails extends Activity {
         return dialog;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.user_details, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (hasAbout())
+            menu.findItem(R.id.show_user_menu).setEnabled(true);
+        return true;
+    }
+
 
     /* Callbacks */
 
@@ -186,6 +203,21 @@ public class UserDetails extends Activity {
                        this, BookDetails.class));
     }
 
+    /** Called when a menu item is selected. */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.goto_home_menu:
+            finish();
+            return true;
+        case R.id.show_user_menu:
+            moreUser(null);
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     /* Handlers */
 
@@ -195,7 +227,7 @@ public class UserDetails extends Activity {
         user.getAvatar(requestHandler);
 
         usernameLabel.setText(user.username);
-        if (user.about.length() > 0 && user.location.length() > 0)
+        if (hasAbout())
             aboutUserButton.setEnabled(true);
 
         boolean same = false;
@@ -249,5 +281,14 @@ public class UserDetails extends Activity {
     void handleDownloadError(String url, Exception e) {
         Log.v(TAG, "failed to download " + url + " because " + e);
         //whoosh
+    }
+
+
+    /* Utilities */
+
+    /** Returns true if there is enough about info to display */
+    boolean hasAbout() {
+        return (user != null && user.about.length() > 0 &&
+                user.location.length() > 0);
     }
 }

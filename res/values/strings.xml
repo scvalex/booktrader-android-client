@@ -26,4 +26,5 @@
     <string name="inbox">Inbox...</string>
     <string name="home">Home</string>
     <string name="new_message">New Message</string>
+    <string name="user_details">User Details</string>
 </resources>
