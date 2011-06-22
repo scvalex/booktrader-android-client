@@ -490,7 +490,7 @@ public class BookTrader extends Activity {
 
     void handleMessagesGot(Messages m) {
         inboxButton.setCompoundDrawablesWithIntrinsicBounds
-            (R.drawable.ic_menu_start_conversation, 0, 0, 0);
+            (R.drawable.ic_menu_friendslist, 0, 0, 0);
         if (m.unread.size() > 0) {
             inboxButton.setCompoundDrawablesWithIntrinsicBounds
                 (R.drawable.ic_menu_notifications, 0, 0, 0);
