@@ -80,22 +80,24 @@ class MessagesAdapter extends BaseAdapter {
 
         Messages.Message first =
             ((List<Messages.Message>)getItem(position)).get(0);
+        String other = first.recipient;
+        if (other.equals(BookTraderAPI.getInstance().currentUser))
+            other = first.sender;
+        if (people.containsKey(other)) {
+            Person p = people.get(other);
+            if (p.avatar != null) {
+                ((ImageView)messageRow.findViewById
+                 (R.id.user_avatar_view)).setImageDrawable(p.avatar);
+            }
+        } else {
+            ObjectCache.getInstance().getPersonDetails(other, handler,
+                                                       false);
+        }
+        messageRow.findViewById(R.id.offer_icon).setVisibility(View.GONE);
         if (first.apples != null) {
             ((TextView)messageRow.findViewById(R.id.message_subject)).setText(first.subject);
+            messageRow.findViewById(R.id.offer_icon).setVisibility(View.VISIBLE);
         } else {
-            String other = first.recipient;
-            if (other.equals(BookTraderAPI.getInstance().currentUser))
-                other = first.sender;
-            if (people.containsKey(other)) {
-                Person p = people.get(other);
-                if (p.avatar != null) {
-                    ((ImageView)messageRow.findViewById
-                     (R.id.user_avatar_view)).setImageDrawable(p.avatar);
-                }
-            } else {
-                ObjectCache.getInstance().getPersonDetails(other, handler,
-                                                           false);
-            }
             ((TextView)messageRow.findViewById(R.id.message_subject)).setText(other);
         }
 
@@ -136,7 +138,6 @@ class MessagesAdapter extends BaseAdapter {
     /* Handlers */
 
     void handleDownloadDone(String url, Drawable image) {
-        Log.v(TAG, "image download done: " + url);
         for (Person p : people.values())
             if (p.avatarSource.equals(url)) {
                 p.avatar = image;
@@ -150,7 +151,6 @@ class MessagesAdapter extends BaseAdapter {
     }
 
     void handlePersonGot(String username, Person person) {
-        Log.v(TAG, "person details got: " + username);
         people.put(username, person);
         person.getAvatar(handler);
     }

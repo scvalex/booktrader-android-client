@@ -489,8 +489,6 @@ public class BookTrader extends Activity {
     }
 
     void handleMessagesGot(Messages m) {
-        Log.v(TAG, "total messages: " + m.all.size() +
-              "; unread: " + m.unread.size());
         inboxButton.setCompoundDrawablesWithIntrinsicBounds
             (R.drawable.ic_menu_start_conversation, 0, 0, 0);
         if (m.unread.size() > 0) {
@@ -499,7 +497,7 @@ public class BookTrader extends Activity {
         }
 
         Toast.makeText(this, "" + m.unread.size() + " unread messages",
-                       Toast.LENGTH_LONG).show();
+                       Toast.LENGTH_SHORT).show();
     }
 
     /** Returns true if an intent is available. */

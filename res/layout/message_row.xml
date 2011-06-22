@@ -9,6 +9,7 @@
   <ImageView
       android:id="@+id/user_avatar_view"
       android:layout_height="wrap_content"
+      android:layout_marginRight="3dp"
       android:layout_weight="0"
       android:layout_width="wrap_content"
       android:src="@drawable/transparent"
@@ -17,8 +18,18 @@
       android:id="@+id/message_subject"
       android:gravity="center|left"
       android:layout_height="fill_parent"
-      android:layout_width="fill_parent"
+      android:layout_width="wrap_content"
       android:lines="1"
       android:textSize="10pt"
+      />
+  <ImageView
+      android:id="@+id/offer_icon"
+      android:layout_gravity="center"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="3dp"
+      android:layout_weight="1"
+      android:layout_width="wrap_content"
+      android:src="@drawable/ic_offer"
+      android:visibility="gone"
       />
 </LinearLayout>
