@@ -138,12 +138,11 @@ public class BookDetails extends Activity {
         book.getCover(detailsHandler);
         findViewById(R.id.owners_container).setVisibility(View.VISIBLE);
         if (book.owners.size() == 0)
-            findViewById(R.id.owners_container).setVisibility(View.INVISIBLE);
+            findViewById(R.id.owners_container).setVisibility(View.GONE);
         ownerList.setData(book.owners);
         findViewById(R.id.coveters_container).setVisibility(View.VISIBLE);
         if (book.coveters.size() == 0)
-            findViewById(R.id.coveters_container).setVisibility
-                (View.INVISIBLE);
+            findViewById(R.id.coveters_container).setVisibility(View.GONE);
         coveterList.setData(book.coveters);
 
         bookTitleLabel.setText(book.title);
@@ -167,7 +166,7 @@ public class BookDetails extends Activity {
         wantButton.setText(getResources().getString(R.string.want));
         wantButton.setVisibility(View.VISIBLE);
         Button clearButton = (Button)findViewById(R.id.clear_button);
-        clearButton.setVisibility(View.INVISIBLE);
+        clearButton.setVisibility(View.GONE);
         if (api.loggedIn) {
             if (book.owners.contains(api.currentUser))
                 markHad();
@@ -220,7 +219,7 @@ public class BookDetails extends Activity {
         Button haveButton = (Button)findViewById(R.id.have_button);
         haveButton.setText(getResources().getString(R.string.already_have));
         haveButton.setEnabled(false);
-        findViewById(R.id.want_button).setVisibility(View.INVISIBLE);
+        findViewById(R.id.want_button).setVisibility(View.GONE);
         findViewById(R.id.clear_button).setVisibility(View.VISIBLE);
     }
 }
