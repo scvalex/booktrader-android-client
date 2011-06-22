@@ -215,7 +215,10 @@ public class UserDetails extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.goto_home_menu:
-            finish();
+            startActivity(new Intent
+                          (Intent.ACTION_VIEW, Uri.EMPTY,
+                           this, BookTrader.class)
+                          .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             return true;
         case R.id.show_user_menu:
             moreUser(null);

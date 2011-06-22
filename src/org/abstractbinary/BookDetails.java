@@ -3,7 +3,9 @@ package org.abstractbinary.booktrader;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -250,7 +252,10 @@ public class BookDetails extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.goto_home_menu:
-            finish();
+            startActivity(new Intent
+                          (Intent.ACTION_VIEW, Uri.EMPTY,
+                           this, BookTrader.class)
+                          .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             return true;
         case R.id.history_menu:
             //whoosh

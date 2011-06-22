@@ -100,7 +100,10 @@ public class Inbox extends ListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.goto_home_menu:
-            finish();
+            startActivity(new Intent
+                          (Intent.ACTION_VIEW,
+                           Uri.EMPTY, this, BookTrader.class)
+                          .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             return true;
         case R.id.new_message_menu:
             Toast.makeText(this, "new message!", Toast.LENGTH_SHORT).show();
