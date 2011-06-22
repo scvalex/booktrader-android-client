@@ -29,4 +29,6 @@
     <string name="user_details">User Details</string>
     <string name="messages">Messages</string>
     <string name="scan">Scan Barcode</string>
+    <string name="remove">Remove</string>
+    <string name="history">History</string>
 </resources>

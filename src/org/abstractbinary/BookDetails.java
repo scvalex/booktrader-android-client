@@ -38,6 +38,7 @@ public class BookDetails extends Activity {
     BookTraderAPI api;
     PeopleList ownerList;
     PeopleList coveterList;
+    boolean wanted, had;
 
     /* Activity life-cycle */
 
@@ -159,6 +160,9 @@ public class BookDetails extends Activity {
             if (i == book.authors.size() - 2)
                 authors.append(" and ");
         }
+
+        had = false;
+        wanted = false;
         ((TextView)findViewById(R.id.book_authors_label)).setText
             (authors.toString());
         Button haveButton = (Button)findViewById(R.id.have_button);
@@ -187,6 +191,27 @@ public class BookDetails extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.book_details, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.have_menu).setEnabled(false);
+        menu.findItem(R.id.want_menu).setEnabled(false);
+        menu.findItem(R.id.remove_menu).setEnabled(false);
+        if (BookTraderAPI.getInstance().loggedIn) {
+            menu.findItem(R.id.have_menu).setEnabled(true);
+            menu.findItem(R.id.want_menu).setEnabled(true);
+            menu.findItem(R.id.remove_menu).setEnabled(true);
+            if (wanted) {
+                menu.findItem(R.id.want_menu).setEnabled(false);
+            } else if (had) {
+                menu.findItem(R.id.have_menu).setEnabled(false);
+                menu.findItem(R.id.want_menu).setEnabled(false);
+            } else {
+                menu.findItem(R.id.remove_menu).setEnabled(false);
+            }
+        }
         return true;
     }
 
@@ -222,6 +247,18 @@ public class BookDetails extends Activity {
         case R.id.goto_home_menu:
             finish();
             return true;
+        case R.id.history_menu:
+            //whoosh
+            return true;
+        case R.id.have_menu:
+            have(null);
+            return true;
+        case R.id.want_menu:
+            want(null);
+            return true;
+        case R.id.remove_menu:
+            clear(null);
+            return true;
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -231,6 +268,7 @@ public class BookDetails extends Activity {
     /* Utilities */
 
     void markWanted() {
+        wanted = true;
         Button wantButton = (Button)findViewById(R.id.want_button);
         wantButton.setText(getResources().getString(R.string.already_want));
         wantButton.setEnabled(false);
@@ -238,6 +276,7 @@ public class BookDetails extends Activity {
     }
 
     void markHad() {
+        had = true;
         Button haveButton = (Button)findViewById(R.id.have_button);
         haveButton.setText(getResources().getString(R.string.already_have));
         haveButton.setEnabled(false);

@@ -5,4 +5,25 @@
       android:icon="@drawable/ic_menu_home"
       android:title="@string/home"
       />
+  <item
+      android:id="@+id/history_menu"
+      android:enabled="false"
+      android:icon="@android:drawable/ic_menu_recent_history"
+      android:title="@string/history"
+      />
+  <item
+      android:id="@+id/have_menu"
+      android:icon="@android:drawable/ic_menu_add"
+      android:title="@string/have"
+      />
+  <item
+      android:id="@+id/want_menu"
+      android:icon="@drawable/ic_menu_star"
+      android:title="@string/want"
+      />
+  <item
+      android:id="@+id/remove_menu"
+      android:icon="@drawable/ic_menu_close_clear_cancel_big"
+      android:title="@string/remove"
+      />
 </menu>
