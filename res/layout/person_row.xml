@@ -24,7 +24,7 @@
       android:textSize="11pt"
       />
   <Button
-      android:drawableLeft="@drawable/ic_menu_send"
+      android:drawableLeft="@drawable/ic_menu_compose"
       android:enabled="false"
       android:layout_height="fill_parent"
       android:layout_gravity="right"

@@ -3,11 +3,17 @@ package org.abstractbinary.booktrader;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class Inbox extends ListActivity {
@@ -77,6 +83,32 @@ public class Inbox extends ListActivity {
             throw new RuntimeException("unknown dialog type: " + id);
         }
         return dialog;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.inbox, menu);
+        return true;
+    }
+
+
+    /* Callbacks */
+
+    /** Called when a menu item is selected. */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.goto_home_menu:
+            finish();
+            return true;
+        case R.id.new_message_menu:
+            Toast.makeText(this, "new message!", Toast.LENGTH_SHORT).show();
+            // whoosh
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
     }
 
 

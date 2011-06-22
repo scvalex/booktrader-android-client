@@ -20,9 +20,10 @@
     <string name="more">More</string>
     <string name="owners">Owners</string>
     <string name="coveters">Coveters</string>
-    <string name="send_message">Send Message</string>
     <string name="owns">Owns</string>
     <string name="wants">Wants</string>
     <string name="no_messages">No Messages :,(</string>
     <string name="inbox">Inbox...</string>
+    <string name="home">Home</string>
+    <string name="new_message">New Message</string>
 </resources>
