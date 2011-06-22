@@ -19,7 +19,7 @@
         >
       <Button
           android:id="@+id/inbox_button"
-          android:drawableLeft="@drawable/ic_menu_start_conversation"
+          android:drawableLeft="@drawable/ic_menu_friendslist"
           android:layout_height="wrap_content"
           android:layout_width="wrap_content"
           android:onClick="showMessages"
