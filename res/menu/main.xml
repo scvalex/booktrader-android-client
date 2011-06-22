@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item
+      android:id="@+id/goto_messages_menu"
+      android:icon="@drawable/ic_menu_friendslist_big"
+      android:title="@string/messages"
+      />
+  <item
+      android:id="@+id/scan_barcode_menu"
+      android:icon="@drawable/ic_menu_camera_big"
+      android:title="@string/scan"
+      />
+  <item
+      android:id="@+id/login_menu"
+      android:icon="@drawable/ic_menu_login_big"
+      android:title="@string/log_in"
+      android:visible="false"
+      />
+  <item
+      android:id="@+id/logout_menu"
+      android:icon="@drawable/ic_menu_login_big"
+      android:title="@string/log_out"
+      />
+  <item
       android:id="@+id/clear_cache_menu"
       android:icon="@android:drawable/ic_menu_close_clear_cancel"
-      android:title="@string/clear_cache" />
+      android:title="@string/clear_cache"
+      />
   <item
       android:id="@+id/about_menu"
       android:icon="@android:drawable/ic_menu_help"
-      android:title="@string/about" />
+      android:title="@string/about"
+      />
 </menu>

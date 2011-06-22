@@ -297,6 +297,20 @@ public class BookTrader extends Activity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (BookTraderAPI.getInstance().loggedIn) {
+            menu.findItem(R.id.login_menu).setVisible(false);
+            menu.findItem(R.id.goto_messages_menu).setEnabled(true);
+            menu.findItem(R.id.logout_menu).setVisible(true);
+        } else {
+            menu.findItem(R.id.login_menu).setVisible(true);
+            menu.findItem(R.id.goto_messages_menu).setEnabled(false);
+            menu.findItem(R.id.logout_menu).setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent intent) {
         switch (requestCode) {
@@ -362,6 +376,18 @@ public class BookTrader extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+        case R.id.goto_messages_menu:
+            showMessages(null);
+            return true;
+        case R.id.scan_barcode_menu:
+            scanBarcode(null);
+            return true;
+        case R.id.login_menu:
+            logIn(null);
+            return true;
+        case R.id.logout_menu:
+            logOut(null);
+            return true;
         case R.id.clear_cache_menu:
             DownloadCache.getInstance().clear();
             Toast.makeText(this, "Cache cleared", Toast.LENGTH_SHORT).show();

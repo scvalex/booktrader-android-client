@@ -27,4 +27,6 @@
     <string name="home">Home</string>
     <string name="new_message">New Message</string>
     <string name="user_details">User Details</string>
+    <string name="messages">Messages</string>
+    <string name="scan">Scan Barcode</string>
 </resources>
