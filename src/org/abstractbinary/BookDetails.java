@@ -240,6 +240,11 @@ public class BookDetails extends Activity {
         api.doRemove(bookIdentifier, detailsHandler);
     }
 
+    /** Called when the user clicks a new message button. */
+    public void sendMessage(View v) {
+        // whoosh
+    }
+
     /** Called when a menu item is selected. */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -135,11 +135,13 @@
                   public void have(android.view.View);
                   public void want(android.view.View);
                   public void clear(android.view.View);
+                  public void sendMessage(android.view.View);
               }
             </option>
             <option>
               -keep class org.abstractbinary.booktrader.UserDetails {
                   public void moreUser(android.view.View);
+                  public void sendMessage(android.view.View);
               }
             </option>
             <option>-dontskipnonpubliclibraryclasses</option>

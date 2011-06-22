@@ -175,6 +175,8 @@ public class UserDetails extends Activity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (hasAbout())
             menu.findItem(R.id.show_user_menu).setEnabled(true);
+        if (myself())
+            menu.findItem(R.id.send_message_menu).setEnabled(false);
         return true;
     }
 
@@ -184,6 +186,11 @@ public class UserDetails extends Activity {
     /** Called when clicking on a user's ``more'' link. */
     public void moreUser(View v) {
         showDialog(DIALOG_ABOUT_USER);
+    }
+
+    /** Called when clicking a user's ``send message'' button. */
+    public void sendMessage(View v) {
+        //whoosh
     }
 
     /** Called when clicking on a book in one of the tables. */
@@ -213,6 +220,9 @@ public class UserDetails extends Activity {
         case R.id.show_user_menu:
             moreUser(null);
             return true;
+        case R.id.send_message_menu:
+            sendMessage(null);
+            return true;
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -229,6 +239,8 @@ public class UserDetails extends Activity {
         usernameLabel.setText(user.username);
         if (hasAbout())
             aboutUserButton.setEnabled(true);
+        if (myself())
+            findViewById(R.id.send_message_button).setEnabled(false);
 
         boolean same = false;
 
@@ -290,5 +302,11 @@ public class UserDetails extends Activity {
     boolean hasAbout() {
         return (user != null && user.about.length() > 0 &&
                 user.location.length() > 0);
+    }
+
+    boolean myself() {
+        BookTraderAPI api = BookTraderAPI.getInstance();
+        return (user != null && api.loggedIn &&
+                user.username.equals(api.currentUser));
     }
 }
