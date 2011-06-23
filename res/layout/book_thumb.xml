@@ -26,4 +26,12 @@
         android:layout_width="fill_parent"
         />
   </LinearLayout>
+  <ImageView
+      android:id="@+id/owned_sticker"
+      android:layout_height="wrap_content"
+      android:layout_gravity="top|right"
+      android:layout_width="wrap_content"
+      android:src="@drawable/owned_sticker"
+      android:visibility="invisible"
+      />
 </FrameLayout>

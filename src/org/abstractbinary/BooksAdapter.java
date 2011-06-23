@@ -106,6 +106,10 @@ class BooksAdapter extends BaseAdapter {
             bookThumb.findViewById(R.id.book_cover_text).setVisibility(View.VISIBLE);
         }
 
+        bookThumb.findViewById(R.id.owned_sticker).setVisibility(View.INVISIBLE);
+        if (book.owners.size() > 0)
+            bookThumb.findViewById(R.id.owned_sticker).setVisibility(View.VISIBLE);
+
         return bookThumb;
     }
 
