@@ -19,6 +19,14 @@
         android:textSize="11pt"
         />
     <Button
+        android:id="@+id/refresh_button"
+        android:drawableLeft="@drawable/ic_menu_refresh"
+        android:layout_height="40dip"
+        android:layout_weight="0"
+        android:layout_width="wrap_content"
+        android:onClick="refresh"
+        />
+    <Button
         android:id="@+id/compose_button"
         android:drawableLeft="@drawable/ic_menu_compose"
         android:layout_height="40dip"

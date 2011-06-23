@@ -66,8 +66,7 @@ public class Inbox extends ListActivity {
             }
         };
 
-        if (BookTraderAPI.getInstance().loggedIn)
-            ObjectCache.getInstance().getAllMessages(requestHandler);
+        refresh(null);
     }
 
     @Override
@@ -106,6 +105,9 @@ public class Inbox extends ListActivity {
                            Uri.EMPTY, this, BookTrader.class)
                           .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             return true;
+        case R.id.refresh_menu:
+            refresh(null);
+            return true;
         case R.id.new_message_menu:
             newMessage(null);
             return true;
@@ -119,6 +121,12 @@ public class Inbox extends ListActivity {
         startActivity(new Intent
                       (Intent.ACTION_VIEW,
                        Uri.EMPTY, this, NewMessage.class));
+    }
+
+    /** Called when the refresh button is pressed. */
+    public void refresh(View v) {
+        if (BookTraderAPI.getInstance().loggedIn)
+            ObjectCache.getInstance().getAllMessages(requestHandler);
     }
 
 
