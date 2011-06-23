@@ -32,5 +32,10 @@
               android:theme="@android:style/Theme.NoTitleBar"
               android:configChanges="orientation">
     </activity>
+    <activity android:name=".NewMessage"
+              android:label="@string/app_name"
+              android:theme="@android:style/Theme.NoTitleBar"
+              android:configChanges="orientation">
+    </activity>
   </application>
 </manifest>

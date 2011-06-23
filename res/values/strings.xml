@@ -28,6 +28,8 @@
     <string name="scan">Scan Barcode</string>
     <string name="search">Search</string>
     <string name="send_message">Send Message</string>
+    <string name="to">To:</string>
+    <string name="type_a_name">Type a name</string>
     <string name="user_details">User Details</string>
     <string name="username">Username</string>
     <string name="wants">Wants</string>

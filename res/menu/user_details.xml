@@ -13,7 +13,6 @@
       />
   <item
       android:id="@+id/send_message_menu"
-      android:enabled="false"
       android:icon="@drawable/ic_menu_compose_big"
       android:title="@string/send_message"
       />

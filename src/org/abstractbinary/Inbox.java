@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -106,12 +107,18 @@ public class Inbox extends ListActivity {
                           .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             return true;
         case R.id.new_message_menu:
-            Toast.makeText(this, "new message!", Toast.LENGTH_SHORT).show();
-            // whoosh
+            newMessage(null);
             return true;
         default:
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    /** Called when the compose button is pressed. */
+    public void newMessage(View v) {
+        startActivity(new Intent
+                      (Intent.ACTION_VIEW,
+                       Uri.EMPTY, this, NewMessage.class));
     }
 
 

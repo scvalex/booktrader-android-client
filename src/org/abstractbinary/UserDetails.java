@@ -175,7 +175,7 @@ public class UserDetails extends Activity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (hasAbout())
             menu.findItem(R.id.show_user_menu).setEnabled(true);
-        if (myself())
+        if (!BookTraderAPI.getInstance().loggedIn || myself())
             menu.findItem(R.id.send_message_menu).setEnabled(false);
         return true;
     }
@@ -190,7 +190,12 @@ public class UserDetails extends Activity {
 
     /** Called when clicking a user's ``send message'' button. */
     public void sendMessage(View v) {
-        //whoosh
+        if (user == null)
+            return;
+        startActivity(new Intent
+                      (Intent.ACTION_VIEW,
+                       Uri.withAppendedPath(Uri.EMPTY, user.username),
+                       this, NewMessage.class));
     }
 
     /** Called when clicking on a book in one of the tables. */

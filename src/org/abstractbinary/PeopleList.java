@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -112,6 +113,26 @@ class PeopleList {
                               context, UserDetails.class));
                     }
                 });
+
+            if (BookTraderAPI.getInstance().loggedIn) {
+                String currentUser = BookTraderAPI.getInstance().currentUser;
+                if (!username.equals(currentUser)) {
+                    Button sendMessage =
+                        (Button)personRow.findViewById(R.id.send_message);
+                    sendMessage.setEnabled(true);
+                    sendMessage.setOnClickListener
+                        (new View.OnClickListener() {
+                                public void onClick(View v) {
+                                    context.startActivity
+                                        (new Intent
+                                         (Intent.ACTION_VIEW,
+                                          Uri.withAppendedPath(Uri.EMPTY,
+                                                               username),
+                                          context, NewMessage.class));
+                                }
+                            });
+                }
+            }
         }
     }
 

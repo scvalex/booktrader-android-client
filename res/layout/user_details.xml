@@ -37,7 +37,6 @@
         />
     <Button
         android:id="@+id/send_message_button"
-        android:enabled="false"
         android:drawableLeft="@drawable/ic_menu_compose"
         android:layout_height="fill_parent"
         android:layout_weight="0"

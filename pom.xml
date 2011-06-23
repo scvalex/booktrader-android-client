@@ -144,6 +144,11 @@
                   public void sendMessage(android.view.View);
               }
             </option>
+            <option>
+              -keep class org.abstractbinary.booktrader.Inbox {
+                  public void newMessage(android.view.View);
+              }
+            </option>
             <option>-dontskipnonpubliclibraryclasses</option>
             <option>-dontoptimize</option>
             <option>-dontpreverify</option>
