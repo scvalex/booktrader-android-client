@@ -1,7 +1,9 @@
 package org.abstractbinary.booktrader;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,15 +16,17 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.List;
-import android.app.AlertDialog;
 
 
 public class NewMessage extends Activity {
     /* Debugging */
     static final String TAG = "BookTrader";
 
-    /* Constants */
+    /* Dialogs */
     static final int DIALOG_INVALID_RECIPIENT = 0;
+    static final int DIALOG_PERPETUUM = 1;
+    static final int DIALOG_PROBLEM = 2;
+    ProgressDialog perpetuumDialog;
 
     /* Internal gubbins */
     String recipientUsername;
@@ -72,6 +76,25 @@ public class NewMessage extends Activity {
                         Log.e(TAG, "couldn't get users: " +
                               (Exception)msg.obj);
                         break;
+                    case BookTraderAPI.SEND_START:
+                        showDialog(DIALOG_PERPETUUM);
+                        break;
+                    case BookTraderAPI.SEND_DONE:
+                        try {
+                            dismissDialog(DIALOG_PERPETUUM);
+                        } catch (IllegalArgumentException e) {
+                            // whoosh
+                        }
+                        finish();
+                        break;
+                    case BookTraderAPI.SEND_ERROR:
+                        try {
+                            dismissDialog(DIALOG_PERPETUUM);
+                        } catch (IllegalArgumentException e) {
+                            // whoosh
+                        }
+                        handleSendError((Exception)msg.obj);
+                        break;
                     default:
                         throw new RuntimeException("unknown message type: " +
                                                    msg.what);
@@ -85,11 +108,29 @@ public class NewMessage extends Activity {
     @Override
     protected Dialog onCreateDialog(int id) {
         final Dialog dialog;
+        AlertDialog.Builder builder;
         switch (id) {
         case DIALOG_INVALID_RECIPIENT:
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder = new AlertDialog.Builder(this);
             builder.setTitle("No such recipient")
                 .setMessage("Check the recipient again")
+                .setNeutralButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            dialog = builder.create();
+            break;
+        case DIALOG_PERPETUUM:
+            ProgressDialog perpetuumDialog = new ProgressDialog(this);
+            dialog = perpetuumDialog;
+            perpetuumDialog.setMessage
+                (getResources().getText(R.string.loading));
+            break;
+        case DIALOG_PROBLEM:
+            builder = new AlertDialog.Builder(this);
+            builder.setTitle("Problem occurred")
+                .setMessage("Check the message again")
                 .setNeutralButton("Close", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
@@ -114,6 +155,12 @@ public class NewMessage extends Activity {
         }
 
         Toast.makeText(this, "sending message", Toast.LENGTH_SHORT).show();
+        String subject =
+            ((EditText)findViewById(R.id.subject_edit)).getText().toString();
+        String body =
+            ((EditText)findViewById(R.id.body_edit)).getText().toString();
+        BookTraderAPI.getInstance().doSendMessage(recipient, subject,
+                                                  body, handler);
     }
 
     public void cancel(View v) {
@@ -125,10 +172,14 @@ public class NewMessage extends Activity {
     /* Handlers */
 
     void handleGetUsersDone(List<String> usernames) {
-        Log.v(TAG, "got " + usernames.size() + " users");
         validUsernames = usernames;
         recipientEdit.setAdapter
             (new ArrayAdapter
              (this, android.R.layout.simple_dropdown_item_1line, usernames));
+    }
+
+    void handleSendError(Exception e) {
+        Log.e(TAG, "send error: " + e);
+        showDialog(DIALOG_PROBLEM);
     }
 }

@@ -48,6 +48,7 @@ class BookTraderAPI {
     static final String BOOKS_URL  = BASE_URL + "/books";
     static final String SEARCH_URL = BASE_URL + "/search";
     static final String MESSAGES_URL = BASE_URL + "/messages";
+    static final String NEW_MESSAGE_URL = MESSAGES_URL + "/new";
 
     static class BookDetailsResult {
         String bookIdentifier;
@@ -99,6 +100,9 @@ class BookTraderAPI {
     static final int MESSAGES_ERROR     = 120;
     static final int GET_USERS_DONE     = 121;
     static final int GET_USERS_FAILED   = 122;
+    static final int SEND_START         = 123;
+    static final int SEND_DONE          = 124;
+    static final int SEND_ERROR         = 125;
 
     /* Network communications */
     HttpClient httpClient;
@@ -319,6 +323,9 @@ class BookTraderAPI {
                             httpClient.execute(httpGet, httpContext);
                         JSONObject json =
                             new JSONObject(responseToString(response));
+                        if (json.getString("status").equals("error"))
+                            throw new RuntimeException
+                                ("error alling:" + json.getString("reason"));
                         JSONArray jsonUsers = json.getJSONArray("users");
                         List<String> users = new ArrayList<String>();
                         for (int i = 0; i < jsonUsers.length(); ++i)
@@ -399,6 +406,43 @@ class BookTraderAPI {
                     } catch (Exception e) {
                         sendMessage(handler, PERSON_GET_FAILED,
                                     new PersonResult(username, e));
+                    }
+                }
+            });
+    }
+
+    /** Get all a usernames. */
+    void doSendMessage(String recipient, String subject, String body,
+                       final Handler handler) {
+        final HttpPost httpPost = new HttpPost(NEW_MESSAGE_URL);
+
+        List<NameValuePair> values = new ArrayList<NameValuePair>();
+        values.add(new BasicNameValuePair("recipient", recipient));
+        values.add(new BasicNameValuePair("subject", subject));
+        values.add(new BasicNameValuePair("body", body));
+        values.add(new BasicNameValuePair("Send", "Send"));
+        values.add(new BasicNameValuePair("format", "json"));
+        try {
+            httpPost.setEntity(new UrlEncodedFormEntity(values));
+        } catch (Exception e) {
+            sendMessage(handler, SEND_ERROR, e);
+        }
+
+        sendMessage(handler, SEND_START, null);
+        pool.execute(new Runnable() {
+                public void run() {
+                    try {
+                        HttpResponse response =
+                            httpClient.execute(httpPost, httpContext);
+                        JSONObject json =
+                            new JSONObject(responseToString(response));
+                        if (json.getString("status").equals("error"))
+                            throw new RuntimeException
+                                ("error sending:" + json.getString("reason"));
+                        sendMessage(handler, SEND_DONE, null);
+                    } catch (Exception e) {
+                        Log.v(TAG, "Send error " + e.getCause());
+                        sendMessage(handler, SEND_ERROR, e);
                     }
                 }
             });

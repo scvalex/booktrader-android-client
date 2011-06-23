@@ -56,7 +56,7 @@
     </TableRow>
   </TableLayout>
   <EditText
-      android:id="@+id/body_text"
+      android:id="@+id/body_edit"
       android:gravity="top|left"
       android:imeOptions="actionDone"
       android:layout_height="fill_parent"
