@@ -1,6 +1,7 @@
 package org.abstractbinary.booktrader;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -55,6 +56,7 @@ public class BookTrader extends Activity {
     /* Dialogs */
     static final int DIALOG_LOGIN = 0;
     static final int DIALOG_PERPETUUM = 1;
+    static final int DIALOG_ABOUT = 2;
     ProgressDialog perpetuumDialog;
 
     /* Often used widgets */
@@ -283,6 +285,18 @@ public class BookTrader extends Activity {
             perpetuumDialog.setMessage
                 (getResources().getText(R.string.loading));
             break;
+        case DIALOG_ABOUT:
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("BookTrader")
+                .setIcon(R.drawable.mr_t)
+                .setMessage("This is BookTrader: and advanced book trading platform.")
+                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            dialog = builder.create();
+            break;
         default:
             throw new RuntimeException("Unknown dialog type: " + id);
         }
@@ -393,7 +407,7 @@ public class BookTrader extends Activity {
             Toast.makeText(this, "Cache cleared", Toast.LENGTH_SHORT).show();
             return true;
         case R.id.about_menu:
-            Toast.makeText(this, "fööt fööt fööt", Toast.LENGTH_SHORT).show();
+            showDialog(DIALOG_ABOUT);
             return true;
         default:
             return super.onOptionsItemSelected(item);
