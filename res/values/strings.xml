@@ -8,6 +8,7 @@
     <string name="cancel">Cancel</string>
     <string name="clear_cache">Clear cache</string>
     <string name="coveters">Coveters</string>
+    <string name="from">From:</string>
     <string name="have">Have</string>
     <string name="history">History</string>
     <string name="home">Home</string>
@@ -34,4 +35,6 @@
     <string name="username">Username</string>
     <string name="wants">Wants</string>
     <string name="want">Want</string>
+    <string name="subject">Subject:</string>
+    <string name="hi_there">Hi, there!</string>
 </resources>
