@@ -32,7 +32,7 @@
           android:textSize="10pt"
           android:text="@string/to"
           />
-      <EditText
+      <AutoCompleteTextView
           android:id="@+id/recipient_edit"
           android:hint="@string/type_a_name"
           android:lines="1"

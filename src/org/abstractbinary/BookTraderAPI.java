@@ -97,6 +97,8 @@ class BookTraderAPI {
     static final int ALL_MESSAGES_START = 118;
     static final int MESSAGES_GOT       = 119;
     static final int MESSAGES_ERROR     = 120;
+    static final int GET_USERS_DONE     = 121;
+    static final int GET_USERS_FAILED   = 122;
 
     /* Network communications */
     HttpClient httpClient;
@@ -301,6 +303,29 @@ class BookTraderAPI {
                                     new Messages(json));
                     } catch (Exception e) {
                         sendMessage(handler, MESSAGES_ERROR, e);
+                    }
+                }
+            });
+    }
+
+    /** Get all a usernames. */
+    void doGetAllUsers(final Handler handler) {
+        final HttpGet httpGet = new HttpGet(USERS_URL + "?format=json");
+
+        pool.execute(new Runnable() {
+                public void run() {
+                    try {
+                        HttpResponse response =
+                            httpClient.execute(httpGet, httpContext);
+                        JSONObject json =
+                            new JSONObject(responseToString(response));
+                        JSONArray jsonUsers = json.getJSONArray("users");
+                        List<String> users = new ArrayList<String>();
+                        for (int i = 0; i < jsonUsers.length(); ++i)
+                            users.add(jsonUsers.getString(i));
+                        sendMessage(handler, GET_USERS_DONE, users);
+                    } catch (Exception e) {
+                        sendMessage(handler, GET_USERS_FAILED, e);
                     }
                 }
             });

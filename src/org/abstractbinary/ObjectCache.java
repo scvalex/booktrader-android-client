@@ -4,9 +4,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -25,7 +28,9 @@ class ObjectCache {
     static final int PERSON_GOT         = 302;
     static final int OBJECT_GET_FAILED  = 303;
     static final int MESSAGES_GOT       = 304;
+    static final int USERS_GOT          = 305;
     static final String MESSAGES_LIST_KEY = "/messages/list";
+    static final String USERS_LIST_KEY = "/users";
 
     /* Cache on db stuff */
     BookTraderOpenHelper dbHelper;
@@ -76,6 +81,12 @@ class ObjectCache {
                     case BookTraderAPI.MESSAGES_ERROR:
                         handleMessagesError((Exception)msg.obj);
                         break;
+                    case BookTraderAPI.GET_USERS_DONE:
+                        handleUsersGot((List<String>)msg.obj);
+                        break;
+                    case BookTraderAPI.GET_USERS_FAILED:
+                        handleUsersError((Exception)msg.obj);
+                        break;
                     default:
                         throw new RuntimeException("unknown message type: " +
                                                    msg.what);
@@ -108,6 +119,28 @@ class ObjectCache {
 
                       public void getFromAPI() {
                           BookTraderAPI.getInstance().doGetAllMessages
+                              (detailsHandler);
+                      }
+                  });
+    }
+
+    /** Get al la user's details. */
+    void getAllUsers(final Handler handler) {
+        getCached(USERS_LIST_KEY, handler, false,
+                  new CacheHandler() {
+                      public void handleCached(byte[] fromDb)
+                          throws Exception
+                      {
+                          JSONArray jsonUsers  =
+                              new JSONArray(new String(fromDb));
+                          List<String> users = new ArrayList<String>();
+                          for (int i = 0; i < jsonUsers.length(); ++i)
+                              users.add(jsonUsers.getString(i));
+                          sendMessage(handler, USERS_GOT, users);
+                      }
+
+                      public void getFromAPI() {
+                          BookTraderAPI.getInstance().doGetAllUsers
                               (detailsHandler);
                       }
                   });
@@ -202,6 +235,12 @@ class ObjectCache {
                              messages.jsonString.getBytes());
     }
 
+    synchronized void insertUsers(List<String> users) {
+        dbHelper.cacheRemove(USERS_LIST_KEY);
+        dbHelper.cacheInsert(USERS_LIST_KEY,
+                             (new JSONArray(users)).toString().getBytes());
+    }
+
 
     /* Handlers */
 
@@ -278,6 +317,31 @@ class ObjectCache {
             requestHandlers.remove(MESSAGES_LIST_KEY);
         } catch (Exception e) {
             Log.e(TAG,  "Nested exception erring messages: " +
+                  e + " (" + e.getCause() + ")");
+            // whoosh
+        }
+    }
+
+    void handleUsersGot(List<String> users) {
+        try {
+            Handler handler = requestHandlers.get(USERS_LIST_KEY);
+            sendMessage(handler, USERS_GOT, users);
+            insertUsers(users);
+            requestHandlers.remove(USERS_LIST_KEY);
+        } catch (Exception e) {
+            Log.e(TAG, "Nested exception getting users: " +
+                  e + " (" + e.getCause() + ")");
+            // whoosh
+        }
+    }
+
+    void handleUsersError(Exception exception) {
+        try {
+            Handler handler = requestHandlers.get(USERS_LIST_KEY);
+            sendMessage(handler, OBJECT_GET_FAILED, exception);
+            requestHandlers.remove(USERS_LIST_KEY);
+        } catch (Exception e) {
+            Log.e(TAG,  "Nested exception erring users: " +
                   e + " (" + e.getCause() + ")");
             // whoosh
         }
