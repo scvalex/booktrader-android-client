@@ -65,7 +65,11 @@ public class Inbox extends ListActivity {
                 }
             }
         };
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
         refresh(null);
     }
 
