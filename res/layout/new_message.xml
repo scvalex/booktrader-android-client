@@ -54,6 +54,7 @@
     </TableRow>
   </TableLayout>
   <EditText
+      android:id="@+id/body_text"
       android:gravity="top|left"
       android:layout_height="fill_parent"
       android:layout_weight="1"
@@ -67,7 +68,6 @@
       android:orientation="horizontal"
       >
     <Button
-        android:enabled="false"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_width="fill_parent"

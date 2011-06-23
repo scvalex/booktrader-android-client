@@ -126,7 +126,7 @@ class ObjectCache {
 
     /** Get al la user's details. */
     void getAllUsers(final Handler handler) {
-        getCached(USERS_LIST_KEY, handler, false,
+        getCached(USERS_LIST_KEY, handler, true,
                   new CacheHandler() {
                       public void handleCached(byte[] fromDb)
                           throws Exception

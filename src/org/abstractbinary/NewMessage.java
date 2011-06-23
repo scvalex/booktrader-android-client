@@ -1,26 +1,33 @@
 package org.abstractbinary.booktrader;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.widget.ArrayAdapter;
 
 import java.util.List;
+import android.app.AlertDialog;
 
 
 public class NewMessage extends Activity {
     /* Debugging */
     static final String TAG = "BookTrader";
 
+    /* Constants */
+    static final int DIALOG_INVALID_RECIPIENT = 0;
+
     /* Internal gubbins */
     String recipientUsername;
     Handler handler;
+    List<String> validUsernames;
 
     /* Commonly used widgets */
     AutoCompleteTextView recipientEdit;
@@ -75,10 +82,37 @@ public class NewMessage extends Activity {
         ObjectCache.getInstance().getAllUsers(handler);
     }
 
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        final Dialog dialog;
+        switch (id) {
+        case DIALOG_INVALID_RECIPIENT:
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("No such recipient")
+                .setMessage("Check the recipient again")
+                .setNeutralButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            dialog = builder.create();
+            break;
+        default:
+            throw new RuntimeException("Unknown dialog type: " + id);
+        }
+        return dialog;
+    }
+
 
     /* Callbacks */
 
     public void sendMessage(View v) {
+        String recipient = recipientEdit.getText().toString();
+        if (validUsernames != null && !validUsernames.contains(recipient)) {
+            showDialog(DIALOG_INVALID_RECIPIENT);
+            return;
+        }
+
         Toast.makeText(this, "sending message", Toast.LENGTH_SHORT).show();
     }
 
@@ -92,6 +126,7 @@ public class NewMessage extends Activity {
 
     void handleGetUsersDone(List<String> usernames) {
         Log.v(TAG, "got " + usernames.size() + " users");
+        validUsernames = usernames;
         recipientEdit.setAdapter
             (new ArrayAdapter
              (this, android.R.layout.simple_dropdown_item_1line, usernames));
